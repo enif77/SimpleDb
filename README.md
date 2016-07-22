@@ -1,2 +1,2 @@
 # SimpleDb
-Library for File-based and MSSQL-based databases.
+Library for handling file-based and MSSQL-based databases.
