@@ -24,7 +24,7 @@ namespace SimpleDbTests.MsSql.Datalayer
 {
     using SimpleDb.MsSql;
 
-    using SimpleDbTests.MsSql.DataObjects;
+    using SimpleDbTests.Shared.DataObjects;
 
 
     public class LookupDataLayer : LookupDataLayer<Lookup>

@@ -20,9 +20,9 @@ freely, subject to the following restrictions:
  
  */
    
-namespace SimpleDbTests.MsSql.Datalayer
+namespace SimpleDbTests.Files.Datalayer
 {
-    using SimpleDb.MsSql;
+    using SimpleDb.Files;
 
     using SimpleDbTests.Shared.DataObjects;
 

@@ -26,8 +26,10 @@ namespace SimpleDbTests
     using System.Configuration;
 
     using Injektor;
+    using SimpleDb.Files;
     using SimpleDb.MsSql;
 
+    using SimpleDbTests.Files.Datalayer;
     using SimpleDbTests.MsSql.Datalayer;
 
 
@@ -37,6 +39,7 @@ namespace SimpleDbTests
         {
             try
             {
+                FilesTests();
                 MsSqlTests();
             }
             finally 
@@ -48,18 +51,20 @@ namespace SimpleDbTests
         }
 
 
-        private static void MsSqlTests()
-        {
-            MsSql.Datalayer.Initializer.InitializeLayers(new Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
+        #region FILES
 
-            MsSqlLookupDataLayerTest();
-            MsSqlLookupColumnNamesDatalayerTest();
+        private static void FilesTests()
+        {
+            Files.Datalayer.Initializer.InitializeLayers(new SimpleDb.Files.Database(@"D:\Devel\Projects\Personal\CS\git\SimpleDb\SimpleDbTests\Files\Data"));
+
+            FilesLookupDataLayerTest();
+            //MsSqlLookupColumnNamesDatalayerTest();
         }
 
 
-        private static void MsSqlLookupDataLayerTest()
+        private static void FilesLookupDataLayerTest()
         {
-            var dal = Registry.Get<LookupDataLayer>();
+            var dal = Registry.Get<Files.Datalayer.LookupDataLayer>();
             var lookups = dal.GetAll();
             foreach (var lookup in lookups)
             {
@@ -69,21 +74,47 @@ namespace SimpleDbTests
             var name = "V1";
             var id = dal.GetIdByName(name);
             Console.WriteLine("The '{0}' Id is: {1}", name, id);
+        }
 
-            name = "R1";
-            var id2 = dal.GetIdByName("V1");
+        #endregion
 
+
+        #region MSSQL
+
+        private static void MsSqlTests()
+        {
+            MsSql.Datalayer.Initializer.InitializeLayers(new SimpleDb.MsSql.Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
+
+            MsSqlLookupDataLayerTest();
+            MsSqlLookupColumnNamesDatalayerTest();
+        }
+
+
+        private static void MsSqlLookupDataLayerTest()
+        {
+            var dal = Registry.Get<MsSql.Datalayer.LookupDataLayer>();
+            var lookups = dal.GetAll();
+            foreach (var lookup in lookups)
+            {
+                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+            }
+
+            var name = "V1";
+            var id = dal.GetIdByName(name);
+            Console.WriteLine("The '{0}' Id is: {1}", name, id);
         }
 
 
         private static void MsSqlLookupColumnNamesDatalayerTest()
         {
-            var dal = Registry.Get<LookupColumnNamesDataLayer>();
+            var dal = Registry.Get<MsSql.Datalayer.LookupColumnNamesDataLayer>();
             var lookups = dal.GetAll();
             foreach (var lookup in lookups)
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
         }
+
+        #endregion
     }
 }

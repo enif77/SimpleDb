@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.MsSql.DataObjects
+namespace SimpleDbTests.Shared.DataObjects
 {
     using System;
 

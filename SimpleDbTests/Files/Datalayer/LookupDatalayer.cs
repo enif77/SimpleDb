@@ -20,16 +20,16 @@ freely, subject to the following restrictions:
  
  */
    
-namespace SimpleDbTests.MsSql.Datalayer
+namespace SimpleDbTests.Files.Datalayer
 {
-    using SimpleDb.MsSql;
+    using SimpleDb.Files;
 
     using SimpleDbTests.Shared.DataObjects;
 
 
-    public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames>
-    {                                      
-        public LookupColumnNamesDataLayer(Database database)
+    public class LookupDataLayer : LookupDataLayer<Lookup>
+    {
+        public LookupDataLayer(Database database)
             : base(database)
         {
         }

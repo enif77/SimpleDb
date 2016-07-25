@@ -63,11 +63,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Files\Datalayer\Initializer.cs" />
+    <Compile Include="Files\Datalayer\LookupColumnNamesDatalayer.cs" />
+    <Compile Include="Files\Datalayer\LookupDatalayer.cs" />
     <Compile Include="MsSql\Datalayer\Initializer.cs" />
     <Compile Include="MsSql\Datalayer\LookupColumnNamesDatalayer.cs" />
     <Compile Include="MsSql\Datalayer\LookupDatalayer.cs" />
-    <Compile Include="MsSql\DataObjects\LookupColumnNames.cs" />
-    <Compile Include="MsSql\DataObjects\Lookup.cs" />
+    <Compile Include="Shared\DataObjects\LookupColumnNames.cs" />
+    <Compile Include="Shared\DataObjects\Lookup.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -83,6 +86,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\Injektor\Injektor.dll" />
+    <Content Include="Files\Data\LookupColumnNames\0_LookupColumnNames.txt" />
+    <Content Include="Files\Data\LookupColumnNames\1_LookupColumnNames.txt" />
+    <Content Include="Files\Data\LookupColumnNames\2_LookupColumnNames.txt" />
+    <Content Include="Files\Data\LookupColumnNames\3_LookupColumnNames.txt" />
+    <Content Include="Files\Data\Lookup\1_Lookup.txt" />
+    <Content Include="Files\Data\Lookup\2_Lookup.txt" />
+    <Content Include="Files\Data\Lookup\3_Lookup.txt" />
+    <Content Include="Files\Data\Lookup\0_Lookup.txt" />
     <Content Include="MsSql\Data\SimpleDatabase.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -105,9 +116,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Files\Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

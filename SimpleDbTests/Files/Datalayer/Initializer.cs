@@ -19,19 +19,30 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
  
  */
-   
-namespace SimpleDbTests.MsSql.Datalayer
+
+namespace SimpleDbTests.Files.Datalayer
 {
-    using SimpleDb.MsSql;
+    using System;
 
-    using SimpleDbTests.Shared.DataObjects;
+    using Injektor;
+    using SimpleDb.Files;
+    
 
-
-    public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames>
-    {                                      
-        public LookupColumnNamesDataLayer(Database database)
-            : base(database)
+    /// <summary>
+    /// Global class for registering and initializing data layers.
+    /// </summary>
+    public static class Initializer
+    {
+        /// <summary>
+        /// Initializes and registers all data layers.
+        /// </summary>
+        /// <param name="database"></param>
+        public static void InitializeLayers(Database database)
         {
+            if (database == null) throw new ArgumentNullException("database");
+
+            Registry.RegisterInstance(new LookupDataLayer(database));
+            Registry.RegisterInstance(new LookupColumnNamesDataLayer(database));
         }
     }
 }
