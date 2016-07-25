@@ -65,6 +65,14 @@ namespace SimpleDbTests
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
+
+            var name = "V1";
+            var id = dal.GetIdByName(name);
+            Console.WriteLine("The '{0}' Id is: {1}", name, id);
+
+            name = "R1";
+            var id2 = dal.GetIdByName("V1");
+
         }
 
 

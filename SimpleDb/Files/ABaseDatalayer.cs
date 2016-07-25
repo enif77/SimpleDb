@@ -34,7 +34,7 @@ namespace SimpleDb.Files
     /// The base of all datalayers.
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
-    public abstract class ABaseDatalayer<T> where T : AFileDataObject, new()
+    public abstract class ABaseDatalayer<T> where T : AIdDataObject, new()
     {
         #region fields
         
@@ -261,7 +261,7 @@ namespace SimpleDb.Files
                         obj.Id = LastId + 1;
                     }
 
-                    DataEntity.SaveDataEntity(obj.CreateDataEntity(), GetEntityFilePath(obj.Id));
+                    DataEntity.SaveDataEntity(CreateDataEntity(obj), GetEntityFilePath(obj.Id));
 
                     return obj.Id;
                 }
@@ -358,6 +358,39 @@ namespace SimpleDb.Files
 
 
         #region private methods
+
+        /// <summary>
+        /// Creates a new DataEntity instance from this ADataObject instance.
+        /// </summary>
+        /// <returns>A new DataEntity instance.</returns>
+        private DataEntity CreateDataEntity(T obj)
+        {
+            var entity = new DataEntity();
+
+            // For all DB columns...
+            foreach (var column in obj.DatabaseColumns)
+            {
+                // Get the instance of this column attribute.
+                var attribute = ADataObject.GetDbColumnAttribute(column);
+
+                // Skip ignored columns.
+                if (attribute.IsIgnored) continue;
+
+                var columnType = column.PropertyType;
+                switch (columnType.Name)
+                {
+                    // TODO: Nullable types?
+
+                    case "Int32": entity.SetValue(attribute.Name, (int)column.GetValue(this)); break;
+                    case "Boolean": entity.SetValue(attribute.Name, (bool)column.GetValue(this)); break;
+                    case "Decimal": entity.SetValue(attribute.Name, (decimal)column.GetValue(this)); break;
+                    case "DateTime": entity.SetValue(attribute.Name, (DateTime)column.GetValue(this)); break;
+                    case "String": entity.SetValue(attribute.Name, (string)column.GetValue(this)); break;
+                }
+            }
+
+            return entity;
+        }
 
         /// <summary>
         /// Loads a data object from an entity data file.
