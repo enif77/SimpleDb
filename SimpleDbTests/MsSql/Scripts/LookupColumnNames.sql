@@ -79,6 +79,23 @@ END
 GO
 
 
+CREATE FUNCTION [dbo].[fnLookupColumnNames_GetIdByName]
+(
+	@Name	nvarchar(3)
+)
+RETURNS	int
+AS
+BEGIN
+	DECLARE	@Id	int
+	
+	SELECT @Id = [Id] FROM LookupColumnNames WHERE RenamedName = @Name
+
+	RETURN	@Id
+END
+
+GO
+
+
 -- If nothing is selected (The Id = 0), we display/use this item.
 INSERT INTO LookupColumnNames (RenamedName, Description) VALUES ('-', '')
 

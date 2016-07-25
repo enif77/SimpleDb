@@ -60,6 +60,7 @@ CREATE PROC [dbo].[spLookup_Insert]
 AS
 BEGIN
 	INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description)
+
 	SELECT SCOPE_IDENTITY() [Id]
 END
 
@@ -73,7 +74,25 @@ CREATE PROC [dbo].[spLookup_Delete]
 AS
 BEGIN
 	DELETE FROM Lookup WHERE Id = @Id
+
 	SELECT @@ROWCOUNT [RowCount]
+END
+
+GO
+
+
+CREATE FUNCTION [dbo].[fnLookup_GetIdByName]
+(
+	@Name	nvarchar(3)
+)
+RETURNS	int
+AS
+BEGIN
+	DECLARE	@Id	int
+	
+	SELECT @Id = [Id] FROM Lookup WHERE Name = @Name
+
+	RETURN	@Id
 END
 
 GO
