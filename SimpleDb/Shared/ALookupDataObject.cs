@@ -48,7 +48,13 @@ namespace SimpleDb.Shared
 
         #region properties
 
+        /// <summary>
+        /// The Name DB column.
+        /// User can change this column name by overriding this property in his own ALookupDataObject implementation.
+        /// The DbColumnTag is required by the LookupDataLayer. User should not change it.
+        /// </summary>
         [DbColumn("Name", Int32.MaxValue)]
+        [DbColumnTag("Name")]
         public virtual string Name
         {
             get { return _name; }
@@ -62,8 +68,13 @@ namespace SimpleDb.Shared
             }
         }
 
-
+        /// <summary>
+        /// The Description DB column.
+        /// User can change this column name by overriding this property in his own ALookupDataObject implementation.
+        /// The DbColumnTag is not required by the LookupDataLayer. User can change it.
+        /// </summary>
         [DbColumn("Description", Int32.MaxValue)]
+        [DbColumnTag("Description")]
         public virtual string Description
         {
             get { return _description; }
@@ -95,7 +106,6 @@ namespace SimpleDb.Shared
                 Id = this.Id,
                 Name = this.Name,
                 Description = this.Description
-
             };
         }
 

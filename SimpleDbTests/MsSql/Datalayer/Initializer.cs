@@ -1,6 +1,6 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
  
-SimpleDb is available under the zlib license:
+SimpleDbTests is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -20,50 +20,29 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDbTests.MsSql.Datalayer
 {
-    using System.Globalization;
+    using System;
 
+    using Injektor;
+    using SimpleDb.MsSql;
+    
 
     /// <summary>
-    /// A base class for a business object.
+    /// Global class for registering and initializing data layers.
     /// </summary>
-    public abstract class AIdDataObject : ADataObject, IId
+    public static class Initializer
     {
-        #region fields
-
-        private int _id;
-
-        #endregion
-
-
-        #region properties
-
-        [DbColumn("Id", 1, DbColumnAttribute.ColumnOptions.Id)]
-        [DbColumnTag("Id")]
-        public virtual int Id
+        /// <summary>
+        /// Initializes and registers all data layers.
+        /// </summary>
+        /// <param name="database"></param>
+        public static void InitializeLayers(Database database)
         {
-            get { return _id; }
-            set
-            {
-                if (_id != value)
-                {
-                    _id = value;
-                    OnPropertyChanged("Id");
-                }
-            }
+            if (database == null) throw new ArgumentNullException("database");
+
+            Registry.RegisterInstance(new LookupDataLayer(database));
+            Registry.RegisterInstance(new LookupColumnNamesDataLayer(database));
         }
-
-        #endregion
-
-
-        #region public methods
-
-        public override string ToString()
-        {
-            return Id.ToString(CultureInfo.InvariantCulture);
-        }
-
-        #endregion
     }
 }

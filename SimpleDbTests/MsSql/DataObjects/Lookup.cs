@@ -1,6 +1,6 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
  
-SimpleDb is available under the zlib license:
+SimpleDbTests is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -20,48 +20,40 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDbTests.MsSql.DataObjects
 {
-    using System.Globalization;
+    using System;
 
+    using SimpleDb.Shared;
 
     /// <summary>
-    /// A base class for a business object.
+    /// A simple lookup with default colums and column names.
     /// </summary>
-    public abstract class AIdDataObject : ADataObject, IId
+    [DbTable("Lookup")]
+    public sealed class Lookup : ALookupDataObject<Lookup>
     {
-        #region fields
+        #region ctor
 
-        private int _id;
+        public Lookup()
+        {
+            // The description is not required. 
+            // Because it is not nullable by default, we set some non-null value here. 
+            Description = String.Empty;
+        }
 
         #endregion
 
 
         #region properties
 
-        [DbColumn("Id", 1, DbColumnAttribute.ColumnOptions.Id)]
-        [DbColumnTag("Id")]
-        public virtual int Id
+        /// <summary>
+        /// The Name column with limited lenght of data. (3 chars only, see the Lookup.sql file.)
+        /// </summary>
+        [DbColumn("Name", 3)]
+        public override string Name
         {
-            get { return _id; }
-            set
-            {
-                if (_id != value)
-                {
-                    _id = value;
-                    OnPropertyChanged("Id");
-                }
-            }
-        }
-
-        #endregion
-
-
-        #region public methods
-
-        public override string ToString()
-        {
-            return Id.ToString(CultureInfo.InvariantCulture);
+            get { return base.Name; }
+            set { base.Name = value; }
         }
 
         #endregion
