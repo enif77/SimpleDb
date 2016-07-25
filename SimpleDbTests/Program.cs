@@ -37,10 +37,7 @@ namespace SimpleDbTests
         {
             try
             {
-                Initializer.InitializeLayers(new Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
-
-                LookupDataLayerTest();
-                LookupColumnNamesDatalayerTest();
+                MsSqlTests();
             }
             finally 
             {
@@ -50,9 +47,17 @@ namespace SimpleDbTests
             }
         }
 
-        
 
-        private static void LookupDataLayerTest()
+        private static void MsSqlTests()
+        {
+            MsSql.Datalayer.Initializer.InitializeLayers(new Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
+
+            MsSqlLookupDataLayerTest();
+            MsSqlLookupColumnNamesDatalayerTest();
+        }
+
+
+        private static void MsSqlLookupDataLayerTest()
         {
             var dal = Registry.Get<LookupDataLayer>();
             var lookups = dal.GetAll();
@@ -63,7 +68,7 @@ namespace SimpleDbTests
         }
 
 
-        private static void LookupColumnNamesDatalayerTest()
+        private static void MsSqlLookupColumnNamesDatalayerTest()
         {
             var dal = Registry.Get<LookupColumnNamesDataLayer>();
             var lookups = dal.GetAll();
