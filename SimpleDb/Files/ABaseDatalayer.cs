@@ -57,7 +57,9 @@ namespace SimpleDb.Files
 
             Database = database;
             TypeInstance = new T();
-            DataDirectory = Path.Combine(Database.RootDirectoryPath, TypeInstance.DatabaseTableName);
+
+            // TODO: Fails, when DatabaseTableName/DbTable attribute is not set.
+            DataDirectory = Path.Combine(Database.RootDirectoryPath, TypeInstance.DatabaseTableName); 
 
             if (Directory.Exists(DataDirectory) == false)
             {
@@ -381,11 +383,11 @@ namespace SimpleDb.Files
                 {
                     // TODO: Nullable types?
 
-                    case "Int32": entity.SetValue(attribute.Name, (int)column.GetValue(this)); break;
-                    case "Boolean": entity.SetValue(attribute.Name, (bool)column.GetValue(this)); break;
-                    case "Decimal": entity.SetValue(attribute.Name, (decimal)column.GetValue(this)); break;
-                    case "DateTime": entity.SetValue(attribute.Name, (DateTime)column.GetValue(this)); break;
-                    case "String": entity.SetValue(attribute.Name, (string)column.GetValue(this)); break;
+                    case "Int32": entity.SetValue(attribute.Name, (int)column.GetValue(obj)); break;
+                    case "Boolean": entity.SetValue(attribute.Name, (bool)column.GetValue(obj)); break;
+                    case "Decimal": entity.SetValue(attribute.Name, (decimal)column.GetValue(obj)); break;
+                    case "DateTime": entity.SetValue(attribute.Name, (DateTime)column.GetValue(obj)); break;
+                    case "String": entity.SetValue(attribute.Name, (string)column.GetValue(obj)); break;
                 }
             }
 
