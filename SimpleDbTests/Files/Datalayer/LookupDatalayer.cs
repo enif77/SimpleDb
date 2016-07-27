@@ -19,9 +19,11 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
  
  */
-   
+
 namespace SimpleDbTests.Files.Datalayer
 {
+    using System.IO;
+
     using SimpleDb.Files;
 
     using SimpleDbTests.Shared.DataObjects;
@@ -32,6 +34,23 @@ namespace SimpleDbTests.Files.Datalayer
         public LookupDataLayer(Database database)
             : base(database)
         {
+        }
+
+        /// <summary>
+        /// Deletes all rows in DB.
+        /// </summary>
+        /// <returns>Number of affected rows.</returns>
+        public int DeleteAll()
+        {
+            var count = 0;
+            var tableDirectory = new DirectoryInfo(DataDirectory);
+            foreach (var file in tableDirectory.GetFiles("*.txt"))
+            {
+                file.Delete();
+                count++;
+            }
+
+            return count;
         }
     }
 }

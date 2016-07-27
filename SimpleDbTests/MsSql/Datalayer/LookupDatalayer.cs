@@ -19,9 +19,11 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
  
  */
-   
+
 namespace SimpleDbTests.MsSql.Datalayer
 {
+    using System.Data.SqlClient;
+
     using SimpleDb.MsSql;
 
     using SimpleDbTests.Shared.DataObjects;
@@ -32,6 +34,19 @@ namespace SimpleDbTests.MsSql.Datalayer
         public LookupDataLayer(Database database)
             : base(database)
         {
+        }
+
+
+        /// <summary>
+        /// Deletes all rows in DB.
+        /// </summary>
+        /// <param name="transaction">A SqlTransaction instance or null.</param>
+        /// <returns>Number of affected rows.</returns>
+        public int DeleteAll(SqlTransaction transaction = null)
+        {
+            OperationAllowed(DatabaseOperation.Delete);
+
+            return Database.ExecuteNonQuery("spLookup_DeleteAll", null, transaction);
         }
     }
 }

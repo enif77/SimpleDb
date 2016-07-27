@@ -98,6 +98,21 @@ END
 GO
 
 
+CREATE PROCEDURE [dbo].[spLookup_DeleteAll]
+AS
+BEGIN
+	SET NOCOUNT ON
+
+	TRUNCATE TABLE	[dbo].[Lookup]
+
+	DBCC CHECKIDENT(Lookup, RESEED, 0) WITH NO_INFOMSGS
+	
+END
+
+GO
+
+
+
 -- If nothing is selected (The Id = 0), we display/use this item.
 INSERT INTO Lookup (Name, Description) VALUES ('-', '')
 
