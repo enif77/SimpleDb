@@ -248,7 +248,6 @@ namespace SimpleDb.Files
         /// Inserts/updates object in database
         /// </summary>
         /// <param name="obj">Instance to save</param>
-        /// <param name="transaction">Instance to SqlTransaction object</param>
         /// <returns>Id of saved instance</returns>
         public virtual int Save(T obj)
         {
