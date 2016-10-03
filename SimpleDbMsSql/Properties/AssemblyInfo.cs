@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SimpleDb")]
-[assembly: AssemblyDescription("Library for handling file-based and MSSQL based databases.")]
+[assembly: AssemblyTitle("SimpleDbMsSql")]
+[assembly: AssemblyDescription("Library for handling MSSQL based databases.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SimpleDb")]
+[assembly: AssemblyProduct("SimpleDbMsSql")]
 [assembly: AssemblyCopyright("Copyright © 2016 Premysl Fara")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("732c781c-4861-4ec9-bd8e-17443e63ad03")]
+[assembly: Guid("1bdfcedc-cf86-4e69-95c4-efc4d4bce056")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.10")]
+[assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

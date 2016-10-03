@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDbFiles - (C) 2016 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -22,30 +22,30 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Files
 {
-    using System;
-    using System.IO;
+    using System.Collections.Generic;
+
+    using SimpleDb.Shared;
 
 
-    public class Database
+    public interface IDataConsumer<T> where T : ADataObject, new()
     {
-        public string RootDirectoryPath { get; private set; }
+        /// <summary>
+        /// A list of T instances.
+        /// </summary>
+        ICollection<T> Instances { get; }
 
+        /// <summary>
+        /// Creates an object instance from a data entity and strores it in the Instances collection.
+        /// </summary>
+        /// <param name="entity">An entity instance to be processed.</param>
+        /// <returns>True on succes.</returns>
+        bool CreateInstance(DataEntity entity);
 
-        public Database(string rootDirectoryPath)
-        {
-            if (String.IsNullOrEmpty(rootDirectoryPath))
-            {
-                throw new ArgumentNullException("rootDirectoryPath", "A root directory path expected.");
-            }
-
-            if (Directory.Exists(rootDirectoryPath) == false)
-            {
-                Directory.CreateDirectory(rootDirectoryPath);
-
-                //throw new ArgumentException("rootDirectoryPath", String.Format("The root directory path '{0}' does not exists.", rootDirectoryPath));
-            }
-
-            RootDirectoryPath = rootDirectoryPath;
-        }
+        /// <summary>
+        /// Recreates an object instance from an entity.
+        /// </summary>
+        /// <param name="entity">A data entity to be processed.</param>
+        /// <returns>True on succes.</returns>
+        bool RecreateInstance(DataEntity entity);
     }
 }
