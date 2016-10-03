@@ -254,18 +254,33 @@ namespace SimpleDb.Shared
 
             if (column.PropertyType == typeof(string))
             {
-                // Check a string length and the null value for string types.
+                // Get the property value.
                 var value = column.GetValue(this) as string;
-                if (value == null && attribute.IsNullable == false)
-                {
-                    // Strings are a value type, so we have to check for the null here too.
-                    throw new ValidationException(String.Format("The {0} property value can not be null.", column.Name));
-                }
 
-                // String lengths are limited.
-                if (value != null && value.Length > attribute.Length)
+                if (value == null)
                 {
-                    throw new ValidationException(String.Format("The {0} property value '{1}' is too long. ({2}/{3})", column.Name, value, value.Length, attribute.Length));
+                    if (attribute.IsNullable == false)
+                    {
+                        // Strings are a value type, so we have to check for the null here too.
+                        throw new ValidationException(String.Format("The {0} property value can not be null.", column.Name));
+                    }
+
+                    // The value is null and because this column is nullable, 
+                    // we do not have to do anything with the Nonempty column option here.
+                }
+                else
+                {
+                    if (attribute.IsNonempty && String.IsNullOrWhiteSpace(value))
+                    {
+                        // Nonempty strings should contain something.
+                        throw new ValidationException(String.Format("The {0} property value can not be empty.", column.Name));
+                    }
+
+                    // String lengths are limited.
+                    if (value.Length > attribute.Length)
+                    {
+                        throw new ValidationException(String.Format("The {0} property value '{1}' is too long. ({2}/{3})", column.Name, value, value.Length, attribute.Length));
+                    }
                 }
             }
             else if (column.PropertyType == typeof(DateTime))

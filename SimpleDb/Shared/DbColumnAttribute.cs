@@ -58,6 +58,13 @@ namespace SimpleDb.Shared
             ReadOnly = 4,
 
             /// <summary>
+            /// A string value, that can not be empty.
+            /// A nonempty string can be null, if it the Nullable column option is used.
+            /// See String.IsNullOrWhiteSpace().
+            /// </summary>
+            Nonempty = 8,
+
+            /// <summary>
             /// Is Ignored. The value is never read from/saved to DB.
             /// </summary>
             Ignored = 128,
@@ -79,7 +86,7 @@ namespace SimpleDb.Shared
         public ColumnOptions Options { get; private set; }
 
         /// <summary>
-        /// True, if this column allows a DbNull value.
+        /// True, if this column allows the null value.
         /// </summary>
         public bool IsNullable
         {
@@ -88,7 +95,18 @@ namespace SimpleDb.Shared
                 return (Options & ColumnOptions.Nullable) == ColumnOptions.Nullable;
             }
         }
-        
+
+        /// <summary>
+        /// True, if this column string value can not be empty.
+        /// </summary>
+        public bool IsNonempty
+        {
+            get
+            {
+                return (Options & ColumnOptions.Nonempty) == ColumnOptions.Nonempty;
+            }
+        }
+
         /// <summary>
         /// True, if this column allows a DbNull value.
         /// </summary>
