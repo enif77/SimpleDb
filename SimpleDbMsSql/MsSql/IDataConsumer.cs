@@ -1,6 +1,6 @@
 ﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
  
-SimpleDb is available under the zlib license:
+SimpleDbMsSql is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
