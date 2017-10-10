@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SimpleDbTests")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Library for handling file-based and (MS)SQL based databases.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SimpleDbTests")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © 2016 - 2017 Premysl Fara")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

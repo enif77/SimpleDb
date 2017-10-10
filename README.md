@@ -1,11 +1,11 @@
 # SimpleDb
 Library for handling file-based and MSSQL-based databases.
 
-## The SimpleDb
+## The SimpleDb.Shared
 This library contains shared code used by the SimpleDbFiles and the SimpleDbMssql projects.
 You have to use this library, if you want to use mentiones libraries.
 
-## The SimpleDbFiles
+## The SimpleDb.Files
 Backend for the SimpleDb library. Uses files in the file system to store data. Each table
 (data object) is stored in a separate directory. Each item of that table is stored in a 
 separate file in that directory. Each data object using this library has to have the Id
@@ -13,14 +13,15 @@ column, because it is used to generate names for stored items.
 
 This library is best for very simple and small databases.
 
-## The SimpleDbMssql
+## The SimpleDb.Sql
 Backend for the SimpleDb library. Uses MSSQL for storing data. 
+(Will use various SQL DBs in the future.)
 
 This library is best for more complicated stuff.
 
 # Licence
 
-SimpleDb - (C) 2016 Premysl Fara 
+SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
