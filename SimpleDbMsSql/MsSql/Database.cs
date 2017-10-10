@@ -49,19 +49,12 @@ namespace SimpleDb.MsSql
         /// <summary>
         /// Returns a connection string used for accessing this instances database.
         /// </summary>
-        public string ConnectionString
-        {
-            get; private set;
-        }
+        public string ConnectionString { get; }
 
         /// <summary>
         /// Returns a connection command timeout used for accessing this instances database.
         /// </summary>
-        public int CommandTimeout
-        {
-            get;
-            private set;
-        }
+        public int CommandTimeout { get; }
 
         /// <summary>
         /// Returns database name parsed from connection string
@@ -72,7 +65,7 @@ namespace SimpleDb.MsSql
             {
                 var builder = new SqlConnectionStringBuilder(ConnectionString);
 
-                return String.Format("{0}\\{1}", builder.DataSource, builder.InitialCatalog);
+                return string.Format("{0}\\{1}", builder.DataSource, builder.InitialCatalog);
             }
         }
 
@@ -88,7 +81,7 @@ namespace SimpleDb.MsSql
         /// <param name="commandTimeout">An optional command timeout.</param>
         public Database(string connectionString, int commandTimeout = DefaultCommandTimeoutSeconds)
         {
-            if (String.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
                 throw new ArgumentNullException("connectionString");
             }
@@ -177,7 +170,7 @@ namespace SimpleDb.MsSql
         /// <returns>Number of affected rows</returns>
         public int ExecuteNonQuery(string storedProcedure, SqlParameter[] parameters, SqlTransaction transaction = null)
         {
-            if (String.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
+            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
 
             try
             {
@@ -214,7 +207,7 @@ namespace SimpleDb.MsSql
         /// <param name="dataConsumer">A data consumer.</param>
         public void ExecuteReader(string storedProcedure, SqlParameter[] parameters, DataConsumer dataConsumer, SqlTransaction transaction)
         {
-            if (String.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
+            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
             if (dataConsumer == null) throw new ArgumentNullException("dataConsumer");
 
             try
@@ -252,7 +245,7 @@ namespace SimpleDb.MsSql
         /// <param name="transaction">A SQL transaction or null.</param>
         public void ExecuteReaderQuery(string query, DataConsumer dataConsumer, SqlTransaction transaction = null)
         {
-            if (String.IsNullOrEmpty(query)) throw new ArgumentException("A SQL query expected.", "query");
+            if (string.IsNullOrEmpty(query)) throw new ArgumentException("A SQL query expected.", "query");
             if (dataConsumer == null) throw new ArgumentNullException("dataConsumer");
             
             try
@@ -290,7 +283,7 @@ namespace SimpleDb.MsSql
         /// <param name="dataConsumer">A data consumer.</param>
         public void ExecuteReaderFunction(string function, SqlParameter[] parameters, DataConsumer dataConsumer, SqlTransaction transaction = null)
         {
-            if (String.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", "function");
+            if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", "function");
             if (dataConsumer == null) throw new ArgumentNullException("dataConsumer");
 
             try
@@ -369,7 +362,7 @@ namespace SimpleDb.MsSql
         /// <returns>Scalar value returned from stored procedure</returns>
         public object ExecuteScalarObject(string storedProcedure, SqlParameter[] parameters, SqlTransaction transaction = null)
         {
-            if (String.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
+            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
 
             try
             {
@@ -406,7 +399,7 @@ namespace SimpleDb.MsSql
         /// <returns>Result of the function</returns>
         public T ExecuteScalarFunction<T>(string function, SqlParameter[] parameters, SqlTransaction transaction = null)
         {
-            if (String.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", "function");
+            if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", "function");
 
             try
             {
@@ -491,7 +484,7 @@ namespace SimpleDb.MsSql
         /// <returns>A SqlParameter instance.</returns>
         public SqlParameter NullableBooleanParameter(string name, bool? value)
         {
-            if (String.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
 
             return value.HasValue
                 ? new SqlParameter(name, value)
@@ -506,7 +499,7 @@ namespace SimpleDb.MsSql
         /// <returns>A SqlParameter instance.</returns>
         public SqlParameter NullableInt32Parameter(string name, int? value)
         {
-            if (String.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
 
             return value.HasValue
                 ? new SqlParameter(name, value)
@@ -521,7 +514,7 @@ namespace SimpleDb.MsSql
         /// <returns>A SqlParameter instance.</returns>
         public SqlParameter NullableDecimalParameter(string name, decimal? value)
         {
-            if (String.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
 
             return value.HasValue 
                 ? new SqlParameter(name, value) 
@@ -536,7 +529,7 @@ namespace SimpleDb.MsSql
         /// <returns>A SqlParameter instance.</returns>
         public SqlParameter NullableDateTimeParameter(string name, DateTime? value)
         {
-            if (String.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
 
             return value.HasValue
                 ? new SqlParameter(name, value)

@@ -42,9 +42,7 @@ namespace SimpleDb.MsSql
         /// <param name="instances">A collection, where created instances are stored.</param>
         public DataConsumer(ICollection<T> instances)
         {
-            if (instances == null) throw new ArgumentNullException("instances");
-
-            Instances = instances;
+            Instances = instances ?? throw new ArgumentNullException(nameof(instances));
         }
         
 
@@ -54,7 +52,6 @@ namespace SimpleDb.MsSql
         public ICollection<T> Instances
         {
             get;
-            private set;
         }
 
 

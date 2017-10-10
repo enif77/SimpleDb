@@ -568,8 +568,7 @@ namespace SimpleDb.MsSql
         /// <param name="data">A list of object to be stored in the database.</param>
         private void SaveAllOperation(SqlTransaction transaction, object data)
         {
-            var objects = (IEnumerable<T>)data;
-            foreach (var obj in objects)
+            foreach (T obj in (IEnumerable<T>)data)
             {
                 try
                 {
