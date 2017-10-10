@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleDbMsSql</RootNamespace>
     <AssemblyName>SimpleDbMsSql</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +50,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleDb\SimpleDb.csproj">
-      <Project>{732c781c-4861-4ec9-bd8e-17443e63ad03}</Project>
-      <Name>SimpleDb</Name>
+    <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
+      <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
+      <Name>SimpleDb.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

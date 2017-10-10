@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleDbTests</RootNamespace>
     <AssemblyName>SimpleDbTests</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <PublishUrl>publish\</PublishUrl>
@@ -27,6 +27,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -79,6 +80,10 @@
     <None Include="Dependencies\Injektor\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
+      <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
+      <Name>SimpleDb.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleDbFiles\SimpleDbFiles.csproj">
       <Project>{0698eae3-3596-471a-9523-9a48631c8bc0}</Project>
       <Name>SimpleDbFiles</Name>
@@ -86,10 +91,6 @@
     <ProjectReference Include="..\SimpleDbMsSql\SimpleDbMsSql.csproj">
       <Project>{1bdfcedc-cf86-4e69-95c4-efc4d4bce056}</Project>
       <Name>SimpleDbMsSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimpleDb\SimpleDb.csproj">
-      <Project>{732c781c-4861-4ec9-bd8e-17443e63ad03}</Project>
-      <Name>SimpleDb</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
