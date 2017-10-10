@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -27,43 +27,46 @@ namespace SimpleDb.Shared
 
 
     /// <summary>
-    /// Helper class for creating empty values used in SingleSelect controls in WPF
+    /// Helper class for creating empty/null values used in select controls in UI.
     /// </summary>
-    /// <typeparam name="T">Type of BusinessObject</typeparam>
+    /// <typeparam name="T">Type of ADataObject instance.</typeparam>
     public static class EmptyValue<T> where T : class, ILookup, new()
     {
         #region fields
 
         /// <summary>
-        /// Storage containers for required and optional values
+        /// Storage containers for required and optional values.
         /// </summary>
         private static readonly ConcurrentDictionary<Type, object> RequiredValues = new ConcurrentDictionary<Type, object>();
         private static readonly ConcurrentDictionary<Type, object> OptionalValues = new ConcurrentDictionary<Type, object>();
 
         #endregion
 
+
         #region properties
 
         /// <summary>
-        /// Represents empty instance of BusinessObject for Required item
+        /// Represents empty instance of ADataObject for a required item.
         /// </summary>
         public static T Required
         {
             get
             {
                 RequiredValues.TryAdd(typeof(T), new T { Name = "<choose>" });
+
                 return (T)RequiredValues[typeof(T)];
             }
         }
 
         /// <summary>
-        /// Represents empty instance of BusinessObject for Optional item
+        /// Represents empty instance of ADataObject for an optional item.
         /// </summary>
         public static T Optional
         {
             get
             {
                 OptionalValues.TryAdd(typeof(T), new T { Name = "<none>" });
+
                 return (T)OptionalValues[typeof(T)];
             }
         }

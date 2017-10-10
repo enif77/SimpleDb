@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -43,7 +43,7 @@ namespace SimpleDb.Shared
         /// <param name="name">A database table name.</param>
         public DbTableAttribute(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name argument expected.");
             }

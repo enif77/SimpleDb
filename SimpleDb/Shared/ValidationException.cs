@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -30,15 +30,9 @@ namespace SimpleDb.Shared
     /// </summary>
     public class ValidationException : Exception
     {
-        public ValidationException(string message) 
-            : base(message)
-        {
-        }
-
-
-        public ValidationException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+        public ValidationException(string message) : base(message) { }
+        public ValidationException(string message, Exception innerException) : base(message, innerException) { }
+        public ValidationException() { }
+        protected ValidationException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

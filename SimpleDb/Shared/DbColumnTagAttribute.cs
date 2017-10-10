@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -43,9 +43,9 @@ namespace SimpleDb.Shared
         /// <param name="tag">A database column tag.</param>
         public DbColumnTagAttribute(string tag)
         {
-            if (String.IsNullOrEmpty(tag))
+            if (string.IsNullOrEmpty(tag))
             {
-                throw new ArgumentException("The tag argument expected.");
+                throw new ArgumentException("A tag argument expected.");
             }
 
             Tag = tag;

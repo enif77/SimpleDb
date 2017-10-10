@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -68,17 +68,17 @@ namespace SimpleDb.Shared
         /// <summary>
         /// A DB column name.
         /// </summary>
-        public string Name { get; private set; }
-        
+        public string Name { get; }
+
         /// <summary>
         /// A maximal allowed length of a string column.
         /// </summary>
-        public int Length { get; private set; }
+        public int Length { get; }
 
         /// <summary>
         /// Column options.
         /// </summary>
-        public ColumnOptions Options { get; private set; }
+        public ColumnOptions Options { get; }
 
         /// <summary>
         /// True, if this column allows the null value.
@@ -124,6 +124,7 @@ namespace SimpleDb.Shared
             }
         }
 
+
         /// <summary>
         /// A constructor.
         /// </summary>
@@ -142,10 +143,7 @@ namespace SimpleDb.Shared
         /// <param name="options">Column options.</param>
         public DbColumnAttribute(string name, int length, ColumnOptions options = ColumnOptions.None)
         {
-            if (String.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The name argument expected.");
-            }
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A database column attribute name expected.");
 
             Name = name;
             Length = length;

@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -31,15 +31,9 @@ namespace SimpleDb.Shared
     [Serializable]
     public class DatabaseException : Exception
     {
-        public DatabaseException(string message) : base(message)
-        {
-            
-        }
-
-
-        public DatabaseException(string message, Exception inner) : base(message, inner)
-        {
-            
-        }
+        public DatabaseException(string message) : base(message) { }
+        public DatabaseException(string message, Exception innerException) : base(message, innerException) { }
+        public DatabaseException() { }
+        protected DatabaseException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

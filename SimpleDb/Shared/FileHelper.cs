@@ -39,10 +39,7 @@ namespace SimpleDb.Shared
         /// <returns>An array of strings or exception.</returns>
         public static string[] LoadDataAsArrayOfStrings(string fileName, bool trimNonEmpty = false)
         {
-            if (String.IsNullOrWhiteSpace(fileName))
-            {
-                throw new ArgumentException("A file name expected.", "fileName");
-            }
+            if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentException("A file name expected.", nameof(fileName));
 
             var data = File.ReadAllLines(fileName);
 
@@ -51,7 +48,7 @@ namespace SimpleDb.Shared
             {
                 for (var i = 0; i < data.Length; i++)
                 {
-                    if (String.IsNullOrEmpty(data[i]) == false)
+                    if (string.IsNullOrEmpty(data[i]) == false)
                     {
                         data[i] = data[i].Trim();
                     }
