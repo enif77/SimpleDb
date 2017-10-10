@@ -104,9 +104,6 @@ namespace SimpleDb.MsSql
                 // Get the instance of this column attribute.
                 var attribute = ADataObject.GetDbColumnAttribute(column);
 
-                // Skip ignored columns.
-                if (attribute.IsIgnored) continue;
-
                 var columnData = reader[attribute.Name]; // Can throw IndexOutOfRangeException.
                 var columnType = column.PropertyType;
 

@@ -63,11 +63,6 @@ namespace SimpleDb.Shared
             /// See String.IsNullOrWhiteSpace().
             /// </summary>
             Nonempty = 8,
-
-            /// <summary>
-            /// Is Ignored. The value is never read from/saved to DB.
-            /// </summary>
-            Ignored = 128,
         }
 
         /// <summary>
@@ -128,18 +123,6 @@ namespace SimpleDb.Shared
                 return (Options & ColumnOptions.ReadOnly) == ColumnOptions.ReadOnly;
             }
         }
-
-        /// <summary>
-        /// True, if this column is ignored.
-        /// </summary>
-        public bool IsIgnored
-        {
-            get
-            {
-                return (Options & ColumnOptions.Ignored) == ColumnOptions.Ignored;
-            }
-        }
-
 
         /// <summary>
         /// A constructor.

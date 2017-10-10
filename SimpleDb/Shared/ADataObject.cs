@@ -112,9 +112,6 @@ namespace SimpleDb.Shared
                 // Get the instance of this column attribute.
                 var attribute = GetDbColumnAttribute(column);
 
-                // Ignored columns should not be validated.
-                if (attribute.IsIgnored) continue;
-
                 // Check for non nullable type, when the a.IsNullable is true.
                 CheckNullableType(attribute, column);
 

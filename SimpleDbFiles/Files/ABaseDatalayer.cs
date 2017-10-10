@@ -374,9 +374,6 @@ namespace SimpleDb.Files
                 // Get the instance of this column attribute.
                 var attribute = ADataObject.GetDbColumnAttribute(column);
 
-                // Skip ignored columns.
-                if (attribute.IsIgnored) continue;
-
                 var columnType = column.PropertyType;
                 switch (columnType.Name)
                 {

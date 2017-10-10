@@ -443,7 +443,7 @@ namespace SimpleDb.MsSql
                 var attribute = ADataObject.GetDbColumnAttribute(column);
 
                 // Skip Id attributes on insert and read only attributes.
-                if ((insert && attribute.IsId) || attribute.IsReadOnly || attribute.IsIgnored)
+                if ((insert && attribute.IsId) || attribute.IsReadOnly)
                 {
                     continue;  
                 }
