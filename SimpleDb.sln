@@ -10,11 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDbTests", "SimpleDbTests\SimpleDbTests.csproj", "{5FB77F9D-863C-4233-960D-711F086D5C05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDbFiles", "SimpleDbFiles\SimpleDbFiles.csproj", "{0698EAE3-3596-471A-9523-9A48631C8BC0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDbMsSql", "SimpleDbMsSql\SimpleDbMsSql.csproj", "{1BDFCEDC-CF86-4E69-95C4-EFC4D4BCE056}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Shared", "SimpleDb.Shared\SimpleDb.Shared.csproj", "{F8D2A998-1B50-4886-AD6E-485374DBEB56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Files", "SimpleDb.Files\SimpleDb.Files.csproj", "{02415C98-B92E-4852-B224-A73B9902F4A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Sql", "SimpleDb.Sql\SimpleDb.Sql.csproj", "{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,18 +26,18 @@ Global
 		{5FB77F9D-863C-4233-960D-711F086D5C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FB77F9D-863C-4233-960D-711F086D5C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FB77F9D-863C-4233-960D-711F086D5C05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0698EAE3-3596-471A-9523-9A48631C8BC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0698EAE3-3596-471A-9523-9A48631C8BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0698EAE3-3596-471A-9523-9A48631C8BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0698EAE3-3596-471A-9523-9A48631C8BC0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1BDFCEDC-CF86-4E69-95C4-EFC4D4BCE056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BDFCEDC-CF86-4E69-95C4-EFC4D4BCE056}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1BDFCEDC-CF86-4E69-95C4-EFC4D4BCE056}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1BDFCEDC-CF86-4E69-95C4-EFC4D4BCE056}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02415C98-B92E-4852-B224-A73B9902F4A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02415C98-B92E-4852-B224-A73B9902F4A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02415C98-B92E-4852-B224-A73B9902F4A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02415C98-B92E-4852-B224-A73B9902F4A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

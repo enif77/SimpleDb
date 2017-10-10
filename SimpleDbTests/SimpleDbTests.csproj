@@ -80,17 +80,17 @@
     <None Include="Dependencies\Injektor\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleDb.Files\SimpleDb.Files.csproj">
+      <Project>{02415c98-b92e-4852-b224-a73b9902f4a3}</Project>
+      <Name>SimpleDb.Files</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
       <Name>SimpleDb.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SimpleDbFiles\SimpleDbFiles.csproj">
-      <Project>{0698eae3-3596-471a-9523-9a48631c8bc0}</Project>
-      <Name>SimpleDbFiles</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimpleDbMsSql\SimpleDbMsSql.csproj">
-      <Project>{1bdfcedc-cf86-4e69-95c4-efc4d4bce056}</Project>
-      <Name>SimpleDbMsSql</Name>
+    <ProjectReference Include="..\SimpleDb.Sql\SimpleDb.Sql.csproj">
+      <Project>{22684e08-ec5b-482e-90e3-d3a7c4fccf3a}</Project>
+      <Name>SimpleDb.Sql</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
