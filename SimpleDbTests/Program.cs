@@ -27,7 +27,7 @@ namespace SimpleDbTests
 
     using Injektor;
     using SimpleDb.Files;
-    using SimpleDb.MsSql;
+    using SimpleDb.Sql;
 
     using SimpleDbTests.Files.Datalayer;
     using SimpleDbTests.MsSql.Datalayer;
@@ -83,7 +83,7 @@ namespace SimpleDbTests
 
         private static void MsSqlTests()
         {
-            MsSql.Datalayer.Initializer.InitializeLayers(new SimpleDb.MsSql.Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
+            MsSql.Datalayer.Initializer.InitializeLayers(new SimpleDb.Sql.Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
 
             MsSqlLookupDataLayerTest();
             MsSqlLookupColumnNamesDatalayerTest();

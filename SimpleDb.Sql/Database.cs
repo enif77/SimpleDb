@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.MsSql
+namespace SimpleDb.Sql
 {
     using System;
     using System.Collections.Generic;

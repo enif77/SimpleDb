@@ -51,6 +51,7 @@
     <Compile Include="EmptyValue.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="IAuditedObject.cs" />
+    <Compile Include="IDatabaseProvider.cs" />
     <Compile Include="IId.cs" />
     <Compile Include="ILookup.cs" />
     <Compile Include="IUpdatable.cs" />

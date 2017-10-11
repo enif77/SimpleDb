@@ -40,12 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MsSql\ABaseDatalayer.cs" />
-    <Compile Include="MsSql\Database.cs" />
-    <Compile Include="MsSql\DatabaseConnection.cs" />
-    <Compile Include="MsSql\DataConsumer.cs" />
-    <Compile Include="MsSql\IDataConsumer.cs" />
-    <Compile Include="MsSql\LookupDataLayer.cs" />
+    <Compile Include="ABaseDatalayer.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="DatabaseConnection.cs" />
+    <Compile Include="DataConsumer.cs" />
+    <Compile Include="IDataConsumer.cs" />
+    <Compile Include="LookupDataLayer.cs" />
+    <Compile Include="MsSql\SqlDatabaseProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace SimpleDbTests.MsSql.Datalayer
     using System;
 
     using Injektor;
-    using SimpleDb.MsSql;
+    using SimpleDb.Sql;
     
 
     /// <summary>

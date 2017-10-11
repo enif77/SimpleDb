@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
    
 namespace SimpleDbTests.MsSql.Datalayer
 {
-    using SimpleDb.MsSql;
+    using SimpleDb.Sql;
 
     using SimpleDbTests.Shared.DataObjects;
 

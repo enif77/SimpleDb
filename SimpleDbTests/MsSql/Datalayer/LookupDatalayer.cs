@@ -24,7 +24,7 @@ namespace SimpleDbTests.MsSql.Datalayer
 {
     using System.Data.SqlClient;
 
-    using SimpleDb.MsSql;
+    using SimpleDb.Sql;
 
     using SimpleDbTests.Shared.DataObjects;
 
