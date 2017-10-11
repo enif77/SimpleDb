@@ -1,6 +1,6 @@
-﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDbMsSql is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -24,7 +24,6 @@ namespace SimpleDb.Sql
 {
     using System;
     using System.Data;
-    using System.Data.SqlClient;
 
 
     public sealed class DatabaseConnection : IDisposable
@@ -34,10 +33,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Gets this connections connection.
         /// </summary>
-        public SqlConnection Connection
-        {
-            get { return _connection; }
-        }
+        public IDbConnection Connection { get; }
 
         #endregion
 
@@ -48,13 +44,14 @@ namespace SimpleDb.Sql
         /// Constructor.
         /// </summary>
         /// <param name="connectionString">A database connection string.</param>
-        public DatabaseConnection(string connectionString)
+        /// <param name="databaseProvider">A database provider instance.</param>
+        public DatabaseConnection(string connectionString, IDatabaseProvider databaseProvider)
         {
-            _connection = new SqlConnection(connectionString);
+            Connection = databaseProvider.CreateDbConnection(connectionString);
 
             // TODO: pokud selže na deadlock, počkat 10s a zkusit znova.
 
-            _connection.Open();
+            Connection.Open();
         }
 
         // Use C# destructor syntax for finalization code. 
@@ -76,10 +73,9 @@ namespace SimpleDb.Sql
         #region IDisposable
 
         // Resource.
-        private readonly SqlConnection _connection = null;
 
         // Track whether Dispose has been called. 
-        private bool _disposed = false;
+        private bool _disposed;
 
 
         // Implement IDisposable. 
@@ -114,14 +110,14 @@ namespace SimpleDb.Sql
                 if (disposing)
                 {
                     // Dispose managed resources.
-                    if (_connection != null)
+                    if (Connection != null)
                     {
-                        if (_connection.State == ConnectionState.Open)
+                        if (Connection.State == ConnectionState.Open)
                         {
-                            _connection.Close();
+                            Connection.Close();
                         }
 
-                        _connection.Dispose();
+                        Connection.Dispose();
                     }
                 }
 
@@ -129,7 +125,8 @@ namespace SimpleDb.Sql
                 // unmanaged resources here. 
                 // If disposing is false, 
                 // only the following code is executed.
-                ;  // Nothing to do here. :-)
+
+                // Nothing to do here. :-)
 
                 // Note disposing has been done.
                 _disposed = true;

@@ -1,6 +1,6 @@
-﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDbMsSql is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -23,11 +23,15 @@ freely, subject to the following restrictions:
 namespace SimpleDb.Sql
 {
     using System.Collections.Generic;
-    using System.Data.SqlClient;
+    using System.Data;
 
     using SimpleDb.Shared;
 
 
+    /// <summary>
+    /// Defines a data consumer for reading data from a database.
+    /// </summary>
+    /// <typeparam name="T">A type of data, that will be read from the database.</typeparam>
     public interface IDataConsumer<T> where T : ADataObject, new()
     {
         /// <summary>
@@ -41,7 +45,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
         /// <returns>True on succes.</returns>
-        bool CreateInstance(SqlDataReader reader);
+        bool CreateInstance(IDataReader reader);
 
         /// <summary>
         /// Recreates an object instance from the actual SQL reader state.
@@ -49,6 +53,14 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
         /// <returns>True on succes.</returns>
-        bool RecreateInstance(SqlDataReader reader);
+        bool RecreateInstance(IDataReader reader);
+
+        ///// <summary>
+        ///// Creates an object instance from the actual SQL reader state and strores it in the Instances collection.
+        ///// Data consumer should never call reader.Read() method.
+        ///// </summary>
+        ///// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
+        ///// <returns>True on succes.</returns>
+        //bool CreateSimpleInstance(SqlDataReader reader);
     }
 }

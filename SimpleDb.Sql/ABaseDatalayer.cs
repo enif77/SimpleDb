@@ -1,6 +1,6 @@
-﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDbMsSql is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -24,7 +24,8 @@ namespace SimpleDb.Sql
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
+    using System.Data;
+    using System.Data.Common;
     using System.Linq;
 
     using SimpleDb.Shared;
@@ -75,9 +76,7 @@ namespace SimpleDb.Sql
         /// <param name="database">An initialised Database instance to be used for all database operations.</param>
         protected ABaseDatalayer(Database database)
         {
-            if (database == null) throw new ArgumentNullException("database");
-
-            Database = database;
+            Database = database ?? throw new ArgumentNullException(nameof(database));
             TypeInstance = new T();
 
             var baseName = TypeInstance.DatabaseTableName;
@@ -94,34 +93,28 @@ namespace SimpleDb.Sql
         /// <summary>
         /// A Database instance used for all database operations.
         /// </summary>
-        public Database Database { get; private set; }
+        public Database Database { get; }
 
         /// <summary>
         /// An instance of a T, used for reflection operations.
         /// </summary>
-        protected T TypeInstance { get; private set; }
+        protected T TypeInstance { get; }
 
         /// <summary>
         /// If true, the AuthorizationManager security is nod used.
-        /// False by default (the security IS used).
+        /// False by default (the security is used).
         /// </summary>
-        protected virtual bool BypassSecurity
-        {
-            get
-            {
-                return false;
-            }
-        }
+        protected virtual bool BypassSecurity => false;
 
         /// <summary>
         /// Gets a base of a stored procedure name.
         /// </summary>
-        protected virtual string StoredProcedureBaseName { get; private set; }
+        protected virtual string StoredProcedureBaseName { get; }
 
         /// <summary>
         /// Gets a base of a function name.
         /// </summary>
-        protected virtual string FunctionBaseName { get; private set; }
+        protected virtual string FunctionBaseName { get; }
 
         #endregion
 
@@ -155,16 +148,7 @@ namespace SimpleDb.Sql
         /// <param name="operation">A DatabaseOperation code.</param>
         protected virtual void OperationAllowedImplementation(DatabaseOperation operation)
         {
-        }
-
-        /// <summary>
-        /// Logs an error.
-        /// </summary>
-        /// <param name="functionCode"></param>
-        /// <param name="ex"></param>
-        protected virtual void LogError(string functionCode, Exception ex)
-        {
-            // No logging by default.
+            // Here can be a user created code, that does checks against the database.
         }
 
         /// <summary>
@@ -174,28 +158,19 @@ namespace SimpleDb.Sql
         /// <returns>IEnumerable of all object instances.</returns>
         public virtual IEnumerable<T> GetAll(IDataConsumer<T> userDataConsumer = null)
         {
-            try
-            {
-                OperationAllowed(DatabaseOperation.Select);
+            OperationAllowed(DatabaseOperation.Select);
 
-                var res = new List<T>();
+            var res = new List<T>();
 
-                var consumer = userDataConsumer ?? new DataConsumer<T>(res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(res);
 
-                Database.ExecuteReader(
-                    GetSelectStoredProcedureName(),
-                    CreateSelectListParameters(),
-                    consumer.CreateInstance,
-                    null);
+            Database.ExecuteReader(
+                GetSelectStoredProcedureName(),
+                CreateSelectListParameters(),
+                consumer.CreateInstance,
+                null);
 
-                return res;
-            }
-            catch (Exception ex)
-            {
-                LogError(GetSecurityFunctionCode(DatabaseOperation.Select), ex);
-
-                throw;
-            }
+            return res;
         }
 
         /// <summary>
@@ -204,7 +179,7 @@ namespace SimpleDb.Sql
         /// <param name="id">Id value</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance to object</returns>
-        public virtual T Get(int id, SqlTransaction transaction = null)
+        public virtual T Get(int id, IDbTransaction transaction = null)
         {
             return Get(id, null, transaction);
         }
@@ -216,32 +191,23 @@ namespace SimpleDb.Sql
         /// <param name="userDataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance to object</returns>
-        public virtual T Get(int id, IDataConsumer<T> userDataConsumer, SqlTransaction transaction = null)
+        public virtual T Get(int id, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            try
-            {
-                if (id <= 0) throw new ArgumentException("A positive number expected.", "id");
+            if (id <= 0) throw new ArgumentException("A positive number expected.", "id");
 
-                OperationAllowed(DatabaseOperation.Select);
+            OperationAllowed(DatabaseOperation.Select);
 
-                var res = new List<T>();
+            var res = new List<T>();
 
-                var consumer = userDataConsumer ?? new DataConsumer<T>(res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(res);
 
-                Database.ExecuteReader(
-                    GetSelectDetailsStoredProcedureName(),
-                    CreateIdParameters(id),
-                    consumer.CreateInstance, 
-                    transaction);
-                
-                return res.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                LogError(GetSecurityFunctionCode(DatabaseOperation.Select), ex);
+            Database.ExecuteReader(
+                GetSelectDetailsStoredProcedureName(),
+                CreateIdParameters(id),
+                consumer.CreateInstance,
+                transaction);
 
-                throw;
-            }
+            return res.FirstOrDefault();
         }
 
         /// <summary>
@@ -249,51 +215,43 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="obj">Instance to save</param>
         /// <param name="transaction">Instance to SqlTransaction object</param>
-        /// <returns>Id of saved instance</returns>
-        public virtual int Save(T obj, SqlTransaction transaction = null)
+        /// <returns>Id of saved instance or the number of modified rows for non IId instances.</returns>
+        public virtual int Save(T obj, IDbTransaction transaction = null)
         {
             var operation = DatabaseOperation.Insert;
-            try
+
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+            var iid = obj as IId;
+            if (iid == null)
             {
-                if (obj == null) throw new ArgumentNullException("obj");
-
-                var iid = obj as IId;
-                if (iid == null)
-                {
-                    OperationAllowed(operation);
-
-                    return Database.ExecuteScalar(GetInsertStoredProcedureName(), CreateInsertParameters(obj), transaction);
-                }
-
-                if (iid.Id == 0)
-                {
-                    OperationAllowed(operation);
-
-                    return iid.Id = Database.ExecuteScalar(GetInsertStoredProcedureName(), CreateInsertParameters(obj), transaction);
-                }
-
-                operation = DatabaseOperation.Update;
-
                 OperationAllowed(operation);
 
-                return Database.ExecuteScalar(GetUpdateStoredProcedureName(), CreateUpdateParameters(obj), transaction);
+                return Database.ExecuteScalar(GetInsertStoredProcedureName(), CreateInsertParameters(obj), transaction);
             }
-            catch (Exception ex)
+
+            if (iid.Id == 0)
             {
-                LogError(GetSecurityFunctionCode(operation), ex);
-                
-                throw;
+                OperationAllowed(operation);
+
+                return iid.Id = Database.ExecuteScalar(GetInsertStoredProcedureName(), CreateInsertParameters(obj), transaction);
             }
+
+            operation = DatabaseOperation.Update;
+
+            OperationAllowed(operation);
+
+            return Database.ExecuteScalar(GetUpdateStoredProcedureName(), CreateUpdateParameters(obj), transaction);
         }
-        
+
         /// <summary>
         /// Inserts/updates all objects in transaction.
         /// </summary>
         /// <param name="objects">A list of objects.</param>
         /// <param name="transaction">A transaction.</param>
-        public virtual void SaveAll(IEnumerable<T> objects, SqlTransaction transaction = null)
+        public virtual void SaveAll(IEnumerable<T> objects, IDbTransaction transaction = null)
         {
-            if (objects == null) throw new ArgumentNullException("objects");
+            if (objects == null) throw new ArgumentNullException(nameof(objects));
 
             if (objects.Any() == false) return;
 
@@ -306,28 +264,19 @@ namespace SimpleDb.Sql
                 SaveAllOperation(transaction, objects);
             }
         }
-        
+
         /// <summary>
         /// Deletes object from database
         /// </summary>
         /// <param name="obj">Instance to delete</param>
         /// <param name="transaction">Instance to SqlTransaction object</param>
-        public virtual void Delete(T obj, SqlTransaction transaction = null)
+        public virtual void Delete(T obj, IDbTransaction transaction = null)
         {
-            try
-            {
-                if (obj == null) throw new ArgumentNullException("obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-                OperationAllowed(DatabaseOperation.Delete);
+            OperationAllowed(DatabaseOperation.Delete);
 
-                Database.ExecuteNonQuery(GetDeleteStoredProcedureName(), CreateIdParameters(obj), transaction);
-            }
-            catch (Exception ex)
-            {
-                LogError(GetSecurityFunctionCode(DatabaseOperation.Delete), ex);
-
-                throw;
-            }
+            Database.ExecuteNonQuery(GetDeleteStoredProcedureName(), CreateIdParameters(obj), transaction);
         }
 
         /// <summary>
@@ -335,25 +284,16 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="id">An object ID to delete</param>
         /// <param name="transaction">Instance to SqlTransaction object</param>
-        public virtual void Delete(int id, SqlTransaction transaction = null)
+        public virtual void Delete(int id, IDbTransaction transaction = null)
         {
-            try
-            {
-                if (id <= 0) throw new ArgumentException("An object ID expected.", "id");
+            if (id <= 0) throw new ArgumentException("An object ID expected.", nameof(id));
 
-                OperationAllowed(DatabaseOperation.Delete);
+            OperationAllowed(DatabaseOperation.Delete);
 
-                var iid = TypeInstance as IId;
-                if (iid == null) throw new NotSupportedException("Object does not contain ID");
+            var iid = TypeInstance as IId;
+            if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
-                Database.ExecuteNonQuery(GetDeleteStoredProcedureName(), CreateIdParameters(iid.Id), transaction);
-            }
-            catch (Exception ex)
-            {
-                LogError(GetSecurityFunctionCode(DatabaseOperation.Delete), ex);
-
-                throw;
-            }
+            Database.ExecuteNonQuery(GetDeleteStoredProcedureName(), CreateIdParameters(iid.Id), transaction);
         }
 
         /// <summary>
@@ -361,7 +301,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="obj">An object instance to be reloaded from a database.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T obj, SqlTransaction transaction = null)
+        public virtual void Reload(T obj, IDbTransaction transaction = null)
         {
             Reload(obj, null, transaction);
         }
@@ -372,29 +312,20 @@ namespace SimpleDb.Sql
         /// <param name="obj">An object instance to be reloaded from a database.</param>
         /// <param name="userDataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T obj, IDataConsumer<T> userDataConsumer, SqlTransaction transaction = null)
+        public virtual void Reload(T obj, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            try
-            {
-                var iid = obj as IId;
-                if (iid == null) throw new NotSupportedException("Object does not contain ID");
+            var iid = obj as IId;
+            if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
-                OperationAllowed(DatabaseOperation.Select);
+            OperationAllowed(DatabaseOperation.Select);
 
-                var consumer = userDataConsumer ?? new DataConsumer<T>(new List<T> { obj });
+            var consumer = userDataConsumer ?? new DataConsumer<T>(new List<T> { obj });
 
-                Database.ExecuteReader(
-                   GetSelectDetailsStoredProcedureName(),
-                   CreateIdParameters(iid.Id),
-                   consumer.RecreateInstance,
-                   transaction);
-            }
-            catch (Exception ex)
-            {
-                LogError(GetSecurityFunctionCode(DatabaseOperation.Select), ex);
-
-                throw;
-            }
+            Database.ExecuteReader(
+                GetSelectDetailsStoredProcedureName(),
+                CreateIdParameters(iid.Id),
+                consumer.RecreateInstance,
+                transaction);
         }
 
         #endregion
@@ -406,7 +337,7 @@ namespace SimpleDb.Sql
         /// Creates parameters for a SELECT database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual SqlParameter[] CreateSelectListParameters()
+        protected virtual DbParameter[] CreateSelectListParameters()
         {
             return null;
         }
@@ -415,7 +346,7 @@ namespace SimpleDb.Sql
         /// Creates parameters for a INSERT database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected SqlParameter[] CreateInsertParameters(ADataObject instance)
+        protected DbParameter[] CreateInsertParameters(ADataObject instance)
         {
             return CreateInsertOrUpdateParameters(instance, instance is IId);  // TODO: Insert parameters for non IId objects?
         }
@@ -424,18 +355,18 @@ namespace SimpleDb.Sql
         /// Creates parameters for a UPDATE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected SqlParameter[] CreateUpdateParameters(ADataObject instance)
+        protected DbParameter[] CreateUpdateParameters(ADataObject instance)
         {
             return CreateInsertOrUpdateParameters(instance, false);
         }
-        
+
         /// <summary>
         /// Creates parameters for an INSERT or an UPDATE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual SqlParameter[] CreateInsertOrUpdateParameters(ADataObject instance, bool insert)
+        protected virtual DbParameter[] CreateInsertOrUpdateParameters(ADataObject instance, bool insert)
         {
-            var paramList = new List<SqlParameter>();
+            var paramList = new List<DbParameter>();
 
             foreach (var column in instance.DatabaseColumns)
             {
@@ -445,11 +376,11 @@ namespace SimpleDb.Sql
                 // Skip Id attributes on insert and read only attributes.
                 if ((insert && attribute.IsId) || attribute.IsReadOnly)
                 {
-                    continue;  
+                    continue;
                 }
 
                 // Add parameter to the list of parameters.
-                paramList.Add(new SqlParameter(GetParameterName(attribute.Name), column.GetValue(instance)));
+                paramList.Add(Database.DatabaseProvider.CreateDbParameter(GetParameterName(attribute.Name), column.GetValue(instance)));
             }
 
             return paramList.ToArray();
@@ -459,9 +390,9 @@ namespace SimpleDb.Sql
         /// Creates parameters for an GET or an DELETE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual SqlParameter[] CreateIdParameters(ADataObject instance)
+        protected virtual DbParameter[] CreateIdParameters(ADataObject instance)
         {
-            var paramList = new List<SqlParameter>();
+            var paramList = new List<DbParameter>();
 
             foreach (var column in instance.DatabaseColumns)
             {
@@ -472,7 +403,7 @@ namespace SimpleDb.Sql
                 if (attribute.IsId)
                 {
                     // Add parameter to the list of parameters.
-                    paramList.Add(new SqlParameter(GetParameterName(attribute.Name), column.GetValue(instance)));
+                    paramList.Add(Database.DatabaseProvider.CreateDbParameter(GetParameterName(attribute.Name), column.GetValue(instance)));
                 }
             }
 
@@ -483,26 +414,25 @@ namespace SimpleDb.Sql
         /// Creates parameters for an GET or an DELETE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual SqlParameter[] CreateIdParameters(int id)
+        protected virtual DbParameter[] CreateIdParameters(int id)
         {
             if (TypeInstance is IId == false || TypeInstance.IsDatabaseTable == false)
             {
                 throw new Exception("Can not create an Id parameter from a non IId or non database object.");
             }
 
-            var paramList = new List<SqlParameter>();
+            var paramList = new List<DbParameter>();
 
             foreach (var attribute in TypeInstance.DatabaseColumns.Select(ADataObject.GetDbColumnAttribute).Where(attribute => attribute.IsId))
             {
                 // Add parameter to the list of parameters.
-                paramList.Add(new SqlParameter(GetParameterName(attribute.Name), id));    
+                paramList.Add(Database.DatabaseProvider.CreateDbParameter(GetParameterName(attribute.Name), id));
 
                 break;
             }
 
             return paramList.ToArray();
         }
-        
 
         /// <summary>
         /// Returns a stored procedure name for an SELECT operation.
@@ -548,8 +478,7 @@ namespace SimpleDb.Sql
         {
             return StoredProcedureBaseName + "_Delete";
         }
-
-
+        
         /// <summary>
         /// Creates a parameter name from a column name.
         /// </summary>
@@ -560,15 +489,14 @@ namespace SimpleDb.Sql
             return "@" + columnName;
         }
 
-
         /// <summary>
         /// The SaveAll operation.
         /// </summary>
         /// <param name="transaction">A SQL transaction.</param>
         /// <param name="data">A list of object to be stored in the database.</param>
-        private void SaveAllOperation(SqlTransaction transaction, object data)
+        private void SaveAllOperation(IDbTransaction transaction, object data)
         {
-            foreach (T obj in (IEnumerable<T>)data)
+            foreach (var obj in (IEnumerable<T>)data)
             {
                 try
                 {

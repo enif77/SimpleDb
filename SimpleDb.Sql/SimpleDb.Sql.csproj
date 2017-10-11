@@ -44,6 +44,7 @@
     <Compile Include="Database.cs" />
     <Compile Include="DatabaseConnection.cs" />
     <Compile Include="DataConsumer.cs" />
+    <Compile Include="IDatabaseProvider.cs" />
     <Compile Include="IDataConsumer.cs" />
     <Compile Include="LookupDataLayer.cs" />
     <Compile Include="MsSql\SqlDatabaseProvider.cs" />

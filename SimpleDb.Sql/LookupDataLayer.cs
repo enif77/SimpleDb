@@ -1,6 +1,6 @@
-﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 Premysl Fara 
  
-SimpleDbMsSql is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -86,8 +86,8 @@ namespace SimpleDb.Sql
         private readonly Dictionary<string, int> _lookupCache;
 
         /// <summary>
-        /// Returns a Db column name of a Name column.
+        /// Returns a database column name of the Name column.
         /// </summary>
-        private string NamePropertyDbColumnName { get; set; }
+        private string NamePropertyDbColumnName { get; }
     }
 }

@@ -1,6 +1,6 @@
-﻿/* SimpleDbFiles - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDbFiles is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages

@@ -26,9 +26,7 @@ namespace SimpleDb.Sql.MsSql
     using System.Data;
     using System.Data.Common;
     using System.Data.SqlClient;
-
-    using SimpleDb.Shared;
-
+    
 
     /// <summary>
     /// Database provider for a MSSQL database.

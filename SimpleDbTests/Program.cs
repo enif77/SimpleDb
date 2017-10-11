@@ -31,7 +31,7 @@ namespace SimpleDbTests
 
     using SimpleDbTests.Files.Datalayer;
     using SimpleDbTests.MsSql.Datalayer;
-
+    using SimpleDb.Sql.MsSql;
 
     static class Program
     {
@@ -55,7 +55,7 @@ namespace SimpleDbTests
 
         private static void FilesTests()
         {
-            Files.Datalayer.Initializer.InitializeLayers(new SimpleDb.Files.Database(@"D:\Devel\Projects\Personal\CS\git\SimpleDb\SimpleDbTests\Files\Data"));
+            Files.Datalayer.Initializer.InitializeLayers(new SimpleDb.Files.Database(@"W:\Devel\Projects\CS\git\SimpleDb\SimpleDbTests\Files\Data"));
 
             FilesLookupDataLayerTest();
             //MsSqlLookupColumnNamesDatalayerTest();
@@ -65,8 +65,7 @@ namespace SimpleDbTests
         private static void FilesLookupDataLayerTest()
         {
             var dal = Registry.Get<Files.Datalayer.LookupDataLayer>();
-            var lookups = dal.GetAll();
-            foreach (var lookup in lookups)
+            foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
@@ -83,7 +82,10 @@ namespace SimpleDbTests
 
         private static void MsSqlTests()
         {
-            MsSql.Datalayer.Initializer.InitializeLayers(new SimpleDb.Sql.Database(ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString));
+            MsSql.Datalayer.Initializer.InitializeLayers(
+                new SimpleDb.Sql.Database(
+                    ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString,
+                    new SqlDatabaseProvider()));
 
             MsSqlLookupDataLayerTest();
             MsSqlLookupColumnNamesDatalayerTest();
@@ -93,8 +95,7 @@ namespace SimpleDbTests
         private static void MsSqlLookupDataLayerTest()
         {
             var dal = Registry.Get<MsSql.Datalayer.LookupDataLayer>();
-            var lookups = dal.GetAll();
-            foreach (var lookup in lookups)
+            foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
@@ -108,8 +109,7 @@ namespace SimpleDbTests
         private static void MsSqlLookupColumnNamesDatalayerTest()
         {
             var dal = Registry.Get<MsSql.Datalayer.LookupColumnNamesDataLayer>();
-            var lookups = dal.GetAll();
-            foreach (var lookup in lookups)
+            foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }

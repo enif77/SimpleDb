@@ -1,6 +1,6 @@
-﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDbMsSql is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -24,7 +24,7 @@ namespace SimpleDb.Sql
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
+    using System.Data;
     using System.Linq;
 
     using SimpleDb.Shared;
@@ -44,24 +44,14 @@ namespace SimpleDb.Sql
         {
             Instances = instances ?? throw new ArgumentNullException(nameof(instances));
         }
-        
-
-        /// <summary>
-        /// A list of T instances.
-        /// </summary>
-        public ICollection<T> Instances
-        {
-            get;
-        }
 
 
-        /// <summary>
-        /// Creates an object instance from the actual SQL reader state and stores it in the Instances collection.
-        /// Data consumer should never call reader.Read() method.
-        /// </summary>
-        /// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
-        /// <returns>True on succes.</returns>
-        public virtual bool CreateInstance(SqlDataReader reader)
+        /// <inheritdoc />
+        public ICollection<T> Instances { get; }
+
+
+        /// <inheritdoc />
+        public virtual bool CreateInstance(IDataReader reader)
         {
             var instance = new T();
 
@@ -71,14 +61,9 @@ namespace SimpleDb.Sql
 
             return true;
         }
-        
-        /// <summary>
-        /// Recreates an object instance from the actual SQL reader state.
-        /// Data consumer should never call reader.Read() method.
-        /// </summary>
-        /// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
-        /// <returns>True on succes.</returns>
-        public virtual bool RecreateInstance(SqlDataReader reader)
+
+        /// <inheritdoc />
+        public virtual bool RecreateInstance(IDataReader reader)
         {
             if (Instances.Count == 0) throw new Exception("An object instance for recreation expected.");
 
@@ -88,12 +73,13 @@ namespace SimpleDb.Sql
             return true;
         }
 
+
         /// <summary>
         /// Extracts data from DB reader to the given instance.
         /// </summary>
         /// <param name="reader">A DB reader ready to give data.</param>
         /// <param name="instance">An instance of a target object.</param>
-        private static void GetData(SqlDataReader reader, T instance)
+        private static void GetData(IDataReader reader, T instance)
         {
             // For all DB columns...
             foreach (var column in instance.DatabaseColumns)

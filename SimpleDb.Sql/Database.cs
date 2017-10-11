@@ -1,6 +1,6 @@
-﻿/* SimpleDbMsSql - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDbMsSql is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -25,7 +25,7 @@ namespace SimpleDb.Sql
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Data.SqlClient;
+    using System.Data.Common;
     using System.Text;
 
     using SimpleDb.Shared;
@@ -34,7 +34,7 @@ namespace SimpleDb.Sql
     /// <summary>
     /// Reperesents a database.
     /// </summary>
-    public class Database 
+    public class Database
     {
         #region constants
 
@@ -47,27 +47,24 @@ namespace SimpleDb.Sql
         #region properties
 
         /// <summary>
-        /// Returns a connection string used for accessing this instances database.
+        /// A IDatabaseProvider instance.
+        /// </summary>
+        public IDatabaseProvider DatabaseProvider { get; }
+
+        /// <summary>
+        /// A connection string used for accessing this instance database.
         /// </summary>
         public string ConnectionString { get; }
 
         /// <summary>
-        /// Returns a connection command timeout used for accessing this instances database.
+        /// A connection command timeout used for accessing this Database instance database.
         /// </summary>
         public int CommandTimeout { get; }
 
         /// <summary>
-        /// Returns database name parsed from connection string
+        /// A database name parsed from the Connection string.
         /// </summary>
-        public string DatabaseName
-        {
-            get
-            {
-                var builder = new SqlConnectionStringBuilder(ConnectionString);
-
-                return string.Format("{0}\\{1}", builder.DataSource, builder.InitialCatalog);
-            }
-        }
+        public string DatabaseName => DatabaseProvider.GetDatabaseName(ConnectionString);
 
         #endregion
 
@@ -75,20 +72,22 @@ namespace SimpleDb.Sql
         #region ctor
 
         /// <summary>
-        /// Creates new instance of Database object for specified connection string
+        /// Creates new instance of a Database object for specified connection string.
         /// </summary>
         /// <param name="connectionString">Connection string to database</param>
+        /// <param name="databaseProvider">A database provider instance.</param>
         /// <param name="commandTimeout">An optional command timeout.</param>
-        public Database(string connectionString, int commandTimeout = DefaultCommandTimeoutSeconds)
+        public Database(string connectionString, IDatabaseProvider databaseProvider, int commandTimeout = DefaultCommandTimeoutSeconds)
         {
             if (string.IsNullOrEmpty(connectionString))
             {
-                throw new ArgumentNullException("connectionString");
+                throw new ArgumentNullException(nameof(connectionString));
             }
 
             ConnectionString = connectionString;
-            CommandTimeout = (commandTimeout > 0) 
-                ? commandTimeout 
+            DatabaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            CommandTimeout = (commandTimeout > 0)
+                ? commandTimeout
                 : DefaultCommandTimeoutSeconds;
         }
 
@@ -103,14 +102,14 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
         /// <returns>True on success.</returns>
-        public delegate bool DataConsumer(SqlDataReader reader);
+        public delegate bool DataConsumer(IDataReader reader);
 
         /// <summary>
         /// A method called during a SQL transaction.
         /// See the DoInTransaction() method.
         /// </summary>
         /// <param name="transaction">A SQL transaction, that operetions in this method can use to connect to the database.</param>
-        public delegate void TransactionOperation(SqlTransaction transaction, object data);
+        public delegate void TransactionOperation(IDbTransaction transaction, object data);
 
         #endregion
 
@@ -123,7 +122,7 @@ namespace SimpleDb.Sql
         /// <returns>A DatabaseConnection instance.</returns>
         public DatabaseConnection CreateConnection()
         {
-            return new DatabaseConnection(ConnectionString);
+            return new DatabaseConnection(ConnectionString, DatabaseProvider);
         }
 
         /// <summary>
@@ -144,7 +143,7 @@ namespace SimpleDb.Sql
                 return false;
             }
         }
-        
+
         /// <summary>
         /// Creates a SQL transaction and runs an operation in it.
         /// </summary>
@@ -160,7 +159,7 @@ namespace SimpleDb.Sql
                 }
             }
         }
-        
+
         /// <summary>
         /// Executes non-query SQL stored procedure and returns number of affected rows.
         /// </summary>
@@ -168,13 +167,13 @@ namespace SimpleDb.Sql
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(string storedProcedure, SqlParameter[] parameters, SqlTransaction transaction = null)
+        public int ExecuteNonQuery(string storedProcedure, DbParameter[] parameters, IDbTransaction transaction = null)
         {
-            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
+            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", nameof(storedProcedure));
 
             try
             {
-                SqlParameter errorCodeParameter;
+                DbParameter errorCodeParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
@@ -197,7 +196,6 @@ namespace SimpleDb.Sql
             }
         }
 
-
         /// <summary>
         /// Executes SQL reader to database
         /// </summary>
@@ -205,14 +203,14 @@ namespace SimpleDb.Sql
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <param name="dataConsumer">A data consumer.</param>
-        public void ExecuteReader(string storedProcedure, SqlParameter[] parameters, DataConsumer dataConsumer, SqlTransaction transaction)
+        public void ExecuteReader(string storedProcedure, DbParameter[] parameters, DataConsumer dataConsumer, IDbTransaction transaction)
         {
-            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
-            if (dataConsumer == null) throw new ArgumentNullException("dataConsumer");
+            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", nameof(storedProcedure));
+            if (dataConsumer == null) throw new ArgumentNullException(nameof(dataConsumer));
 
             try
             {
-                SqlParameter errorCodeParameter;
+                DbParameter errorCodeParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
@@ -243,11 +241,11 @@ namespace SimpleDb.Sql
         /// <param name="query">A SQL query.</param>
         /// <param name="dataConsumer">A method consuming data from a SqlDataReader reader.</param>
         /// <param name="transaction">A SQL transaction or null.</param>
-        public void ExecuteReaderQuery(string query, DataConsumer dataConsumer, SqlTransaction transaction = null)
+        public void ExecuteReaderQuery(string query, DataConsumer dataConsumer, IDbTransaction transaction = null)
         {
-            if (string.IsNullOrEmpty(query)) throw new ArgumentException("A SQL query expected.", "query");
-            if (dataConsumer == null) throw new ArgumentNullException("dataConsumer");
-            
+            if (string.IsNullOrEmpty(query)) throw new ArgumentException("A SQL query expected.", nameof(query));
+            if (dataConsumer == null) throw new ArgumentNullException(nameof(dataConsumer));
+
             try
             {
                 if (transaction == null)
@@ -273,18 +271,18 @@ namespace SimpleDb.Sql
                 throw new DatabaseException(ex.Message, ex);
             }
         }
-        
+
         /// <summary>
-        /// Executes SQL reader to database
+        /// Executes SQL reader to database.
         /// </summary>
-        /// <param name="function">Name of stored procedure in database</param>
-        /// <param name="parameters">Array of SQL parameters</param>
-        /// <param name="transaction">SQL transaction object</param>
+        /// <param name="function">Name of stored procedure in database.</param>
+        /// <param name="parameters">Array of SQL parameters.</param>
+        /// <param name="transaction">SQL transaction object.</param>
         /// <param name="dataConsumer">A data consumer.</param>
-        public void ExecuteReaderFunction(string function, SqlParameter[] parameters, DataConsumer dataConsumer, SqlTransaction transaction = null)
+        public void ExecuteReaderFunction(string function, DbParameter[] parameters, DataConsumer dataConsumer, IDbTransaction transaction = null)
         {
-            if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", "function");
-            if (dataConsumer == null) throw new ArgumentNullException("dataConsumer");
+            if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", nameof(function));
+            if (dataConsumer == null) throw new ArgumentNullException(nameof(dataConsumer));
 
             try
             {
@@ -292,7 +290,7 @@ namespace SimpleDb.Sql
                 var query = new StringBuilder();
 
                 query.Append("SELECT * FROM ");
-                query.Append(function);
+                query.Append(function);  // TODO: Toto hrozí SQL injection...
                 query.Append(" (");
 
                 var count = 0;
@@ -309,14 +307,14 @@ namespace SimpleDb.Sql
                 }
 
                 query.Append(")");
-                
+
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
                     {
                         using (var command = CreateTextCommand(query.ToString(), parameters, connection.Connection, null))
                         {
-                            ReadData(command, dataConsumer);    
+                            ReadData(command, dataConsumer);
                         }
                     }
                 }
@@ -341,11 +339,11 @@ namespace SimpleDb.Sql
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <returns>Scalar value returned from stored procedure</returns>
-        public int ExecuteScalar(string storedProcedure, SqlParameter[] parameters, SqlTransaction transaction = null)
+        public int ExecuteScalar(string storedProcedure, DbParameter[] parameters, IDbTransaction transaction = null)
         {
             var result = ExecuteScalarObject(storedProcedure, parameters, transaction);
 
-            if (result == null || result.ToString() == "")
+            if (result == null || string.IsNullOrEmpty(result.ToString()))
             {
                 return 0;
             }
@@ -360,13 +358,13 @@ namespace SimpleDb.Sql
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <returns>Scalar value returned from stored procedure</returns>
-        public object ExecuteScalarObject(string storedProcedure, SqlParameter[] parameters, SqlTransaction transaction = null)
+        public object ExecuteScalarObject(string storedProcedure, DbParameter[] parameters, IDbTransaction transaction = null)
         {
-            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", "storedProcedure");
+            if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", nameof(storedProcedure));
 
             try
             {
-                SqlParameter errorCodeParameter;
+                DbParameter errorCodeParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
@@ -388,7 +386,7 @@ namespace SimpleDb.Sql
                 throw new DatabaseException(ex.Message, ex);
             }
         }
-        
+
         /// <summary>
         /// Executes scalar function with parameters
         /// </summary>
@@ -397,13 +395,13 @@ namespace SimpleDb.Sql
         /// <param name="parameters">Array of parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <returns>Result of the function</returns>
-        public T ExecuteScalarFunction<T>(string function, SqlParameter[] parameters, SqlTransaction transaction = null)
+        public T ExecuteScalarFunction<T>(string function, DbParameter[] parameters, IDbTransaction transaction = null)
         {
-            if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", "function");
+            if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", nameof(function));
 
             try
             {
-                SqlParameter returnParameter;
+                DbParameter returnParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
@@ -419,9 +417,9 @@ namespace SimpleDb.Sql
                     using (var command = CreateCommand(transaction.Connection, function, parameters, transaction, out returnParameter))
                     {
                         command.ExecuteNonQuery();
-                    }    
+                    }
                 }
-                
+
                 return (returnParameter.Value == DBNull.Value)
                     ? default(T)
                     : (T)returnParameter.Value;
@@ -431,7 +429,7 @@ namespace SimpleDb.Sql
                 throw new DatabaseException(ex.Message, ex);
             }
         }
-        
+
 
         /// <summary>
         /// Static helper method for converting values from SqlDataReader
@@ -440,10 +438,10 @@ namespace SimpleDb.Sql
         /// <param name="reader">SqlDataReader object representing one row in database</param>
         /// <param name="columnName">Name of column</param>
         /// <returns>Converted value</returns>
-        public static T GetValue<T>(SqlDataReader reader, string columnName)
+        public static T GetValue<T>(IDataReader reader, string columnName)
         {
-            return (reader[columnName] is DBNull) 
-                ? default(T) 
+            return (reader[columnName] is DBNull)
+                ? default(T)
                 : (T)reader[columnName];
         }
 
@@ -453,7 +451,7 @@ namespace SimpleDb.Sql
         /// <param name="reader">A reader.</param>
         /// <param name="columnName">A column name.</param>
         /// <returns>True.</returns>
-        public static bool GetBooleanValue(SqlDataReader reader, string columnName)
+        public static bool GetBooleanValue(IDataReader reader, string columnName)
         {
             return (int)reader[columnName] != 0;
         }
@@ -463,7 +461,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="parameters">Procedure parameters</param>
         /// <returns>Parameters as string</returns>
-        public static string ParamsToString(IEnumerable<SqlParameter> parameters)
+        public static string ParamsToString(IEnumerable<DbParameter> parameters)
         {
             var result = new StringBuilder();
 
@@ -475,20 +473,17 @@ namespace SimpleDb.Sql
             return result.ToString();
         }
 
-
         /// <summary>
         /// Creates a SQL parameter from a nullable bool value.
         /// </summary>
         /// <param name="name">A SQL parameter name.</param>
         /// <param name="value">A nullable value.</param>
         /// <returns>A SqlParameter instance.</returns>
-        public SqlParameter NullableBooleanParameter(string name, bool? value)
+        public DbParameter NullableBooleanParameter(string name, bool? value)
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return value.HasValue
-                ? new SqlParameter(name, value)
-                : new SqlParameter(name, DBNull.Value);
+            return DatabaseProvider.CreateDbParameter(name, value);
         }
 
         /// <summary>
@@ -497,13 +492,11 @@ namespace SimpleDb.Sql
         /// <param name="name">A SQL parameter name.</param>
         /// <param name="value">A nullable value.</param>
         /// <returns>A SqlParameter instance.</returns>
-        public SqlParameter NullableInt32Parameter(string name, int? value)
+        public DbParameter NullableInt32Parameter(string name, int? value)
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return value.HasValue
-                ? new SqlParameter(name, value)
-                : new SqlParameter(name, DBNull.Value);
+            return DatabaseProvider.CreateDbParameter(name, value);
         }
 
         /// <summary>
@@ -512,13 +505,11 @@ namespace SimpleDb.Sql
         /// <param name="name">A SQL parameter name.</param>
         /// <param name="value">A nullable value.</param>
         /// <returns>A SqlParameter instance.</returns>
-        public SqlParameter NullableDecimalParameter(string name, decimal? value)
+        public DbParameter NullableDecimalParameter(string name, decimal? value)
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return value.HasValue 
-                ? new SqlParameter(name, value) 
-                : new SqlParameter(name, DBNull.Value);
+            return DatabaseProvider.CreateDbParameter(name, value);
         }
 
         /// <summary>
@@ -527,13 +518,11 @@ namespace SimpleDb.Sql
         /// <param name="name">A SQL parameter name.</param>
         /// <param name="value">A nullable value.</param>
         /// <returns>A SqlParameter instance.</returns>
-        public SqlParameter NullableDateTimeParameter(string name, DateTime? value)
+        public DbParameter NullableDateTimeParameter(string name, DateTime? value)
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", "name");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return value.HasValue
-                ? new SqlParameter(name, value)
-                : new SqlParameter(name, DBNull.Value);
+            return DatabaseProvider.CreateDbParameter(name, value);
         }
 
         #endregion
@@ -550,16 +539,11 @@ namespace SimpleDb.Sql
         /// <param name="transaction">SqlTransaction instance</param>
         /// <param name="errorCodeParameter">Out parameter representing error code</param>
         /// <returns>Instance of created SqlCommand</returns>
-        private SqlCommand CreateCommand(SqlConnection connection, string storedProcedure, SqlParameter[] parameters, SqlTransaction transaction, out SqlParameter errorCodeParameter)
+        private IDbCommand CreateCommand(IDbConnection connection, string storedProcedure, DbParameter[] parameters, IDbTransaction transaction, out DbParameter errorCodeParameter)
         {
             var command = CreateStoredProcedureCommand(storedProcedure, parameters, connection, transaction);
 
-            errorCodeParameter = new SqlParameter(ReturnParameterName, SqlDbType.Int)
-            {
-                Direction = ParameterDirection.ReturnValue
-            };
-
-            command.Parameters.Add(errorCodeParameter);
+            command.Parameters.Add(errorCodeParameter = DatabaseProvider.CreateReturnIntDbParameter(ReturnParameterName));
 
             return command;
         }
@@ -573,7 +557,7 @@ namespace SimpleDb.Sql
         /// <param name="connection">An open database connection.</param>
         /// <param name="transaction">A transaction or null.</param>
         /// <returns>A SqlCommand instance.</returns>
-        private SqlCommand CreateTextCommand(string sql, SqlParameter[] parameters, SqlConnection connection, SqlTransaction transaction)
+        private IDbCommand CreateTextCommand(string sql, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
         {
             return CreateSqlCommand(CommandType.Text, sql, parameters, connection, transaction);
         }
@@ -586,7 +570,7 @@ namespace SimpleDb.Sql
         /// <param name="connection">An open database connection.</param>
         /// <param name="transaction">A transaction or null.</param>
         /// <returns>A SqlCommand instance.</returns>
-        private SqlCommand CreateStoredProcedureCommand(string storedProcedure, SqlParameter[] parameters, SqlConnection connection, SqlTransaction transaction)
+        private IDbCommand CreateStoredProcedureCommand(string storedProcedure, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
         {
             return CreateSqlCommand(CommandType.StoredProcedure, storedProcedure, parameters, connection, transaction);
         }
@@ -599,31 +583,18 @@ namespace SimpleDb.Sql
         /// <param name="parameters">An array of SQL parameters.</param>
         /// <param name="connection">An open database connaction.</param>
         /// <param name="transaction">A transaction or null.</param>
-        /// <returns>A SqlCommand instance.</returns>
-        private SqlCommand CreateSqlCommand(CommandType commandType, string sql, SqlParameter[] parameters, SqlConnection connection, SqlTransaction transaction)
+        /// <returns>A IDbCommand instance.</returns>
+        private IDbCommand CreateSqlCommand(CommandType commandType, string sql, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
         {
-            var command = new SqlCommand(sql, connection)
-            {
-                CommandType = commandType,
-                Transaction = transaction,
-                CommandTimeout = Math.Max(CommandTimeout, connection.ConnectionTimeout)
-            };
-
-            if (parameters != null && parameters.Length > 0)
-            {
-                command.Parameters.AddRange(parameters);
-            }
-
-            return command;
+            return DatabaseProvider.CreateDbCommand(commandType, CommandTimeout, sql, parameters, connection, transaction);
         }
-        
-        
+
         /// <summary>
         /// Reads data from a SQL command.
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="dataConsumer"></param>
-        private void ReadData(SqlCommand command, DataConsumer dataConsumer)
+        /// <param name="command">A IDbCommand instance.</param>
+        /// <param name="dataConsumer">A DataConsumer instance.</param>
+        private void ReadData(IDbCommand command, DataConsumer dataConsumer)
         {
             using (var reader = command.ExecuteReader())
             {
@@ -636,12 +607,12 @@ namespace SimpleDb.Sql
                 }
             }
         }
-        
+
         /// <summary>
-        /// Reads scalar value from a SQL command.
+        /// Reads scalar value from a database command.
         /// </summary>
         /// <param name="command">A SQL command instance.</param>
-        private object ReadScalar(SqlCommand command)
+        private object ReadScalar(IDbCommand command)
         {
             return command.ExecuteScalar();
         }
@@ -652,7 +623,7 @@ namespace SimpleDb.Sql
         ///// <typeparam name="T">A type of the returned value.</typeparam>
         ///// <param name="command">A SQL command instance.</param>
         ///// <returns>A value returned from a scalar function.</returns>
-        //private T GetScalarFunctionResult<T>(SqlCommand command)
+        //private T GetScalarFunctionResult<T>(IDbCommand command)
         //{
         //    var returnParameter = new SqlParameter(ReturnParameterName, SqlDbType.Int)
         //    {
