@@ -24,7 +24,6 @@ namespace SimpleDb.Sql
 {
     using System;
     using System.Collections.Generic;
-    using System.Data.SqlClient;
     using System.Linq;
 
     using SimpleDb.Shared;
@@ -68,7 +67,7 @@ namespace SimpleDb.Sql
                     FunctionBaseName + "_GetIdByName",
                     new[]
                     {
-                        new SqlParameter(GetParameterName(NamePropertyDbColumnName), name),
+                        Database.DatabaseProvider.CreateDbParameter(GetParameterName(NamePropertyDbColumnName), name)
                     },
                     null);
 
