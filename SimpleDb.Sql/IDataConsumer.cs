@@ -35,6 +35,11 @@ namespace SimpleDb.Sql
     public interface IDataConsumer<T> where T : ADataObject, new()
     {
         /// <summary>
+        /// The used database provider instance.
+        /// </summary>
+        IDatabaseProvider DatabaseProvider { get; }
+
+        /// <summary>
         /// A list of T instances.
         /// </summary>
         ICollection<T> Instances { get; }

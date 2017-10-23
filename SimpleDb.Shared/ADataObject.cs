@@ -47,6 +47,8 @@ namespace SimpleDb.Shared
 
         /// <summary>
         /// Returns a database table name of this instance.
+        /// If this type does not have the DbTableAttribute attribute set, an InvalidOperationException is thrown.
+        /// If the Name of the DbTableAttribute attribute is null, the name of this class is returned.
         /// </summary>
         public string DatabaseTableName
         {
@@ -54,16 +56,12 @@ namespace SimpleDb.Shared
             {
                 var thisType = GetType();
 
-                if (!IsDatabaseTable) return String.Format("ADataObject<{0}>", thisType.Name);
+                if (!IsDatabaseTable) throw new InvalidOperationException(string.Format("The '{0}' is not a datatable.", thisType.FullName));
 
                 var attribute = thisType.GetCustomAttribute(typeof(DbTableAttribute)) as DbTableAttribute;
-                if (attribute == null)
-                {
-                    // This never happens. We are working with DbColumn properties only.
-                    throw new Exception(String.Format("Can not get DbTable from the {0} class.", thisType.Name));
-                }
-
-                return attribute.Name;
+                
+                // The name of a table can be defined by the name of the class.
+                return attribute.Name ?? thisType.Name;
             }
         }
 
@@ -93,7 +91,7 @@ namespace SimpleDb.Shared
 
 
         #region public
-
+        
         /// <summary>
         /// Validates this instance.
         /// </summary>
@@ -130,7 +128,7 @@ namespace SimpleDb.Shared
         /// <returns>All properties with a given tag</returns>
         public IEnumerable<PropertyInfo> GetColumnsWithTag(string tag)
         {
-            if (String.IsNullOrEmpty(tag)) throw new ArgumentException("A tag expected.", "tag");
+            if (string.IsNullOrEmpty(tag)) throw new ArgumentException("A database column tag expected.", nameof(tag));
 
             var taggedColumns = new List<PropertyInfo>();
 
@@ -156,7 +154,7 @@ namespace SimpleDb.Shared
             if (attribute == null)
             {
                 // This never happens. We are working with DbColumn properties only.
-                throw new Exception(String.Format("Can not get DbColumn from the {0} property.", column.Name));
+                throw new InvalidOperationException(String.Format("The DbColumnAttribute is not defined for the {0} property.", column.Name));
             }
 
             return attribute;
@@ -174,7 +172,7 @@ namespace SimpleDb.Shared
             if (attribute == null)
             {
                 // This never happens. We are working with DbColumn properties only.
-                throw new Exception(String.Format("Can not get DbColumnTag from the {0} property.", column.Name));
+                throw new InvalidOperationException(String.Format("The DbColumnTagAttribute is not defined for the {0} property.", column.Name));
             }
 
             return attribute;

@@ -50,7 +50,7 @@ namespace SimpleDb.Sql.MsSql
         /// <inheritdoc />
         public DbParameter CreateDbParameter(string name, object value)
         {
-            return new SqlParameter(name, value ?? DBNull.Value);
+            return new SqlParameter(GetParameterName(name), value ?? DBNull.Value);
         }
 
         /// <inheritdoc />
@@ -78,6 +78,71 @@ namespace SimpleDb.Sql.MsSql
             }
 
             return command;
+        }
+        
+        /// <inheritdoc />
+        public string TranslateTableName(string tableName)
+        {
+            return tableName;
+        }
+
+        /// <inheritdoc />
+        public string TranslateColumnName(string columnName)
+        {
+            return columnName;
+        }
+
+        /// <inheritdoc />
+        public string GetStoredProcedureBaseName(string baseName)
+        {
+            return "sp" + TranslateTableName(baseName);
+        }
+
+        /// <inheritdoc />
+        public string GetFunctionBaseName(string baseName)
+        {
+            return "fn" + TranslateTableName(baseName);
+        }
+
+        /// <inheritdoc />
+        public virtual string GetSelectStoredProcedureName(string storedProcedureBaseName)
+        {
+            return storedProcedureBaseName + "_SelectList";
+        }
+
+        /// <inheritdoc />
+        public virtual string GetSelectDetailsStoredProcedureName(string storedProcedureBaseName)
+        {
+            return storedProcedureBaseName + "_SelectDetails";
+        }
+
+        /// <inheritdoc />
+        public virtual string GetUpdateStoredProcedureName(string storedProcedureBaseName)
+        {
+            return storedProcedureBaseName + "_Update";
+        }
+
+        /// <inheritdoc />
+        public virtual string GetInsertStoredProcedureName(string storedProcedureBaseName)
+        {
+            return storedProcedureBaseName + "_Insert";
+        }
+
+        /// <inheritdoc />
+        public virtual string GetDeleteStoredProcedureName(string storedProcedureBaseName)
+        {
+            return storedProcedureBaseName + "_Delete";
+        }
+         
+        public virtual string GetGetIdByNameFunctionName(string functionBaseName)
+        {
+            return functionBaseName + "_GetIdByName";
+        }
+
+        /// <inheritdoc />
+        public string GetParameterName(string columnName)
+        {
+            return "@" + TranslateColumnName(columnName);
         }
     }
 }

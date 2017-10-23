@@ -45,7 +45,7 @@ namespace SimpleDb.Sql
         protected enum DatabaseOperation
         {
             /// <summary>
-            /// For Get, GetAll, etc.
+            /// For Get, GetAll, GetIdByName, etc.
             /// </summary>
             Select,
 
@@ -62,7 +62,7 @@ namespace SimpleDb.Sql
             /// <summary>
             /// For Delete. 
             /// </summary>
-            Delete
+            Delete,
         }
 
         #endregion
@@ -81,8 +81,8 @@ namespace SimpleDb.Sql
 
             var baseName = TypeInstance.DatabaseTableName;
 
-            StoredProcedureBaseName = "sp" + baseName;
-            FunctionBaseName = "fn" + baseName;
+            StoredProcedureBaseName = Database.DatabaseProvider.GetStoredProcedureBaseName(baseName);
+            FunctionBaseName = Database.DatabaseProvider.GetFunctionBaseName(baseName);
         }
 
         #endregion
@@ -102,9 +102,9 @@ namespace SimpleDb.Sql
 
         /// <summary>
         /// If true, the AuthorizationManager security is nod used.
-        /// False by default (the security is used).
+        /// True by default (the security is not used).
         /// </summary>
-        protected virtual bool BypassSecurity => false;
+        protected virtual bool BypassSecurity => true;
 
         /// <summary>
         /// Gets a base of a stored procedure name.
@@ -162,10 +162,10 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.DatabaseProvider, res);
 
             Database.ExecuteReader(
-                GetSelectStoredProcedureName(),
+                SelectStoredProcedureName,
                 CreateSelectListParameters(),
                 consumer.CreateInstance,
                 null);
@@ -193,16 +193,16 @@ namespace SimpleDb.Sql
         /// <returns>Instance to object</returns>
         public virtual T Get(int id, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            if (id <= 0) throw new ArgumentException("A positive number expected.", "id");
+            if (id <= 0) throw new ArgumentException("A positive number expected.", nameof(id));
 
             OperationAllowed(DatabaseOperation.Select);
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.DatabaseProvider, res);
 
             Database.ExecuteReader(
-                GetSelectDetailsStoredProcedureName(),
+                SelectDetailsStoredProcedureName,
                 CreateIdParameters(id),
                 consumer.CreateInstance,
                 transaction);
@@ -227,21 +227,21 @@ namespace SimpleDb.Sql
             {
                 OperationAllowed(operation);
 
-                return Database.ExecuteScalar(GetInsertStoredProcedureName(), CreateInsertParameters(obj), transaction);
+                return Database.ExecuteScalar(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
             }
 
             if (iid.Id == 0)
             {
                 OperationAllowed(operation);
 
-                return iid.Id = Database.ExecuteScalar(GetInsertStoredProcedureName(), CreateInsertParameters(obj), transaction);
+                return iid.Id = Database.ExecuteScalar(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
             }
 
             operation = DatabaseOperation.Update;
 
             OperationAllowed(operation);
 
-            return Database.ExecuteScalar(GetUpdateStoredProcedureName(), CreateUpdateParameters(obj), transaction);
+            return Database.ExecuteScalar(UpdateStoredProcedureName, CreateUpdateParameters(obj), transaction);
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Delete);
 
-            Database.ExecuteNonQuery(GetDeleteStoredProcedureName(), CreateIdParameters(obj), transaction);
+            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(obj), transaction);
         }
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace SimpleDb.Sql
             var iid = TypeInstance as IId;
             if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
-            Database.ExecuteNonQuery(GetDeleteStoredProcedureName(), CreateIdParameters(iid.Id), transaction);
+            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(iid.Id), transaction);
         }
 
         /// <summary>
@@ -319,10 +319,10 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(new List<T> { obj });
+            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.DatabaseProvider, new List<T> { obj });
 
             Database.ExecuteReader(
-                GetSelectDetailsStoredProcedureName(),
+                SelectDetailsStoredProcedureName,
                 CreateIdParameters(iid.Id),
                 consumer.RecreateInstance,
                 transaction);
@@ -380,7 +380,7 @@ namespace SimpleDb.Sql
                 }
 
                 // Add parameter to the list of parameters.
-                paramList.Add(Database.DatabaseProvider.CreateDbParameter(GetParameterName(attribute.Name), column.GetValue(instance)));
+                paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
             }
 
             return paramList.ToArray();
@@ -403,7 +403,7 @@ namespace SimpleDb.Sql
                 if (attribute.IsId)
                 {
                     // Add parameter to the list of parameters.
-                    paramList.Add(Database.DatabaseProvider.CreateDbParameter(GetParameterName(attribute.Name), column.GetValue(instance)));
+                    paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
                 }
             }
 
@@ -423,72 +423,68 @@ namespace SimpleDb.Sql
 
             var paramList = new List<DbParameter>();
 
-            foreach (var attribute in TypeInstance.DatabaseColumns.Select(ADataObject.GetDbColumnAttribute).Where(attribute => attribute.IsId))
-            {
-                // Add parameter to the list of parameters.
-                paramList.Add(Database.DatabaseProvider.CreateDbParameter(GetParameterName(attribute.Name), id));
+            //foreach (var attribute in TypeInstance.DatabaseColumns.Select(ADataObject.GetDbColumnAttribute).Where(attribute => attribute.IsId))
+            //{
+            //    // Add parameter to the list of parameters.
+            //    paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name, id));
 
-                break;
+            //    break;
+            //}
+
+            foreach (var column in TypeInstance.DatabaseColumns)
+            {
+                var attribute = ADataObject.GetDbColumnAttribute(column);
+                if (attribute.IsId)
+                {
+                    paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name ?? column.Name, id));
+
+                    break;
+                }
             }
 
             return paramList.ToArray();
         }
 
         /// <summary>
-        /// Returns a stored procedure name for an SELECT operation.
+        /// A select all to a list stored procedure name.
         /// </summary>
-        /// <returns>A name of a stored procedure.</returns>
-        protected virtual string GetSelectStoredProcedureName()
+        private string SelectStoredProcedureName
         {
-            return StoredProcedureBaseName + "_SelectList";
+            get { return Database.DatabaseProvider.GetSelectStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
-        /// Returns A stored procedure name for an SELECT by ID operation.
+        /// A select single by ID stored procedure name.
         /// </summary>
-        /// <returns>A name of a stored procedure.</returns>
-        protected virtual string GetSelectDetailsStoredProcedureName()
+        private string SelectDetailsStoredProcedureName
         {
-            return StoredProcedureBaseName + "_SelectDetails";
+            get { return Database.DatabaseProvider.GetSelectDetailsStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
-        /// Returns a stored procedure name for an UPDATE operation.
+        /// An insert stored procedure name.
         /// </summary>
-        /// <returns>A name of a stored procedure.</returns>
-        protected virtual string GetUpdateStoredProcedureName()
+        private string InsertStoredProcedureName
         {
-            return StoredProcedureBaseName + "_Update";
+            get { return Database.DatabaseProvider.GetInsertStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
-        /// Returns a stored procedure name for an INSERT operation.
+        /// An update stored procedure name.
         /// </summary>
-        /// <returns>A name of a stored procedure.</returns>
-        protected virtual string GetInsertStoredProcedureName()
+        private string UpdateStoredProcedureName
         {
-            return StoredProcedureBaseName + "_Insert";
+            get { return Database.DatabaseProvider.GetUpdateStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
-        /// Returns stored procedure name for the DELETE operation.
+        /// A delete stored procedure name.
         /// </summary>
-        /// <returns>A name of a stored procedure.</returns>
-        protected virtual string GetDeleteStoredProcedureName()
+        private string DeleteStoredProcedureName
         {
-            return StoredProcedureBaseName + "_Delete";
+            get { return Database.DatabaseProvider.GetDeleteStoredProcedureName(StoredProcedureBaseName); }
         }
         
-        /// <summary>
-        /// Creates a parameter name from a column name.
-        /// </summary>
-        /// <param name="columnName">A column name.</param>
-        /// <returns>A parameter name.</returns>
-        protected string GetParameterName(string columnName)
-        {
-            return "@" + columnName;
-        }
-
         /// <summary>
         /// The SaveAll operation.
         /// </summary>

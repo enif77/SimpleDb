@@ -51,11 +51,11 @@ namespace SimpleDb.Files
         /// <returns>An Id of a lookup item or 0.</returns>
         public virtual int GetIdByName(string name, bool bypassCache = false)
         {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", "name");
+            if (string.IsNullOrEmpty(NamePropertyDbColumnName)) throw new Exception("A Name column expected.");
+
             lock (_lookupCacheLock)
             {
-                if (String.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", "name");
-                if (String.IsNullOrEmpty(NamePropertyDbColumnName)) throw new Exception("A Name column expected.");
-
                 if (bypassCache == false && _lookupCache.ContainsKey(name))
                 {
                     return _lookupCache[name];

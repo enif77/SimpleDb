@@ -34,20 +34,15 @@ namespace SimpleDb.Shared
         /// <summary>
         /// A database table name.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
 
         /// <summary>
         /// A constructor.
         /// </summary>
-        /// <param name="name">A database table name.</param>
-        public DbTableAttribute(string name)
+        /// <param name="name">A database table name. If null, the name of the class is used instead.</param>
+        public DbTableAttribute(string name = null)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The name argument expected.");
-            }
-
             Name = name;
         }
     }

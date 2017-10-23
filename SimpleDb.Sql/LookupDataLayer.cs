@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -31,6 +31,13 @@ namespace SimpleDb.Sql
 
     public class LookupDataLayer<T> : ABaseDatalayer<T> where T : AIdDataObject, ILookup, new()
     {
+        /// <summary>
+        /// If true, lookups are cached in the memory.
+        /// False by default.
+        /// </summary>
+        public bool UseCache { get; set; }
+
+
         /// <summary>      
         /// Constructor.
         /// </summary>
@@ -38,40 +45,68 @@ namespace SimpleDb.Sql
         public LookupDataLayer(Database database)
             : base(database)
         {
-            _lookupCacheLock = new object();
-            _lookupCache = new Dictionary<string, int>();
-
+            UseCache = false;
             NamePropertyDbColumnName = ADataObject.GetDbColumnAttribute(TypeInstance.GetColumnsWithTag("Name").FirstOrDefault()).Name;
         }
 
 
         /// <summary>
-        /// Returns an ID of a lookup item by its name.
+        /// Checks, if a lookup is in the internal cache.
         /// </summary>
-        /// <returns>An Id of a lookup item or 0.</returns>
-        public virtual int GetIdByName(string name, bool bypassCache = false)
+        /// <param name="name">A lookup Name.</param>
+        /// <returns>True, if a lookup with a specified name is in the local cache.</returns>
+        protected bool HasCachedLookup(string name)
         {
             lock (_lookupCacheLock)
             {
-                if (String.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", "name");
-                if (String.IsNullOrEmpty(NamePropertyDbColumnName)) throw new Exception("A Name column expected.");
+                if (UseCache)
+                {
+                    return _lookupCache.ContainsKey(name);
 
-                OperationAllowed(DatabaseOperation.Select);
+                }
 
-                if (bypassCache == false && _lookupCache.ContainsKey(name))
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Clears the internal lookup cache.
+        /// </summary>
+        public void ClearCache()
+        {
+            lock (_lookupCacheLock)
+            {
+                _lookupCache.Clear();
+            }
+        }
+        
+        /// <summary>
+        /// Returns an ID of a lookup item by its name.
+        /// </summary>
+        /// <returns>An Id of a lookup item or 0.</returns>
+        public virtual int GetIdByName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
+            if (string.IsNullOrEmpty(NamePropertyDbColumnName)) throw new Exception("A Name column expected.");
+
+            OperationAllowed(DatabaseOperation.Select);
+
+            lock (_lookupCacheLock)
+            {
+                if (HasCachedLookup(name))
                 {
                     return _lookupCache[name];
                 }
 
                 var id = Database.ExecuteScalarFunction<int>(
-                    FunctionBaseName + "_GetIdByName",
+                    Database.DatabaseProvider.GetGetIdByNameFunctionName(FunctionBaseName),
                     new[]
                     {
-                        Database.DatabaseProvider.CreateDbParameter(GetParameterName(NamePropertyDbColumnName), name)
+                        Database.DatabaseProvider.CreateDbParameter(NamePropertyDbColumnName, name)
                     },
                     null);
 
-                if (bypassCache == false)
+                if (UseCache)
                 {
                     _lookupCache.Add(name, id);
                 }
@@ -81,12 +116,13 @@ namespace SimpleDb.Sql
         }
 
 
-        private readonly object _lookupCacheLock;
-        private readonly Dictionary<string, int> _lookupCache;
+        private readonly object _lookupCacheLock = new object();
+        private readonly Dictionary<string, int> _lookupCache = new Dictionary<string, int>();
+
 
         /// <summary>
         /// Returns a database column name of the Name column.
         /// </summary>
-        private string NamePropertyDbColumnName { get; }
+        protected string NamePropertyDbColumnName { get; }
     }
 }

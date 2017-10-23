@@ -45,7 +45,7 @@ namespace SimpleDb.Shared
             /// <summary>
             /// It is an ID column.
             /// </summary>
-            Id = 1,          
+            Id = 1,
 
             /// <summary>
             /// Can be null.
@@ -53,7 +53,7 @@ namespace SimpleDb.Shared
             Nullable = 2,
 
             /// <summary>
-            /// Is read only. The value can not be changed.
+            /// Is read only. The value will never be saved to the database.
             /// </summary>
             ReadOnly = 4,
 
@@ -67,6 +67,7 @@ namespace SimpleDb.Shared
 
         /// <summary>
         /// A DB column name.
+        /// If null, the property name will be used.
         /// </summary>
         public string Name { get; }
 
@@ -130,7 +131,7 @@ namespace SimpleDb.Shared
         /// </summary>
         /// <param name="name">A DB column name.</param>
         /// <param name="options">Column options.</param>
-        public DbColumnAttribute(string name, ColumnOptions options = ColumnOptions.None)
+        public DbColumnAttribute(string name = null, ColumnOptions options = ColumnOptions.None)
             : this(name, Int32.MaxValue, options)
         {
         }
@@ -141,10 +142,8 @@ namespace SimpleDb.Shared
         /// <param name="name">A DB column name.</param>
         /// <param name="length">A maximal allowed length of a string column.</param>
         /// <param name="options">Column options.</param>
-        public DbColumnAttribute(string name, int length, ColumnOptions options = ColumnOptions.None)
+        public DbColumnAttribute(string name = null, int length = Int32.MaxValue, ColumnOptions options = ColumnOptions.None)
         {
-            if (string.IsNullOrEmpty(name)) throw new ArgumentException("A database column attribute name expected.");
-
             Name = name;
             Length = length;
             Options = options;

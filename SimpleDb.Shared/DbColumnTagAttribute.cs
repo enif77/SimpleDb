@@ -34,7 +34,7 @@ namespace SimpleDb.Shared
         /// <summary>
         /// A database column tag.
         /// </summary>
-        public string Tag { get; set; }
+        public string Tag { get; }
 
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SimpleDb.Shared
         {
             if (string.IsNullOrEmpty(tag))
             {
-                throw new ArgumentException("A tag argument expected.");
+                throw new ArgumentException("A database table column tag expected.", nameof(tag));
             }
 
             Tag = tag;

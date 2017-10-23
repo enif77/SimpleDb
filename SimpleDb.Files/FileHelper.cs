@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDb.Files
 {
     using System;
     using System.IO;
