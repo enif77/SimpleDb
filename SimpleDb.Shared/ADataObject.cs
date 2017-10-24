@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -56,9 +56,11 @@ namespace SimpleDb.Shared
             {
                 var thisType = GetType();
 
-                if (!IsDatabaseTable) throw new InvalidOperationException(string.Format("The '{0}' is not a datatable.", thisType.FullName));
-
                 var attribute = thisType.GetCustomAttribute(typeof(DbTableAttribute)) as DbTableAttribute;
+                if (attribute == null)
+                {
+                    throw new InvalidOperationException(string.Format("The '{0}' is not a datatable.", thisType.FullName));
+                }
                 
                 // The name of a table can be defined by the name of the class.
                 return attribute.Name ?? thisType.Name;
@@ -162,7 +164,7 @@ namespace SimpleDb.Shared
 
         /// <summary>
         /// Gets a DbColumnTag from a property.
-        /// Throws an exception, if the propert does not have the DbColumnTag set.
+        /// Throws an exception, if the property does not have the DbColumnTag set.
         /// </summary>
         /// <param name="column">A PropertyInfo instance of a property.</param>
         /// <returns>A DbColumnTag instance.</returns>
