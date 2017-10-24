@@ -33,6 +33,8 @@ namespace SimpleDb.Sql.MsSql
     /// </summary>
     public class SqlDatabaseProvider : IDatabaseProvider
     {
+        #region IDatabaseProvider
+
         /// <inheritdoc />
         public string GetDatabaseName(string connectionString)
         {
@@ -79,7 +81,12 @@ namespace SimpleDb.Sql.MsSql
 
             return command;
         }
-        
+
+        #endregion
+
+
+        #region INamesProvider
+
         /// <inheritdoc />
         public string TranslateTableName(string tableName)
         {
@@ -144,5 +151,7 @@ namespace SimpleDb.Sql.MsSql
         {
             return "@" + TranslateColumnName(columnName);
         }
+
+        #endregion
     }
 }

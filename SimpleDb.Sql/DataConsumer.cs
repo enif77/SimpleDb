@@ -39,9 +39,9 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="provider">A IDatabaseProvider instance.</param>
+        /// <param name="provider">A INamesProvider instance.</param>
         /// <param name="instances">A collection, where created instances are stored.</param>
-        public DataConsumer(IDatabaseProvider provider, ICollection<T> instances)
+        public DataConsumer(INamesProvider provider, ICollection<T> instances)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             Instances = instances ?? throw new ArgumentNullException(nameof(instances));
@@ -50,10 +50,7 @@ namespace SimpleDb.Sql
 
         /// <inheritdoc />
         public ICollection<T> Instances { get; }
-
-        /// <inheritdoc />
-        public IDatabaseProvider Provider { get; }
-
+        
 
         /// <inheritdoc />
         public virtual bool CreateInstance(IDataReader reader)
@@ -77,6 +74,12 @@ namespace SimpleDb.Sql
 
             return true;
         }
+
+
+        /// <summary>
+        /// A names provider instance.
+        /// </summary>
+        private INamesProvider Provider { get; }
 
 
         /// <summary>

@@ -52,6 +52,7 @@
     <Compile Include="IAuditedObject.cs" />
     <Compile Include="IId.cs" />
     <Compile Include="ILookup.cs" />
+    <Compile Include="INamesProvider.cs" />
     <Compile Include="IUpdatable.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
