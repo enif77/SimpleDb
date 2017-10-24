@@ -37,7 +37,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// The used database provider instance.
         /// </summary>
-        IDatabaseProvider DatabaseProvider { get; }
+        IDatabaseProvider Provider { get; }
 
         /// <summary>
         /// A list of T instances.

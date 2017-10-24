@@ -43,7 +43,7 @@ namespace SimpleDb.Sql
         /// <param name="instances">A collection, where created instances are stored.</param>
         public DataConsumer(IDatabaseProvider provider, ICollection<T> instances)
         {
-            DatabaseProvider = provider ?? throw new ArgumentNullException(nameof(provider));
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             Instances = instances ?? throw new ArgumentNullException(nameof(instances));
         }
 
@@ -52,7 +52,7 @@ namespace SimpleDb.Sql
         public ICollection<T> Instances { get; }
 
         /// <inheritdoc />
-        public IDatabaseProvider DatabaseProvider { get; }
+        public IDatabaseProvider Provider { get; }
 
 
         /// <inheritdoc />
@@ -93,7 +93,7 @@ namespace SimpleDb.Sql
                 var attribute = ADataObject.GetDbColumnAttribute(column);
 
                 // A column name can be specified by the name of a property itself.
-                var columnData = reader[DatabaseProvider.TranslateColumnName(attribute.Name ?? column.Name)]; // Can throw IndexOutOfRangeException.
+                var columnData = reader[Provider.TranslateColumnName(attribute.Name ?? column.Name)]; // Can throw IndexOutOfRangeException.
                 var columnType = column.PropertyType;
 
                 // Get a value from the reader object and convert it it to a property type.
