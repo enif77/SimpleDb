@@ -39,10 +39,11 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="provider">A IDatabaseProvider instance.</param>
         /// <param name="instances">A collection, where created instances are stored.</param>
-        public DataConsumer(IDatabaseProvider databaseProvider, ICollection<T> instances)
+        public DataConsumer(IDatabaseProvider provider, ICollection<T> instances)
         {
-            DatabaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            DatabaseProvider = provider ?? throw new ArgumentNullException(nameof(provider));
             Instances = instances ?? throw new ArgumentNullException(nameof(instances));
         }
 

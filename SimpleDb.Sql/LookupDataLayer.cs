@@ -99,10 +99,10 @@ namespace SimpleDb.Sql
                 }
 
                 var id = Database.ExecuteScalarFunction<int>(
-                    Database.DatabaseProvider.GetGetIdByNameFunctionName(FunctionBaseName),
+                    Database.Provider.GetGetIdByNameFunctionName(FunctionBaseName),
                     new[]
                     {
-                        Database.DatabaseProvider.CreateDbParameter(NamePropertyDbColumnName, name)
+                        Database.Provider.CreateDbParameter(NamePropertyDbColumnName, name)
                     },
                     null);
 

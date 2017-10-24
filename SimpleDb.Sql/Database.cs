@@ -49,7 +49,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// A IDatabaseProvider instance.
         /// </summary>
-        public IDatabaseProvider DatabaseProvider { get; }
+        public IDatabaseProvider Provider { get; }
 
         /// <summary>
         /// A connection string used for accessing this instance database.
@@ -64,7 +64,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// A database name parsed from the Connection string.
         /// </summary>
-        public string DatabaseName => DatabaseProvider.GetDatabaseName(ConnectionString);
+        public string DatabaseName => Provider.GetDatabaseName(ConnectionString);
 
         #endregion
 
@@ -85,7 +85,7 @@ namespace SimpleDb.Sql
             }
 
             ConnectionString = connectionString;
-            DatabaseProvider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
+            Provider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
             CommandTimeout = (commandTimeout > 0)
                 ? commandTimeout
                 : DefaultCommandTimeoutSeconds;
@@ -122,7 +122,7 @@ namespace SimpleDb.Sql
         /// <returns>A DatabaseConnection instance.</returns>
         public DatabaseConnection CreateConnection()
         {
-            return new DatabaseConnection(ConnectionString, DatabaseProvider);
+            return new DatabaseConnection(ConnectionString, Provider);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace SimpleDb.Sql
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return DatabaseProvider.CreateDbParameter(name, value);
+            return Provider.CreateDbParameter(name, value);
         }
 
         /// <summary>
@@ -496,7 +496,7 @@ namespace SimpleDb.Sql
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return DatabaseProvider.CreateDbParameter(name, value);
+            return Provider.CreateDbParameter(name, value);
         }
 
         /// <summary>
@@ -509,7 +509,7 @@ namespace SimpleDb.Sql
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return DatabaseProvider.CreateDbParameter(name, value);
+            return Provider.CreateDbParameter(name, value);
         }
 
         /// <summary>
@@ -522,7 +522,7 @@ namespace SimpleDb.Sql
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A parameter name expected.", nameof(name));
 
-            return DatabaseProvider.CreateDbParameter(name, value);
+            return Provider.CreateDbParameter(name, value);
         }
 
         #endregion
@@ -543,7 +543,7 @@ namespace SimpleDb.Sql
         {
             var command = CreateStoredProcedureCommand(storedProcedure, parameters, connection, transaction);
 
-            command.Parameters.Add(errorCodeParameter = DatabaseProvider.CreateReturnIntDbParameter(ReturnParameterName));
+            command.Parameters.Add(errorCodeParameter = Provider.CreateReturnIntDbParameter(ReturnParameterName));
 
             return command;
         }
@@ -586,7 +586,7 @@ namespace SimpleDb.Sql
         /// <returns>A IDbCommand instance.</returns>
         private IDbCommand CreateSqlCommand(CommandType commandType, string sql, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
         {
-            return DatabaseProvider.CreateDbCommand(commandType, CommandTimeout, sql, parameters, connection, transaction);
+            return Provider.CreateDbCommand(commandType, CommandTimeout, sql, parameters, connection, transaction);
         }
 
         /// <summary>

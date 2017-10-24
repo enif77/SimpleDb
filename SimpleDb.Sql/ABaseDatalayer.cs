@@ -81,8 +81,8 @@ namespace SimpleDb.Sql
 
             var baseName = TypeInstance.DatabaseTableName;
 
-            StoredProcedureBaseName = Database.DatabaseProvider.GetStoredProcedureBaseName(baseName);
-            FunctionBaseName = Database.DatabaseProvider.GetFunctionBaseName(baseName);
+            StoredProcedureBaseName = Database.Provider.GetStoredProcedureBaseName(baseName);
+            FunctionBaseName = Database.Provider.GetFunctionBaseName(baseName);
         }
 
         #endregion
@@ -162,7 +162,7 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.DatabaseProvider, res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.Provider, res);
 
             Database.ExecuteReader(
                 SelectStoredProcedureName,
@@ -199,7 +199,7 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.DatabaseProvider, res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.Provider, res);
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -319,7 +319,7 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.DatabaseProvider, new List<T> { obj });
+            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.Provider, new List<T> { obj });
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -380,7 +380,7 @@ namespace SimpleDb.Sql
                 }
 
                 // Add parameter to the list of parameters.
-                paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
+                paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
             }
 
             return paramList.ToArray();
@@ -403,7 +403,7 @@ namespace SimpleDb.Sql
                 if (attribute.IsId)
                 {
                     // Add parameter to the list of parameters.
-                    paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
+                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
                 }
             }
 
@@ -436,7 +436,7 @@ namespace SimpleDb.Sql
                 var attribute = ADataObject.GetDbColumnAttribute(column);
                 if (attribute.IsId)
                 {
-                    paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name ?? column.Name, id));
+                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, id));
 
                     break;
                 }
@@ -450,7 +450,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string SelectStoredProcedureName
         {
-            get { return Database.DatabaseProvider.GetSelectStoredProcedureName(StoredProcedureBaseName); }
+            get { return Database.Provider.GetSelectStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -458,7 +458,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string SelectDetailsStoredProcedureName
         {
-            get { return Database.DatabaseProvider.GetSelectDetailsStoredProcedureName(StoredProcedureBaseName); }
+            get { return Database.Provider.GetSelectDetailsStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string InsertStoredProcedureName
         {
-            get { return Database.DatabaseProvider.GetInsertStoredProcedureName(StoredProcedureBaseName); }
+            get { return Database.Provider.GetInsertStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -474,7 +474,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string UpdateStoredProcedureName
         {
-            get { return Database.DatabaseProvider.GetUpdateStoredProcedureName(StoredProcedureBaseName); }
+            get { return Database.Provider.GetUpdateStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string DeleteStoredProcedureName
         {
-            get { return Database.DatabaseProvider.GetDeleteStoredProcedureName(StoredProcedureBaseName); }
+            get { return Database.Provider.GetDeleteStoredProcedureName(StoredProcedureBaseName); }
         }
         
         /// <summary>
