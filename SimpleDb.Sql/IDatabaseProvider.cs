@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
  */
 
 namespace SimpleDb.Sql
-{    
+{
     using System.Data;
     using System.Data.Common;
 
@@ -31,8 +31,14 @@ namespace SimpleDb.Sql
     /// <summary>
     /// Defines an interface for a specific database implementation
     /// </summary>
-    public interface IDatabaseProvider: INamesProvider
+    public interface IDatabaseProvider
     {
+        /// <summary>
+        /// A INamesProvider instance used for data table and column names translations and generations.
+        /// </summary>
+        INamesProvider NamesProvider { get; }
+
+
         /// <summary>
         /// Extracts a database name from a connection string.
         /// </summary>
@@ -50,7 +56,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Returns a database parameter instance.
         /// </summary>
-        /// <param name="name">A parameter name.</param>
+        /// <param name="name">An untranslated parameter name.</param>
         /// <param name="value">A value or null.</param>
         /// <returns>A database parameter instance.</returns>
         DbParameter CreateDbParameter(string name, object value);
@@ -58,7 +64,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Returns a named integer database return parameter instance.
         /// </summary>
-        /// <param name="name">A parameter name.</param>
+        /// <param name="name">An untranslated parameter name.</param>
         /// <returns>A named integer database return parameter instance.</returns>
         DbParameter CreateReturnIntDbParameter(string name);
 

@@ -41,13 +41,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ABaseDatalayer.cs" />
+    <Compile Include="ABaseNamesProvider.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DatabaseConnection.cs" />
     <Compile Include="DataConsumer.cs" />
     <Compile Include="IDatabaseProvider.cs" />
     <Compile Include="IDataConsumer.cs" />
     <Compile Include="LookupDataLayer.cs" />
-    <Compile Include="MsSql\SqlDatabaseProvider.cs" />
+    <Compile Include="MsSql\NamesProvider.cs" />
+    <Compile Include="MsSql\DatabaseProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

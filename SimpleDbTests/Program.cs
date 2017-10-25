@@ -85,7 +85,7 @@ namespace SimpleDbTests
             MsSql.Datalayer.Initializer.InitializeLayers(
                 new SimpleDb.Sql.Database(
                     ConfigurationManager.ConnectionStrings["SIMPLEDB"].ConnectionString,
-                    new SqlDatabaseProvider()));
+                    new DatabaseProvider()));
 
             MsSqlLookupDataLayerTest();
             MsSqlLookupColumnNamesDatalayerTest();

@@ -81,8 +81,8 @@ namespace SimpleDb.Sql
 
             var baseName = TypeInstance.DatabaseTableName;
 
-            StoredProcedureBaseName = Database.Provider.GetStoredProcedureBaseName(baseName);
-            FunctionBaseName = Database.Provider.GetFunctionBaseName(baseName);
+            StoredProcedureBaseName = NamesProvider.GetStoredProcedureBaseName(baseName);
+            FunctionBaseName = NamesProvider.GetFunctionBaseName(baseName);
         }
 
         #endregion
@@ -94,6 +94,11 @@ namespace SimpleDb.Sql
         /// A Database instance used for all database operations.
         /// </summary>
         public Database Database { get; }
+        
+        /// <summary>
+        /// An INamesProvider instance used by this DALs database.
+        /// </summary>
+        public INamesProvider NamesProvider { get { return Database.Provider.NamesProvider; } }
 
         /// <summary>
         /// An instance of a T, used for reflection operations.
@@ -162,7 +167,7 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.Provider, res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, res);
 
             Database.ExecuteReader(
                 SelectStoredProcedureName,
@@ -199,7 +204,7 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.Provider, res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, res);
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -319,7 +324,7 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(Database.Provider, new List<T> { obj });
+            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, new List<T> { obj });
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -450,7 +455,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string SelectStoredProcedureName
         {
-            get { return Database.Provider.GetSelectStoredProcedureName(StoredProcedureBaseName); }
+            get { return NamesProvider.GetSelectStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -458,7 +463,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string SelectDetailsStoredProcedureName
         {
-            get { return Database.Provider.GetSelectDetailsStoredProcedureName(StoredProcedureBaseName); }
+            get { return NamesProvider.GetSelectDetailsStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -466,7 +471,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string InsertStoredProcedureName
         {
-            get { return Database.Provider.GetInsertStoredProcedureName(StoredProcedureBaseName); }
+            get { return NamesProvider.GetInsertStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -474,7 +479,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string UpdateStoredProcedureName
         {
-            get { return Database.Provider.GetUpdateStoredProcedureName(StoredProcedureBaseName); }
+            get { return NamesProvider.GetUpdateStoredProcedureName(StoredProcedureBaseName); }
         }
 
         /// <summary>
@@ -482,7 +487,7 @@ namespace SimpleDb.Sql
         /// </summary>
         private string DeleteStoredProcedureName
         {
-            get { return Database.Provider.GetDeleteStoredProcedureName(StoredProcedureBaseName); }
+            get { return NamesProvider.GetDeleteStoredProcedureName(StoredProcedureBaseName); }
         }
         
         /// <summary>

@@ -79,10 +79,7 @@ namespace SimpleDb.Sql
         /// <param name="commandTimeout">An optional command timeout.</param>
         public Database(string connectionString, IDatabaseProvider databaseProvider, int commandTimeout = DefaultCommandTimeoutSeconds)
         {
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
+            if (string.IsNullOrEmpty(connectionString)) throw new ArgumentException("A connection string expected.", nameof(connectionString));
 
             ConnectionString = connectionString;
             Provider = databaseProvider ?? throw new ArgumentNullException(nameof(databaseProvider));
