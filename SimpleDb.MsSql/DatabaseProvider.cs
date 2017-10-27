@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Sql.MsSql
+namespace SimpleDb.MsSql
 {
     using System;
     using System.Data;
@@ -28,6 +28,7 @@ namespace SimpleDb.Sql.MsSql
     using System.Data.SqlClient;
 
     using SimpleDb.Shared;
+    using SimpleDb.Sql;
 
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace SimpleDb.Sql.MsSql
         /// <param name="namesProvider">An INamesProvider instance or null.</param>
         public DatabaseProvider(INamesProvider namesProvider = null)
         {
-            NamesProvider = namesProvider ?? new MsSql.NamesProvider();
+            NamesProvider = namesProvider ?? new NamesProvider();
         }
 
 

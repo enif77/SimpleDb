@@ -84,6 +84,10 @@
       <Project>{02415c98-b92e-4852-b224-a73b9902f4a3}</Project>
       <Name>SimpleDb.Files</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.MsSql\SimpleDb.MsSql.csproj">
+      <Project>{0dd21056-8e5d-45e2-8b71-3c9e6157b8e1}</Project>
+      <Name>SimpleDb.MsSql</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
       <Name>SimpleDb.Shared</Name>

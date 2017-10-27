@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}</ProjectGuid>
+    <ProjectGuid>{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleDb.Sql</RootNamespace>
-    <AssemblyName>SimpleDb.Sql</AssemblyName>
+    <RootNamespace>SimpleDb.MsSql</RootNamespace>
+    <AssemblyName>SimpleDb.MsSql</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,20 +40,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ABaseDatalayer.cs" />
-    <Compile Include="ABaseNamesProvider.cs" />
-    <Compile Include="Database.cs" />
-    <Compile Include="DatabaseConnection.cs" />
-    <Compile Include="DataConsumer.cs" />
-    <Compile Include="IDatabaseProvider.cs" />
-    <Compile Include="IDataConsumer.cs" />
-    <Compile Include="LookupDataLayer.cs" />
+    <Compile Include="DatabaseProvider.cs" />
+    <Compile Include="NamesProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
       <Name>SimpleDb.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.Sql\SimpleDb.Sql.csproj">
+      <Project>{22684e08-ec5b-482e-90e3-d3a7c4fccf3a}</Project>
+      <Name>SimpleDb.Sql</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

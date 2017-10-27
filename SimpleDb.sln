@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A2D2514-458A-4E9D-AC96-55A86753D95A}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Files", "SimpleDb.Files\SimpleDb.Files.csproj", "{02415C98-B92E-4852-B224-A73B9902F4A3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Sql", "SimpleDb.Sql\SimpleDb.Sql.csproj", "{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.MsSql", "SimpleDb.MsSql\SimpleDb.MsSql.csproj", "{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22684E08-EC5B-482E-90E3-D3A7C4FCCF3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

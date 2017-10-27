@@ -20,8 +20,11 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Sql.MsSql
+namespace SimpleDb.MsSql
 {
+    using SimpleDb.Sql;
+
+
     public class NamesProvider : ABaseNamesProvider
     {
         // Does nothing special... :-)

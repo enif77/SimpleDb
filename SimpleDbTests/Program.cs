@@ -31,7 +31,7 @@ namespace SimpleDbTests
 
     using SimpleDbTests.Files.Datalayer;
     using SimpleDbTests.MsSql.Datalayer;
-    using SimpleDb.Sql.MsSql;
+    using SimpleDb.MsSql;
 
     static class Program
     {
