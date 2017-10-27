@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -34,7 +34,7 @@ GO
 CREATE PROC [dbo].[spLookupColumnNames_SelectList]
 AS
 BEGIN
-	SELECT * FROM LookupColumnNames
+    SELECT * FROM LookupColumnNames
 END
 
 GO
@@ -42,11 +42,11 @@ GO
 
 CREATE PROC [dbo].[spLookupColumnNames_SelectDetails] 
 (
-	@Id	INT
+    @Id	INT
 )
 AS
 BEGIN
-	SELECT * FROM LookupColumnNames WHERE Id = @Id
+    SELECT * FROM LookupColumnNames WHERE Id = @Id
 END
 
 GO
@@ -54,13 +54,13 @@ GO
 
 CREATE PROC [dbo].[spLookupColumnNames_Insert] 
 ( 
- 	  @RenamedName NVARCHAR(3)
-	, @Description NVARCHAR(max)	= ''
+      @RenamedName NVARCHAR(3)
+    , @Description NVARCHAR(max)	= ''
 ) 
 AS
 BEGIN
-	INSERT INTO LookupColumnNames (RenamedName, Description) VALUES (@RenamedName, @Description)
-	SELECT SCOPE_IDENTITY() [Id]
+    INSERT INTO LookupColumnNames (RenamedName, Description) VALUES (@RenamedName, @Description)
+    SELECT SCOPE_IDENTITY() [Id]
 END
 
 GO
@@ -68,12 +68,12 @@ GO
 
 CREATE PROC [dbo].[spLookupColumnNames_Delete] 
 (
-	@Id	INT
+    @Id	INT
 )
 AS
 BEGIN
-	DELETE FROM LookupColumnNames WHERE Id = @Id
-	SELECT @@ROWCOUNT [RowCount]
+    DELETE FROM LookupColumnNames WHERE Id = @Id
+    SELECT @@ROWCOUNT [RowCount]
 END
 
 GO
@@ -81,16 +81,16 @@ GO
 
 CREATE FUNCTION [dbo].[fnLookupColumnNames_GetIdByName]
 (
-	@Name	nvarchar(3)
+    @Name	nvarchar(3)
 )
 RETURNS	int
 AS
 BEGIN
-	DECLARE	@Id	int
-	
-	SELECT @Id = [Id] FROM LookupColumnNames WHERE RenamedName = @Name
+    DECLARE	@Id	int
+    
+    SELECT @Id = [Id] FROM LookupColumnNames WHERE RenamedName = @Name
 
-	RETURN	@Id
+    RETURN	@Id
 END
 
 GO

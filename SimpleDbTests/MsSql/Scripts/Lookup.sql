@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -34,7 +34,7 @@ GO
 CREATE PROC [dbo].[spLookup_SelectList]
 AS
 BEGIN
-	SELECT * FROM Lookup
+    SELECT * FROM Lookup
 END
 
 GO
@@ -42,11 +42,11 @@ GO
 
 CREATE PROC [dbo].[spLookup_SelectDetails] 
 (
-	@Id	INT
+    @Id	INT
 )
 AS
 BEGIN
-	SELECT * FROM Lookup WHERE Id = @Id
+    SELECT * FROM Lookup WHERE Id = @Id
 END
 
 GO
@@ -54,14 +54,14 @@ GO
 
 CREATE PROC [dbo].[spLookup_Insert] 
 ( 
- 	  @Name NVARCHAR(3)
-	, @Description NVARCHAR(max)	= ''
+      @Name NVARCHAR(3)
+    , @Description NVARCHAR(max)	= ''
 ) 
 AS
 BEGIN
-	INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description)
+    INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description)
 
-	SELECT SCOPE_IDENTITY() [Id]
+    SELECT SCOPE_IDENTITY() [Id]
 END
 
 GO
@@ -69,13 +69,13 @@ GO
 
 CREATE PROC [dbo].[spLookup_Delete] 
 (
-	@Id	INT
+    @Id	INT
 )
 AS
 BEGIN
-	DELETE FROM Lookup WHERE Id = @Id
+    DELETE FROM Lookup WHERE Id = @Id
 
-	SELECT @@ROWCOUNT [RowCount]
+    SELECT @@ROWCOUNT [RowCount]
 END
 
 GO
@@ -83,16 +83,16 @@ GO
 
 CREATE FUNCTION [dbo].[fnLookup_GetIdByName]
 (
-	@Name	nvarchar(3)
+    @Name	nvarchar(3)
 )
 RETURNS	int
 AS
 BEGIN
-	DECLARE	@Id	int
-	
-	SELECT @Id = [Id] FROM Lookup WHERE Name = @Name
+    DECLARE	@Id	int
+    
+    SELECT @Id = [Id] FROM Lookup WHERE Name = @Name
 
-	RETURN	@Id
+    RETURN	@Id
 END
 
 GO
@@ -101,12 +101,12 @@ GO
 CREATE PROCEDURE [dbo].[spLookup_DeleteAll]
 AS
 BEGIN
-	SET NOCOUNT ON
+    SET NOCOUNT ON
 
-	TRUNCATE TABLE	[dbo].[Lookup]
+    TRUNCATE TABLE	[dbo].[Lookup]
 
-	DBCC CHECKIDENT(Lookup, RESEED, 0) WITH NO_INFOMSGS
-	
+    DBCC CHECKIDENT(Lookup, RESEED, 0) WITH NO_INFOMSGS
+    
 END
 
 GO

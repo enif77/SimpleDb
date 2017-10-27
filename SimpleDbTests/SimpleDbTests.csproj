@@ -110,6 +110,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>SimpleDatabase.mdf</DependentUpon>
     </Content>
+    <Content Include="MsSql\Scripts\CreateDatabase.sql" />
     <Content Include="MsSql\Scripts\LookupColumnNames.sql" />
     <Content Include="MsSql\Scripts\Lookup.sql" />
   </ItemGroup>
