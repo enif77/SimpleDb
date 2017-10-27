@@ -1,0 +1,123 @@
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
+ 
+SimpleDbTests is available under the zlib license:
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+ 
+ */
+
+CREATE TABLE lookup (
+     id INT(11) NOT NULL AUTO_INCREMENT,
+     name NVARCHAR(3) NOT NULL,
+     description NVARCHAR(1024) NOT NULL DEFAULT '',
+     PRIMARY KEY (id),
+     CONSTRAINT UNIQUE NONCLUSTERED (name)
+);
+
+GO
+
+CREATE PROCEDURE `sp_lookup_select_list`()
+LANGUAGE SQL
+DETERMINISTIC
+READS SQL DATA
+SQL SECURITY INVOKER
+COMMENT 'Selects all data from the lookup table.'
+BEGIN
+SELECT * FROM lookup;
+END
+
+GO
+
+CREATE PROCEDURE `sp_lookup_select_details`(
+    IN `id` INT
+)
+LANGUAGE SQL
+DETERMINISTIC
+READS SQL DATA
+SQL SECURITY INVOKER
+COMMENT 'Selects data for a single instance from the lookup table.'
+BEGIN
+SELECT * FROM lookup WHERE id = @id;
+END
+
+GO
+
+CREATE PROCEDURE `sp_lookup_insert`(
+    IN `name` VARCHAR(3),
+    IN `description` VARCHAR(1024)
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY INVOKER
+COMMENT 'Inserts a single instance to the lookup table.'
+BEGIN
+INSERT INTO lookup (name, description) VALUES (@name, @description);
+SELECT SCOPE_IDENTITY() id;
+END
+
+GO
+
+CREATE PROCEDURE `sp_lookup_delete`(
+    IN `id` INT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+MODIFIES SQL DATA
+SQL SECURITY INVOKER
+COMMENT ''
+BEGIN
+DELETE FROM lookup WHERE id = @id;
+SELECT ROW_COUNT() AS row_count;
+END
+
+GO
+
+CREATE FUNCTION `fn_lookup_get_id_by_name`(
+	`p_name` VARCHAR(3)
+
+)
+RETURNS int(11)
+LANGUAGE SQL
+DETERMINISTIC
+READS SQL DATA
+SQL SECURITY INVOKER
+COMMENT ''
+BEGIN
+DECLARE found_id INT;
+SET found_id = 0;
+SELECT id INTO found_id FROM lookup WHERE name = p_name;
+RETURN found_id;
+END
+
+
+GO
+
+CREATE PROCEDURE `sp_lookup_delete_all`()
+LANGUAGE SQL
+NOT DETERMINISTIC
+MODIFIES SQL DATA
+SQL SECURITY INVOKER
+COMMENT ''
+BEGIN
+SET foreign_key_checks=0;
+TRUNCATE TABLE	lookup;
+SET foreign_key_checks=1;
+-- DBCC CHECKIDENT(lookup, RESEED, 0) WITH NO_INFOMSGS;
+END
+
+GO

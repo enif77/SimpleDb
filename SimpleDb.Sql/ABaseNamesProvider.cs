@@ -83,13 +83,14 @@ namespace SimpleDb.Sql
             return storedProcedureBaseName + "_Delete";
         }
 
+        /// <inheritdoc />
         public virtual string GetGetIdByNameFunctionName(string functionBaseName)
         {
             return functionBaseName + "_GetIdByName";
         }
 
         /// <inheritdoc />
-        public string GetParameterName(string columnName)
+        public virtual string GetParameterName(string columnName)
         {
             return "@" + TranslateColumnName(columnName);
         }

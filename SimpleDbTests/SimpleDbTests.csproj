@@ -70,6 +70,9 @@
     <Compile Include="MsSql\Datalayer\Initializer.cs" />
     <Compile Include="MsSql\Datalayer\LookupColumnNamesDatalayer.cs" />
     <Compile Include="MsSql\Datalayer\LookupDatalayer.cs" />
+    <Compile Include="MySql\Datalayer\Initializer.cs" />
+    <Compile Include="MySql\Datalayer\LookupColumnNamesDatalayer.cs" />
+    <Compile Include="MySql\Datalayer\LookupDatalayer.cs" />
     <Compile Include="Shared\DataObjects\LookupColumnNames.cs" />
     <Compile Include="Shared\DataObjects\Lookup.cs" />
     <Compile Include="Program.cs" />
@@ -87,6 +90,10 @@
     <ProjectReference Include="..\SimpleDb.MsSql\SimpleDb.MsSql.csproj">
       <Project>{0dd21056-8e5d-45e2-8b71-3c9e6157b8e1}</Project>
       <Name>SimpleDb.MsSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.MySql\SimpleDb.MySql.csproj">
+      <Project>{79eed3e2-411a-4506-9384-68153ce84c10}</Project>
+      <Name>SimpleDb.MySql</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
@@ -117,6 +124,7 @@
     <Content Include="MsSql\Scripts\CreateDatabase.sql" />
     <Content Include="MsSql\Scripts\LookupColumnNames.sql" />
     <Content Include="MsSql\Scripts\Lookup.sql" />
+    <Content Include="MySql\Scripts\lookup.mysql.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">

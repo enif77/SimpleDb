@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Sql", "SimpleDb.Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.MsSql", "SimpleDb.MsSql\SimpleDb.MsSql.csproj", "{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.MySql", "SimpleDb.MySql\SimpleDb.MySql.csproj", "{79EED3E2-411A-4506-9384-68153CE84C10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79EED3E2-411A-4506-9384-68153CE84C10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79EED3E2-411A-4506-9384-68153CE84C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79EED3E2-411A-4506-9384-68153CE84C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79EED3E2-411A-4506-9384-68153CE84C10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDb is available under the zlib license:
+SimpleDbTests is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -20,16 +20,29 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.MsSql
+namespace SimpleDbTests.MySql.Datalayer
 {
-    using SimpleDb.Sql;
+    using System;
 
+    using Injektor;
+    using SimpleDb.Sql;
+    
 
     /// <summary>
-    /// Default names provider for the MsSQL database implementation.
+    /// Global class for registering and initializing data layers.
     /// </summary>
-    public class NamesProvider : ABaseNamesProvider
+    public static class Initializer
     {
-        // Does nothing special... :-)
+        /// <summary>
+        /// Initializes and registers all data layers.
+        /// </summary>
+        /// <param name="database"></param>
+        public static void InitializeLayers(Database database)
+        {
+            if (database == null) throw new ArgumentNullException(nameof(database));
+
+            Registry.RegisterInstance(new LookupDataLayer(database));
+            Registry.RegisterInstance(new LookupColumnNamesDataLayer(database));
+        }
     }
 }

@@ -1,6 +1,6 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
-SimpleDb is available under the zlib license:
+SimpleDbTests is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -20,16 +20,18 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.MsSql
+namespace SimpleDbTests.MySql.Datalayer
 {
     using SimpleDb.Sql;
 
+    using SimpleDbTests.Shared.DataObjects;
 
-    /// <summary>
-    /// Default names provider for the MsSQL database implementation.
-    /// </summary>
-    public class NamesProvider : ABaseNamesProvider
-    {
-        // Does nothing special... :-)
+
+    public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames>
+    {                                      
+        public LookupColumnNamesDataLayer(Database database)
+            : base(database)
+        {
+        }
     }
 }

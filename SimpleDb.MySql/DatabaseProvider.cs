@@ -20,12 +20,13 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.MsSql
+using MySql.Data.MySqlClient;
+
+namespace SimpleDb.MySql
 {
     using System;
     using System.Data;
     using System.Data.Common;
-    using System.Data.SqlClient;
 
     using SimpleDb.Shared;
     using SimpleDb.Sql;
@@ -55,27 +56,27 @@ namespace SimpleDb.MsSql
         /// <inheritdoc />
         public string GetDatabaseName(string connectionString)
         {
-            var builder = new SqlConnectionStringBuilder(connectionString);
+            var builder = new MySqlConnectionStringBuilder(connectionString);
 
-            return string.Format("{0}\\{1}", builder.DataSource, builder.InitialCatalog);
+            return string.Format("{0}\\{1}", builder.Server, builder.Database);
         }
 
         /// <inheritdoc />
         public IDbConnection CreateDbConnection(string connectionString)
         {
-            return new SqlConnection(connectionString);
+            return new MySqlConnection(connectionString);
         }
 
         /// <inheritdoc />
         public DbParameter CreateDbParameter(string name, object value)
         {
-            return new SqlParameter(NamesProvider.GetParameterName(name), value ?? DBNull.Value);
+            return new MySqlParameter(NamesProvider.GetParameterName(name), value ?? DBNull.Value);
         }
 
         /// <inheritdoc />
         public DbParameter CreateReturnIntDbParameter(string name)
         {
-            return new SqlParameter(NamesProvider.GetParameterName(name), SqlDbType.Int)
+            return new MySqlParameter(NamesProvider.GetParameterName(name), MySqlDbType.Int32)
             {
                 Direction = ParameterDirection.ReturnValue
             };
@@ -84,10 +85,10 @@ namespace SimpleDb.MsSql
         /// <inheritdoc />
         public IDbCommand CreateDbCommand(CommandType commandType, int commandTimeout, string sql, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
         {
-            var command = new SqlCommand(sql, connection as SqlConnection)
+            var command = new MySqlCommand(sql, connection as MySqlConnection)
             {
                 CommandType = commandType,
-                Transaction = transaction as SqlTransaction,
+                Transaction = transaction as MySqlTransaction,
                 CommandTimeout = Math.Max(commandTimeout, connection.ConnectionTimeout)
             };
 

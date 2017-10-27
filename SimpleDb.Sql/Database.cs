@@ -39,7 +39,7 @@ namespace SimpleDb.Sql
         #region constants
 
         private const int DefaultCommandTimeoutSeconds = 60;
-        private const string ReturnParameterName = "@Result";
+        private const string ReturnParameterName = "Result";
 
         #endregion
 
@@ -170,19 +170,18 @@ namespace SimpleDb.Sql
 
             try
             {
-                DbParameter errorCodeParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
                     {
-                        using (var command = CreateCommand(connection.Connection, storedProcedure, parameters, null, out errorCodeParameter))
+                        using (var command = CreateCommand(connection.Connection, storedProcedure, parameters, null))
                         {
                             return command.ExecuteNonQuery();
                         }
                     }
                 }
 
-                using (var command = CreateCommand(transaction.Connection, storedProcedure, parameters, transaction, out errorCodeParameter))
+                using (var command = CreateCommand(transaction.Connection, storedProcedure, parameters, transaction))
                 {
                     return command.ExecuteNonQuery();
                 }
@@ -207,12 +206,11 @@ namespace SimpleDb.Sql
 
             try
             {
-                DbParameter errorCodeParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
                     {
-                        using (var command = CreateCommand(connection.Connection, storedProcedure, parameters, null, out errorCodeParameter))
+                        using (var command = CreateCommand(connection.Connection, storedProcedure, parameters, null))
                         {
                             ReadData(command, dataConsumer);
                         }
@@ -220,7 +218,7 @@ namespace SimpleDb.Sql
                 }
                 else
                 {
-                    using (var command = CreateCommand(transaction.Connection, storedProcedure, parameters, transaction, out errorCodeParameter))
+                    using (var command = CreateCommand(transaction.Connection, storedProcedure, parameters, transaction))
                     {
                         ReadData(command, dataConsumer);
                     }
@@ -349,31 +347,30 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Executes scalar stored procedure which returns a value
+        /// Executes scalar stored procedure which returns a value.
         /// </summary>
-        /// <param name="storedProcedure">Name of stored procedure in database</param>
-        /// <param name="parameters">Array of SQL parameters</param>
-        /// <param name="transaction">SQL transaction object</param>
-        /// <returns>Scalar value returned from stored procedure</returns>
+        /// <param name="storedProcedure">Name of stored procedure in database.</param>
+        /// <param name="parameters">Array of SQL parameters.</param>
+        /// <param name="transaction">SQL transaction object.</param>
+        /// <returns>Scalar value returned from stored procedure.</returns>
         public object ExecuteScalarObject(string storedProcedure, DbParameter[] parameters, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(storedProcedure)) throw new ArgumentException("A stored procedure name expected.", nameof(storedProcedure));
 
             try
             {
-                DbParameter errorCodeParameter;
                 if (transaction == null)
                 {
                     using (var connection = CreateConnection())
                     {
-                        using (var command = CreateCommand(connection.Connection, storedProcedure, parameters, null, out errorCodeParameter))
+                        using (var command = CreateCommand(connection.Connection, storedProcedure, parameters, null))
                         {
                             return command.ExecuteScalar();
                         }
                     }
                 }
 
-                using (var command = CreateCommand(transaction.Connection, storedProcedure, parameters, transaction, out errorCodeParameter))
+                using (var command = CreateCommand(transaction.Connection, storedProcedure, parameters, transaction))
                 {
                     return command.ExecuteScalar();
                 }
@@ -385,13 +382,13 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Executes scalar function with parameters
+        /// Executes scalar function with parameters.
         /// </summary>
-        /// <typeparam name="T">Type of result</typeparam>
-        /// <param name="function">Function name</param>
-        /// <param name="parameters">Array of parameters</param>
-        /// <param name="transaction">SQL transaction object</param>
-        /// <returns>Result of the function</returns>
+        /// <typeparam name="T">Type of result.</typeparam>
+        /// <param name="function">Function name.</param>
+        /// <param name="parameters">Array of parameters.</param>
+        /// <param name="transaction">SQL transaction object.</param>
+        /// <returns>Result of the function.</returns>
         public T ExecuteScalarFunction<T>(string function, DbParameter[] parameters, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", nameof(function));
@@ -426,7 +423,6 @@ namespace SimpleDb.Sql
                 throw new DatabaseException(ex.Message, ex);
             }
         }
-
 
         /// <summary>
         /// Static helper method for converting values from SqlDataReader
@@ -530,12 +526,25 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Creates SQL command for database.
         /// </summary>
-        /// <param name="connection">SqlConnection instance</param>
-        /// <param name="storedProcedure">Name of stored procedure</param>
-        /// <param name="parameters">Array of SQL parameters</param>
-        /// <param name="transaction">SqlTransaction instance</param>
-        /// <param name="errorCodeParameter">Out parameter representing error code</param>
-        /// <returns>Instance of created SqlCommand</returns>
+        /// <param name="connection">SqlConnection instance.</param>
+        /// <param name="storedProcedure">A name of a stored procedure.</param>
+        /// <param name="parameters">Array of parameters.</param>
+        /// <param name="transaction">IDbTransaction instance.</param>
+        /// <returns>Instance of created IDbCommand.</returns>
+        private IDbCommand CreateCommand(IDbConnection connection, string storedProcedure, DbParameter[] parameters, IDbTransaction transaction)
+        {
+            return CreateStoredProcedureCommand(storedProcedure, parameters, connection, transaction);
+        }
+
+        /// <summary>
+        /// Creates SQL command for database.
+        /// </summary>
+        /// <param name="connection">SqlConnection instance.</param>
+        /// <param name="storedProcedure">A name of a stored procedure.</param>
+        /// <param name="parameters">Array of parameters.</param>
+        /// <param name="transaction">IDbTransaction instance.</param>
+        /// <param name="errorCodeParameter">Out parameter representing error code.</param>
+        /// <returns>Instance of created IDbCommand.</returns>
         private IDbCommand CreateCommand(IDbConnection connection, string storedProcedure, DbParameter[] parameters, IDbTransaction transaction, out DbParameter errorCodeParameter)
         {
             var command = CreateStoredProcedureCommand(storedProcedure, parameters, connection, transaction);
@@ -544,7 +553,6 @@ namespace SimpleDb.Sql
 
             return command;
         }
-
 
         /// <summary>
         /// Creates a text SQL command.

@@ -39,7 +39,7 @@ namespace SimpleDbTests.MsSql.Datalayer
         /// <param name="database"></param>
         public static void InitializeLayers(Database database)
         {
-            if (database == null) throw new ArgumentNullException("database");
+            if (database == null) throw new ArgumentNullException(nameof(database));
 
             Registry.RegisterInstance(new LookupDataLayer(database));
             Registry.RegisterInstance(new LookupColumnNamesDataLayer(database));
