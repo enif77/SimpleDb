@@ -27,7 +27,7 @@ namespace SimpleDbTests.MsSql.Datalayer
     using SimpleDbTests.Shared.DataObjects;
 
 
-    public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames>
+    public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames, int>
     {                                      
         public LookupColumnNamesDataLayer(Database database)
             : base(database)

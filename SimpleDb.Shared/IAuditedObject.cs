@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -28,7 +28,8 @@ namespace SimpleDb.Shared
     /// <summary>
     /// Base interface for an audited object.
     /// </summary>
-    public interface IAuditedObject : IEntity
+    /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
+    public interface IAuditedObject<TId> : IEntity<TId>
     {
         /// <summary>
         /// The last update date.

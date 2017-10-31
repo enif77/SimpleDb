@@ -30,7 +30,8 @@ namespace SimpleDb.Shared
     /// Helper class for creating empty/null values used in select controls in UI.
     /// </summary>
     /// <typeparam name="T">Type of ADataObject instance.</typeparam>
-    public static class EmptyValue<T> where T : class, ILookup, new()
+    /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
+    public static class EmptyValue<T, TId> where T : class, ILookup<TId>, new()
     {
         #region fields
 

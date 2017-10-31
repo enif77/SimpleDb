@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -25,7 +25,8 @@ namespace SimpleDb.Shared
     /// <summary>
     /// An interface describing an lookup.
     /// </summary>
-    public interface ILookup : IEntity
+    /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
+    public interface ILookup<TId> : IEntity<TId>
     {
         /// <summary>
         /// A name.

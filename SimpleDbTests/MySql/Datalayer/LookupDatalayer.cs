@@ -29,7 +29,7 @@ namespace SimpleDbTests.MySql.Datalayer
     using SimpleDbTests.Shared.DataObjects;
 
 
-    public class LookupDataLayer : LookupDataLayer<Lookup>
+    public class LookupDataLayer : LookupDataLayer<Lookup, int>
     {
         public LookupDataLayer(Database database)
             : base(database)

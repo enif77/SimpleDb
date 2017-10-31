@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -22,47 +22,20 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Shared
 {
-    using System.Globalization;
-
-
     /// <summary>
     /// A base class for a business object.
     /// </summary>
-    public abstract class AIdDataObject : ADataObject, IEntity
+    /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
+    public abstract class AIdDataObject<TId> : ADataObject, IEntity<TId>
     {
-        #region fields
-
-        private int _id;
-
-        #endregion
-
-
         #region properties
 
-        [DbColumn("Id", 1, DbColumnAttribute.ColumnOptions.Id)]
+        /// <summary>
+        /// A unique entity identifier.
+        /// </summary>
+        [DbColumn(DbColumnAttribute.ColumnOptions.Id)]
         [DbColumnTag("Id")]
-        public virtual int Id
-        {
-            get { return _id; }
-            set
-            {
-                if (_id != value)
-                {
-                    _id = value;
-                    OnPropertyChanged("Id");
-                }
-            }
-        }
-
-        #endregion
-
-
-        #region public methods
-
-        public override string ToString()
-        {
-            return Id.ToString(CultureInfo.InvariantCulture);
-        }
+        public virtual TId Id { get; set; }
 
         #endregion
     }

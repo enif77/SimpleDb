@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -28,20 +28,12 @@ namespace SimpleDb.Shared
     /// <summary>
     /// A base class for a business object.
     /// </summary>
-    public abstract class ALookupDataObject<T> : AIdDataObject, ILookup, ICloneable, IUpdatable<T> where T : class, ILookup, new()
+    public abstract class ALookupDataObject<T, TId> : AIdDataObject<TId>, ILookup<TId>, ICloneable, IUpdatable<T> where T : class, ILookup<TId>, new()
     {
         #region public fields
 
-        public static readonly T RequiredValue = EmptyValue<T>.Required;
-        public static readonly T OptionalValue = EmptyValue<T>.Optional;
-
-        #endregion
-
-
-        #region fields
-
-        private string _name;
-        private string _description;
+        public static readonly T RequiredValue = EmptyValue<T, TId>.Required;
+        public static readonly T OptionalValue = EmptyValue<T, TId>.Optional;
 
         #endregion
 
@@ -53,40 +45,18 @@ namespace SimpleDb.Shared
         /// User can change this column name by overriding this property in his own ALookupDataObject implementation.
         /// The DbColumnTag is required by the LookupDataLayer. User should not change it.
         /// </summary>
-        [DbColumn("Name", Int32.MaxValue, DbColumnAttribute.ColumnOptions.Nonempty)]
+        [DbColumn(null, Int32.MaxValue, DbColumnAttribute.ColumnOptions.Nonempty)]
         [DbColumnTag("Name")]
-        public virtual string Name
-        {
-            get { return _name; }
-            set
-            {
-                if (_name != value)
-                {
-                    _name = value;
-                    OnPropertyChanged("Name");
-                }
-            }
-        }
+        public virtual string Name { get; set; }
 
         /// <summary>
         /// The Description DB column.
         /// User can change this column name by overriding this property in his own ALookupDataObject implementation.
         /// The DbColumnTag is not required by the LookupDataLayer. User can change it.
         /// </summary>
-        [DbColumn("Description", Int32.MaxValue)]
+        [DbColumn(null, Int32.MaxValue)]
         [DbColumnTag("Description")]
-        public virtual string Description
-        {
-            get { return _description; }
-            set
-            {
-                if (_description != value)
-                {
-                    _description = value;
-                    OnPropertyChanged("Description");
-                }
-            }
-        }
+        public virtual string Description { get; set; }
 
         #endregion
 
@@ -103,9 +73,9 @@ namespace SimpleDb.Shared
         {
             return new T()
             {
-                Id = this.Id,
-                Name = this.Name,
-                Description = this.Description
+                Id = Id,
+                Name = Name,
+                Description = Description
             };
         }
 
@@ -116,7 +86,9 @@ namespace SimpleDb.Shared
 
         public virtual bool NeedsUpdate(T source)
         {
-            if (Id != source.Id) return true;
+            // TODO: How to check Id?
+            //if (Id != source.Id) return true;
+
             if (Name != source.Name) return true;
             if (Description != source.Description) return true;
 
@@ -126,7 +98,9 @@ namespace SimpleDb.Shared
 
         public virtual void Update(T source)
         {
-            Id = source.Id;
+            // TODO: Id is never updated.
+            //Id = source.Id;
+
             Name = source.Name;
             Description = source.Description;
         }

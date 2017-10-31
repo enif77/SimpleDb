@@ -29,7 +29,7 @@ namespace SimpleDb.Files
     using SimpleDb.Shared;
 
                                       
-    public class LookupDataLayer<T> : ABaseDatalayer<T> where T : AIdDataObject, ILookup, new()
+    public class LookupDataLayer<T> : ABaseDatalayer<T> where T : AIdDataObject<int>, ILookup<int>, new()
     {
         /// <summary>
         /// Constructor.

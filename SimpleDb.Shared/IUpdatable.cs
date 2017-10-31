@@ -26,7 +26,7 @@ namespace SimpleDb.Shared
     /// An interface, that allows an object to be updated.
     /// </summary>
     /// <typeparam name="T">A type.</typeparam>
-    public interface IUpdatable<in T>
+    public interface IUpdatable<in T> where T : class
     {
         /// <summary>
         /// Checks, if this instance is the same as the source instance, or if it needs to be updated to match the source instance.

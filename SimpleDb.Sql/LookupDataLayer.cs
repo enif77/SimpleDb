@@ -29,7 +29,7 @@ namespace SimpleDb.Sql
     using SimpleDb.Shared;
 
 
-    public class LookupDataLayer<T> : ABaseDatalayer<T> where T : AIdDataObject, ILookup, new()
+    public class LookupDataLayer<T, TId> : ABaseDatalayer<T> where T : AIdDataObject<TId>, ILookup<TId>, new()
     {
         /// <summary>
         /// If true, lookups are cached in the memory.

@@ -125,6 +125,14 @@ namespace SimpleDb.Shared
             }
         }
 
+        /// <summary>
+        /// A constructor.
+        /// </summary>
+        /// <param name="options">Column options.</param>
+        public DbColumnAttribute(ColumnOptions options = ColumnOptions.None)
+            : this(null, Int32.MaxValue, options)
+        {
+        }
 
         /// <summary>
         /// A constructor.

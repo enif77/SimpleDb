@@ -24,7 +24,6 @@ namespace SimpleDb.Shared
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Linq;
     using System.Reflection;
 
@@ -32,7 +31,7 @@ namespace SimpleDb.Shared
     /// <summary>
     /// A base class for a business object.
     /// </summary>
-    public abstract class ADataObject : IValidatable, INotifyPropertyChanged
+    public abstract class ADataObject : IValidatable
     {
         #region properties
         
@@ -183,26 +182,7 @@ namespace SimpleDb.Shared
         #endregion
 
 
-        #region events
-
-        /// <summary>
-        /// Event for INotifyPropertyChanged interface
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-        
-        #endregion
-
-
         #region private
-
-        /// <summary>
-        /// Invoker for PropertyChanged event
-        /// </summary>
-        /// <param name="propertyName">Name of property</param>
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
 
         /// <summary>
         /// Checks, if nullability of a DbColumn matches the type of a property.

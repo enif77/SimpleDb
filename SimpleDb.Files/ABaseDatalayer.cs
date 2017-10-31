@@ -34,7 +34,7 @@ namespace SimpleDb.Files
     /// The base of all datalayers.
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
-    public abstract class ABaseDatalayer<T> where T : AIdDataObject, new()
+    public abstract class ABaseDatalayer<T> where T : AIdDataObject<int>, new()
     {
         #region fields
         
