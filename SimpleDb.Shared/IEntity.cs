@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -25,7 +25,7 @@ namespace SimpleDb.Shared
     /// <summary>
     /// An interface for identifiable objects.
     /// </summary>
-    public interface IId
+    public interface IEntity
     {
         /// <summary>
         /// An instance ID.

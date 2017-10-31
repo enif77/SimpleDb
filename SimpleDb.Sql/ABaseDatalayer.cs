@@ -227,7 +227,7 @@ namespace SimpleDb.Sql
 
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            var iid = obj as IId;
+            var iid = obj as IEntity;
             if (iid == null)
             {
                 OperationAllowed(operation);
@@ -295,7 +295,7 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Delete);
 
-            var iid = TypeInstance as IId;
+            var iid = TypeInstance as IEntity;
             if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
             Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(iid.Id), transaction);
@@ -319,7 +319,7 @@ namespace SimpleDb.Sql
         /// <param name="transaction">An optional SQL transaction.</param>
         public virtual void Reload(T obj, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            var iid = obj as IId;
+            var iid = obj as IEntity;
             if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
             OperationAllowed(DatabaseOperation.Select);
@@ -353,7 +353,7 @@ namespace SimpleDb.Sql
         /// <returns>A list of SqlParameters.</returns>
         protected DbParameter[] CreateInsertParameters(ADataObject instance)
         {
-            return CreateInsertOrUpdateParameters(instance, instance is IId);  // TODO: Insert parameters for non IId objects?
+            return CreateInsertOrUpdateParameters(instance, instance is IEntity);  // TODO: Insert parameters for non IId objects?
         }
 
         /// <summary>
@@ -421,9 +421,9 @@ namespace SimpleDb.Sql
         /// <returns>A list of SqlParameters.</returns>
         protected virtual DbParameter[] CreateIdParameters(int id)
         {
-            if (TypeInstance is IId == false || TypeInstance.IsDatabaseTable == false)
+            if (TypeInstance is IEntity == false || TypeInstance.IsDatabaseTable == false)
             {
-                throw new Exception("Can not create an Id parameter from a non IId or non database object.");
+                throw new Exception("Can not create an Id parameter from a non IEntity or non database object.");
             }
 
             var paramList = new List<DbParameter>();

@@ -28,7 +28,7 @@ namespace SimpleDb.Shared
     /// <summary>
     /// A base class for a business object.
     /// </summary>
-    public abstract class AIdDataObject : ADataObject, IId
+    public abstract class AIdDataObject : ADataObject, IEntity
     {
         #region fields
 

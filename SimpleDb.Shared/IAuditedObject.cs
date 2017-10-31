@@ -28,7 +28,7 @@ namespace SimpleDb.Shared
     /// <summary>
     /// Base interface for an audited object.
     /// </summary>
-    public interface IAuditedObject : IId
+    public interface IAuditedObject : IEntity
     {
         /// <summary>
         /// The last update date.

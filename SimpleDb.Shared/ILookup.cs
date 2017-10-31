@@ -25,7 +25,7 @@ namespace SimpleDb.Shared
     /// <summary>
     /// An interface describing an lookup.
     /// </summary>
-    public interface ILookup : IId
+    public interface ILookup : IEntity
     {
         /// <summary>
         /// A name.
