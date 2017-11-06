@@ -41,16 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADataObject.cs" />
-    <Compile Include="AIdDataObject.cs" />
-    <Compile Include="ALookupDataObject.cs" />
+    <Compile Include="AEntity.cs" />
+    <Compile Include="AIdEntity.cs" />
+    <Compile Include="ALookupEntity.cs" />
     <Compile Include="DatabaseException.cs" />
     <Compile Include="DbColumnAttribute.cs" />
     <Compile Include="DbColumnSettings.cs" />
     <Compile Include="DbColumnTagAttribute.cs" />
     <Compile Include="DbTableAttribute.cs" />
     <Compile Include="EmptyValue.cs" />
-    <Compile Include="IAuditedObject.cs" />
+    <Compile Include="IAuditedEntity.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="ILookup.cs" />
     <Compile Include="INamesProvider.cs" />

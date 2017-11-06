@@ -29,7 +29,7 @@ namespace SimpleDb.Files
     using SimpleDb.Shared;
 
                                       
-    public class LookupDataLayer<T> : ABaseDatalayer<T> where T : AIdDataObject<int>, ILookup<int>, new()
+    public class LookupDataLayer<T> : ABaseDatalayer<T> where T : AIdEntity<int>, ILookup<int>, new()
     {
         /// <summary>
         /// Constructor.
@@ -41,7 +41,7 @@ namespace SimpleDb.Files
             _lookupCacheLock = new object();
             _lookupCache = new Dictionary<string, int>();
 
-            NamePropertyDbColumnName = ADataObject.GetDbColumnAttribute(TypeInstance.GetColumnsWithTag("Name").FirstOrDefault()).Name;
+            NamePropertyDbColumnName = AEntity.GetDbColumnAttribute(TypeInstance.GetColumnsWithTag("Name").FirstOrDefault()).Name;
         }
 
 

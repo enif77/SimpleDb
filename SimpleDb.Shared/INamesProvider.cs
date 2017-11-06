@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 namespace SimpleDb.Shared
 {
     /// <summary>
-    /// Privides data tables, columns and other names translations.
+    /// Provides data table, column and other names translation.
     /// </summary>
     public interface INamesProvider
     {

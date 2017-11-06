@@ -34,7 +34,7 @@ namespace SimpleDb.Files
     /// The base of all datalayers.
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
-    public abstract class ABaseDatalayer<T> where T : AIdDataObject<int>, new()
+    public abstract class ABaseDatalayer<T> where T : AIdEntity<int>, new()
     {
         #region fields
         
@@ -372,7 +372,7 @@ namespace SimpleDb.Files
             foreach (var column in obj.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = ADataObject.GetDbColumnAttribute(column);
+                var attribute = AEntity.GetDbColumnAttribute(column);
 
                 var columnType = column.PropertyType;
                 switch (columnType.Name)

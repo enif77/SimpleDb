@@ -29,7 +29,7 @@ namespace SimpleDb.Sql
     using SimpleDb.Shared;
 
 
-    public class LookupDataLayer<T, TId> : ABaseDatalayer<T> where T : AIdDataObject<TId>, ILookup<TId>, new()
+    public class LookupDataLayer<T, TId> : ABaseDatalayer<T> where T : AIdEntity<TId>, ILookup<TId>, new()
     {
         /// <summary>
         /// If true, lookups are cached in the memory.
@@ -46,7 +46,7 @@ namespace SimpleDb.Sql
             : base(database)
         {
             UseCache = false;
-            NamePropertyDbColumnName = ADataObject.GetDbColumnAttribute(TypeInstance.GetColumnsWithTag("Name").FirstOrDefault()).Name;
+            NamePropertyDbColumnName = AEntity.GetDbColumnAttribute(TypeInstance.GetColumnsWithTag("Name").FirstOrDefault()).Name;
         }
 
 

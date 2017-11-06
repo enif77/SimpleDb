@@ -22,23 +22,33 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Shared
 {
+    using System;
+
+
     /// <summary>
-    /// A base class for a business object.
+    /// Base interface for an audited entity.
     /// </summary>
     /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
-    public abstract class AIdDataObject<TId> : ADataObject, IEntity<TId>
+    public interface IAuditedEntity<TId> : IEntity<TId>
     {
-        #region properties
+        /// <summary>
+        /// The last update date.
+        /// </summary>
+        DateTime UpdateDate { get; set; }
 
         /// <summary>
-        /// A unique entity identifier.
+        /// The last use, who updated this object.
         /// </summary>
-        [DbColumn(DbColumnAttribute.ColumnOptions.Id)]
-        [DbColumnTag("Id")]
-        public virtual TId Id { get; set; }
+        string UpdatedBy { get; set; }
 
-        // TODO: Validate, that the Id column is not nullable.
+        /// <summary>
+        /// When was this object created.
+        /// </summary>
+        DateTime CreateDate { get; set; }
 
-        #endregion
+        /// <summary>
+        /// Who created this object.
+        /// </summary>
+        string CreatedBy { get; set; }
     }
 }

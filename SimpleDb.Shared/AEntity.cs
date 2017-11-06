@@ -29,14 +29,14 @@ namespace SimpleDb.Shared
 
 
     /// <summary>
-    /// A base class for a business object.
+    /// A base class for all entities.
     /// </summary>
-    public abstract class ADataObject : IValidatable
+    public abstract class AEntity : IValidatable
     {
         #region properties
         
         /// <summary>
-        /// Returns true, if this object has defined the DbTable attribute.
+        /// Returns true, if this entity has defined the DbTable attribute.
         /// </summary>
         /// <returns></returns>
         public bool IsDatabaseTable
@@ -58,7 +58,7 @@ namespace SimpleDb.Shared
                 var attribute = thisType.GetCustomAttribute(typeof(DbTableAttribute)) as DbTableAttribute;
                 if (attribute == null)
                 {
-                    throw new InvalidOperationException(string.Format("The '{0}' is not a datatable.", thisType.FullName));
+                    throw new InvalidOperationException(string.Format("The '{0}' has not the DBTable attribute set.", thisType.FullName));
                 }
                 
                 // The name of a table can be defined by the name of the class.

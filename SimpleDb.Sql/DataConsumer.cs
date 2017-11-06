@@ -34,7 +34,7 @@ namespace SimpleDb.Sql
     /// Consumes data from a SqlDataReader and construts T instances from them.
     /// </summary>
     /// <typeparam name="T">A constructed instnaces data type.</typeparam>
-    public class DataConsumer<T> : IDataConsumer<T> where T : ADataObject, new()
+    public class DataConsumer<T> : IDataConsumer<T> where T : AEntity, new()
     {
         /// <summary>
         /// Constructor.
@@ -93,7 +93,7 @@ namespace SimpleDb.Sql
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = ADataObject.GetDbColumnAttribute(column);
+                var attribute = AEntity.GetDbColumnAttribute(column);
 
                 // A column name can be specified by the name of a property itself.
                 var columnData = reader[Provider.TranslateColumnName(attribute.Name ?? column.Name)]; // Can throw IndexOutOfRangeException.

@@ -27,7 +27,7 @@ namespace SimpleDb.Files
     using SimpleDb.Shared;
 
 
-    public interface IDataConsumer<T> where T : ADataObject, new()
+    public interface IDataConsumer<T> where T : AEntity, new()
     {
         /// <summary>
         /// A list of T instances.

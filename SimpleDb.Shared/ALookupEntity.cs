@@ -26,9 +26,9 @@ namespace SimpleDb.Shared
 
 
     /// <summary>
-    /// A base class for a business object.
+    /// A base class for an entity with Id, Name and Description columns.
     /// </summary>
-    public abstract class ALookupDataObject<T, TId> : AIdDataObject<TId>, ILookup<TId>, ICloneable, IUpdatable<T> where T : class, ILookup<TId>, new()
+    public abstract class ALookupEntity<T, TId> : AIdEntity<TId>, ILookup<TId>, ICloneable, IUpdatable<T> where T : class, ILookup<TId>, new()
     {
         #region public fields
 
@@ -42,7 +42,7 @@ namespace SimpleDb.Shared
 
         /// <summary>
         /// The Name DB column.
-        /// User can change this column name by overriding this property in his own ALookupDataObject implementation.
+        /// User can change this column name by overriding this property in his own ALookupEntity implementation.
         /// The DbColumnTag is required by the LookupDataLayer. User should not change it.
         /// </summary>
         [DbColumn(null, Int32.MaxValue, DbColumnAttribute.ColumnOptions.Nonempty)]
@@ -51,7 +51,7 @@ namespace SimpleDb.Shared
 
         /// <summary>
         /// The Description DB column.
-        /// User can change this column name by overriding this property in his own ALookupDataObject implementation.
+        /// User can change this column name by overriding this property in his own ALookupEntity implementation.
         /// The DbColumnTag is not required by the LookupDataLayer. User can change it.
         /// </summary>
         [DbColumn(null, Int32.MaxValue)]

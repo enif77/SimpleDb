@@ -26,7 +26,7 @@ namespace SimpleDb.Shared
 
 
     /// <summary>
-    /// An atribute that marks a property as a Name column.
+    /// An attribute that marks a property with a specific tag.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class DbColumnTagAttribute : Attribute

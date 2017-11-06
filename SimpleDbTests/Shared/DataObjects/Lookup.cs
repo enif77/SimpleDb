@@ -30,7 +30,7 @@ namespace SimpleDbTests.Shared.DataObjects
     /// A simple lookup with default colums and column names.
     /// </summary>
     [DbTable("Lookup")]
-    public sealed class Lookup : ALookupDataObject<Lookup, int>
+    public sealed class Lookup : ALookupEntity<Lookup, int>
     {
         #region ctor
 

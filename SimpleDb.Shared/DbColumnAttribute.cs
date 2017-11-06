@@ -26,7 +26,7 @@ namespace SimpleDb.Shared
 
 
     /// <summary>
-    /// An attribute describing a DB column property.
+    /// An attribute describing a database column.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class DbColumnAttribute : Attribute
@@ -53,7 +53,7 @@ namespace SimpleDb.Shared
             Nullable = 2,
 
             /// <summary>
-            /// Is read only. The value will never be saved to the database.
+            /// If this column is read only, the value will never be saved to the database.
             /// </summary>
             ReadOnly = 4,
 
@@ -115,13 +115,13 @@ namespace SimpleDb.Shared
         }
         
         /// <summary>
-        /// True, if this column is read only.
+        /// True, if this column is Id and/or read only.
         /// </summary>
         public bool IsReadOnly
         {
             get
             {
-                return (Options & ColumnOptions.ReadOnly) == ColumnOptions.ReadOnly;
+                return IsId || ((Options & ColumnOptions.ReadOnly) == ColumnOptions.ReadOnly);
             }
         }
 

@@ -33,7 +33,7 @@ namespace SimpleDb.Files
     /// Consumes data from a data entity and construts T instances from them.
     /// </summary>
     /// <typeparam name="T">A constructed instnaces data type.</typeparam>
-    public class DataConsumer<T> : IDataConsumer<T> where T : ADataObject, new()
+    public class DataConsumer<T> : IDataConsumer<T> where T : AEntity, new()
     {
         /// <summary>
         /// Constructor.
@@ -99,7 +99,7 @@ namespace SimpleDb.Files
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = ADataObject.GetDbColumnAttribute(column);
+                var attribute = AEntity.GetDbColumnAttribute(column);
 
                 var columnType = column.PropertyType;
                 switch (columnType.Name)

@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 namespace SimpleDb.Shared
 {
     /// <summary>
-    /// An interface, that allows an object to be updated.
+    /// An interface, that allows an entity to be updated.
     /// </summary>
     /// <typeparam name="T">A type.</typeparam>
     public interface IUpdatable<in T> where T : class

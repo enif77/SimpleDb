@@ -32,7 +32,7 @@ namespace SimpleDb.Sql
     /// Defines a data consumer for reading data from a database.
     /// </summary>
     /// <typeparam name="T">A type of data, that will be read from the database.</typeparam>
-    public interface IDataConsumer<T> where T : ADataObject, new()
+    public interface IDataConsumer<T> where T : AEntity, new()
     {
         /// <summary>
         /// A list of T instances.

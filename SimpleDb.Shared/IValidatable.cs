@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -22,6 +22,9 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Shared
 {
+    /// <summary>
+    /// An interface, that allows an entity to be validated.
+    /// </summary>
     public interface IValidatable
     {
         /// <summary>

@@ -35,7 +35,7 @@ namespace SimpleDb.Sql
     /// The base of all datalayers.
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
-    public abstract class ABaseDatalayer<T> where T : ADataObject, new()
+    public abstract class ABaseDatalayer<T> where T : AEntity, new()
     {
         #region constants
 
@@ -351,7 +351,7 @@ namespace SimpleDb.Sql
         /// Creates parameters for a INSERT database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected DbParameter[] CreateInsertParameters(ADataObject instance)
+        protected DbParameter[] CreateInsertParameters(AEntity instance)
         {
             return CreateInsertOrUpdateParameters(instance, instance is IEntity<int>);  // TODO: Insert parameters for non IId objects?
         }
@@ -360,7 +360,7 @@ namespace SimpleDb.Sql
         /// Creates parameters for a UPDATE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected DbParameter[] CreateUpdateParameters(ADataObject instance)
+        protected DbParameter[] CreateUpdateParameters(AEntity instance)
         {
             return CreateInsertOrUpdateParameters(instance, false);
         }
@@ -369,14 +369,14 @@ namespace SimpleDb.Sql
         /// Creates parameters for an INSERT or an UPDATE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual DbParameter[] CreateInsertOrUpdateParameters(ADataObject instance, bool insert)
+        protected virtual DbParameter[] CreateInsertOrUpdateParameters(AEntity instance, bool insert)
         {
             var paramList = new List<DbParameter>();
 
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = ADataObject.GetDbColumnAttribute(column);
+                var attribute = AEntity.GetDbColumnAttribute(column);
 
                 // Skip Id attributes on insert and read only attributes.
                 if ((insert && attribute.IsId) || attribute.IsReadOnly)
@@ -395,14 +395,14 @@ namespace SimpleDb.Sql
         /// Creates parameters for an GET or an DELETE database operation. 
         /// </summary>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(ADataObject instance)
+        protected virtual DbParameter[] CreateIdParameters(AEntity instance)
         {
             var paramList = new List<DbParameter>();
 
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = ADataObject.GetDbColumnAttribute(column);
+                var attribute = AEntity.GetDbColumnAttribute(column);
 
                 // Add Id attributes only.
                 if (attribute.IsId)
@@ -438,7 +438,7 @@ namespace SimpleDb.Sql
 
             foreach (var column in TypeInstance.DatabaseColumns)
             {
-                var attribute = ADataObject.GetDbColumnAttribute(column);
+                var attribute = AEntity.GetDbColumnAttribute(column);
                 if (attribute.IsId)
                 {
                     paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, id));
