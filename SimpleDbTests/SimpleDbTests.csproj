@@ -124,6 +124,7 @@
     <Content Include="MsSql\Scripts\CreateDatabase.sql" />
     <Content Include="MsSql\Scripts\LookupColumnNames.sql" />
     <Content Include="MsSql\Scripts\Lookup.sql" />
+    <Content Include="MySql\Scripts\lookup_column_names.mysql.txt" />
     <Content Include="MySql\Scripts\lookup.mysql.txt" />
   </ItemGroup>
   <ItemGroup>

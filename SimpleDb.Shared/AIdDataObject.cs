@@ -37,6 +37,8 @@ namespace SimpleDb.Shared
         [DbColumnTag("Id")]
         public virtual TId Id { get; set; }
 
+        // TODO: Validate, that the Id column is not nullable.
+
         #endregion
     }
 }

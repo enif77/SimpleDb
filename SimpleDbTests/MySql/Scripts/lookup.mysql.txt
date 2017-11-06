@@ -88,7 +88,7 @@ END
 GO
 
 CREATE FUNCTION `fn_lookup_get_id_by_name`(
-	`p_name` VARCHAR(3)
+    `p_name` VARCHAR(3)
 
 )
 RETURNS int(11)

@@ -1,0 +1,119 @@
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
+ 
+SimpleDbTests is available under the zlib license:
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+ 
+ */
+
+CREATE TABLE `lookup_column_names` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name_renamed` varchar(3) NOT NULL,
+  `description` varchar(1024) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `NONCLUSTERED` (`name_renamed`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+GO
+
+DELIMITER $$
+CREATE DEFINER=`simpledb_admin`@`%` PROCEDURE `sp_lookup_column_names_select_list`()
+    READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+    COMMENT 'Selects all data from the lookup_column_names table.'
+BEGIN
+SELECT * FROM lookup_column_names;
+END$$
+DELIMITER ;
+
+GO
+
+DELIMITER $$
+CREATE DEFINER=`simpledb_admin`@`%` PROCEDURE `sp_lookup_column_names_select_details`(
+    IN `id` INT
+
+)
+    READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+BEGIN
+SELECT * FROM lookup_column_names WHERE id = @id;
+END$$
+DELIMITER ;
+
+GO
+
+DELIMITER $$
+CREATE DEFINER=`simpledb_admin`@`%` PROCEDURE `sp_lookup_column_names_insert`(
+    IN `name_renamed` VARCHAR(3),
+    IN `description` VARCHAR(1024)
+
+)
+    SQL SECURITY INVOKER
+BEGIN
+INSERT INTO lookup_column_names (name_renamed, description) VALUES (@name_renamed, @description);
+SELECT SCOPE_IDENTITY() id;
+END$$
+DELIMITER ;
+
+GO
+
+DELIMITER $$
+CREATE DEFINER=`simpledb_admin`@`%` PROCEDURE `sp_lookup_column_names_delete`(
+    IN `id` INT
+)
+    MODIFIES SQL DATA
+    SQL SECURITY INVOKER
+BEGIN
+DELETE FROM lookup_column_names WHERE id = @id;
+SELECT ROW_COUNT() AS row_count;
+END$$
+DELIMITER ;
+
+GO
+
+DELIMITER $$
+CREATE DEFINER=`simpledb_admin`@`%` PROCEDURE `sp_lookup_column_names_delete_all`()
+    MODIFIES SQL DATA
+    SQL SECURITY INVOKER
+BEGIN
+SET foreign_key_checks=0;
+TRUNCATE TABLE	lookup_column_names;
+SET foreign_key_checks=1;
+-- DBCC CHECKIDENT(lookup_column_names, RESEED, 0) WITH NO_INFOMSGS;
+END$$
+DELIMITER ;
+
+GO
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_lookup_column_names_get_id_by_name`(
+    `p_name_renamed` VARCHAR(3)
+
+) RETURNS int(11)
+    READS SQL DATA
+    DETERMINISTIC
+    SQL SECURITY INVOKER
+BEGIN
+DECLARE found_id INT;
+SET found_id = 0;
+SELECT id INTO found_id FROM lookup_column_names WHERE name_renamed = p_name_renamed;
+RETURN found_id;
+END$$
+DELIMITER ;

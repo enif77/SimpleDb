@@ -46,7 +46,7 @@ namespace SimpleDbTests.MsSql.Datalayer
         {
             OperationAllowed(DatabaseOperation.Delete);
 
-            return Database.ExecuteNonQuery("spLookup_DeleteAll", null, transaction);
+            return Database.ExecuteNonQuery(StoredProcedureBaseName + "_DeleteAll", null, transaction);
         }
     }
 }

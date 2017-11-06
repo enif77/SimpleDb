@@ -29,7 +29,7 @@ namespace SimpleDbTests.Shared.DataObjects
     /// <summary>
     /// This lookup demonstrates, how to rename a column from a default name.
     /// </summary>
-    [DbTable("LookupColumnNames")]                  
+    [DbTable]
     public sealed class LookupColumnNames : ALookupDataObject<LookupColumnNames, int>
     {
         #region ctor
