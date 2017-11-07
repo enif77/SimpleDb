@@ -45,7 +45,7 @@ namespace SimpleDb.Shared
         /// User can change this column name by overriding this property in his own ALookupEntity implementation.
         /// The DbColumnTag is required by the LookupDataLayer. User should not change it.
         /// </summary>
-        [DbColumn(null, Int32.MaxValue, DbColumnAttribute.ColumnOptions.Nonempty)]
+        [DbStringColumn(IsNonempty = true)]
         [DbColumnTag("Name")]
         public virtual string Name { get; set; }
 
@@ -54,7 +54,7 @@ namespace SimpleDb.Shared
         /// User can change this column name by overriding this property in his own ALookupEntity implementation.
         /// The DbColumnTag is not required by the LookupDataLayer. User can change it.
         /// </summary>
-        [DbColumn(null, Int32.MaxValue)]
+        [DbStringColumn]
         [DbColumnTag("Description")]
         public virtual string Description { get; set; }
 

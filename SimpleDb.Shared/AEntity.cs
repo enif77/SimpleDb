@@ -67,24 +67,24 @@ namespace SimpleDb.Shared
         }
 
         /// <summary>
-        /// Returns a collection containing a list of properties with the DbColumn attribute.
+        /// Returns a collection containing a list of properties with the DbColumn attribute or with attributes inherited from the DbColumn attribute.
         /// </summary>
         public IEnumerable<PropertyInfo> DatabaseColumns
         {
             get
             {
-                return GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnAttribute)));
+                return GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnAttribute), true));
             }
         }
 
         /// <summary>
-        /// Returns a collection containing a list of properties with the DbColumnTag attribute.
+        /// Returns a collection containing a list of properties with the DbColumnTag attribute or with attributes inherited from the DbColumnTag attribute..
         /// </summary>
         public IEnumerable<PropertyInfo> TaggedDatabaseColumns
         {
             get
             {
-                return GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnTagAttribute)));
+                return GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnTagAttribute), true));
             }
         }
 
@@ -233,7 +233,6 @@ namespace SimpleDb.Shared
             {
                 // Get the property value.
                 var value = column.GetValue(this) as string;
-
                 if (value == null)
                 {
                     if (attribute.IsNullable == false)
@@ -247,16 +246,25 @@ namespace SimpleDb.Shared
                 }
                 else
                 {
-                    if (attribute.IsNonempty && String.IsNullOrWhiteSpace(value))
-                    {
-                        // Nonempty strings should contain something.
-                        throw new ValidationException(String.Format("The {0} property value can not be empty.", column.Name));
-                    }
-
                     // String lengths are limited.
-                    if (value.Length > attribute.Length)
+                    var stringColumnAttribute = attribute as DbStringColumnAttribute;
+                    if (stringColumnAttribute != null)
                     {
-                        throw new ValidationException(String.Format("The {0} property value '{1}' is too long. ({2}/{3})", column.Name, value, value.Length, attribute.Length));
+                        if (stringColumnAttribute.IsNonempty && String.IsNullOrWhiteSpace(value))
+                        {
+                            // Nonempty strings should contain something.
+                            throw new ValidationException(String.Format("The {0} property value can not be empty.", column.Name));
+                        }
+
+                        if (value.Length > stringColumnAttribute.MaxLength)
+                        {
+                            // The maximum length of a string column can be limited.
+                            throw new ValidationException(
+                                String.Format("The {0} property value '{1}' is too long. ({2}/{3})", 
+                                    column.Name, value,
+                                    value.Length,
+                                    stringColumnAttribute.MaxLength));
+                        }
                     }
                 }
             }

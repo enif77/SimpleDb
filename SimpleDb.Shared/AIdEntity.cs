@@ -33,7 +33,7 @@ namespace SimpleDb.Shared
         /// <summary>
         /// A unique entity identifier.
         /// </summary>
-        [DbColumn(DbColumnAttribute.ColumnOptions.Id)]
+        [DbColumn(IsId = true)]
         [DbColumnTag("Id")]
         public virtual TId Id { get; set; }
 

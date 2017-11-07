@@ -22,59 +22,36 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Shared
 {
+    using System;
+
+
     /// <summary>
-    /// Database column settings generated from a DbColumnAttribute instance.
+    /// An attribute describing a string database column.
     /// </summary>
-    public class DbColumnSettings
+    [AttributeUsage(AttributeTargets.Property)]
+    public class DbStringColumnAttribute : DbColumnAttribute
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public DbColumnSettings()
-        {
-            Name = null;
-            Tag = null;
-            Length = int.MaxValue;
-            IsNullable = false;
-            IsNonempty = false;
-            IsId = false;
-            IsReadOnly = false;
-        }
-
-        /// <summary>
-        /// A DB column name.
-        /// If null, the property name will be used.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// A database column tag.
-        /// </summary>
-        public string Tag { get; set; }
-
         /// <summary>
         /// A maximal allowed length of a string column.
         /// </summary>
-        public int Length { get; set; }
-
-        /// <summary>
-        /// True, if this column allows the null value.
-        /// </summary>
-        public bool IsNullable { get; set; }
+        public int MaxLength { get; set; }
 
         /// <summary>
         /// True, if this column string value can not be empty.
         /// </summary>
         public bool IsNonempty { get; set; }
 
-        /// <summary>
-        /// True, if this column allows a DbNull value.
-        /// </summary>
-        public bool IsId { get; set; }
 
         /// <summary>
-        /// True, if this column is read only.
+        /// A constructor.
         /// </summary>
-        public bool IsReadOnly { get; set; }
+        /// <param name="name">A DB column name.</param>
+        public DbStringColumnAttribute(string name = null)
+            : base(name)
+        {
+            IsNonempty = false;
+
+            MaxLength = int.MaxValue;
+        }
     }
 }

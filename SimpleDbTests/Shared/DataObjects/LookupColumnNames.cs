@@ -49,7 +49,7 @@ namespace SimpleDbTests.Shared.DataObjects
         /// <summary>
         /// The renamed Name column and limited length of data. (3 chars only, see the Lookup.sql file.)
         /// </summary>
-        [DbColumn("RenamedName", 3)]
+        [DbStringColumn("RenamedName", MaxLength = 3)]
         public override string Name
         {
             get { return base.Name; }

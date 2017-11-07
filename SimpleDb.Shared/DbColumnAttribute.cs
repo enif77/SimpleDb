@@ -32,129 +32,37 @@ namespace SimpleDb.Shared
     public class DbColumnAttribute : Attribute
     {
         /// <summary>
-        /// Database column options.
-        /// </summary>
-        [Flags]
-        public enum ColumnOptions
-        {
-            /// <summary>
-            /// No flag set.
-            /// </summary>
-            None = 0,
-
-            /// <summary>
-            /// It is an ID column.
-            /// </summary>
-            Id = 1,
-
-            /// <summary>
-            /// Can be null.
-            /// </summary>
-            Nullable = 2,
-
-            /// <summary>
-            /// If this column is read only, the value will never be saved to the database.
-            /// </summary>
-            ReadOnly = 4,
-
-            /// <summary>
-            /// A string value, that can not be empty.
-            /// A nonempty string can be null, if it the Nullable column option is used.
-            /// See String.IsNullOrWhiteSpace().
-            /// </summary>
-            Nonempty = 8,
-        }
-
-        /// <summary>
         /// A DB column name.
         /// If null, the property name will be used.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// A maximal allowed length of a string column.
-        /// </summary>
-        public int Length { get; }
-
-        /// <summary>
-        /// Column options.
-        /// </summary>
-        public ColumnOptions Options { get; }
-
-        /// <summary>
         /// True, if this column allows the null value.
         /// </summary>
-        public bool IsNullable
-        {
-            get
-            {
-                return (Options & ColumnOptions.Nullable) == ColumnOptions.Nullable;
-            }
-        }
-
-        /// <summary>
-        /// True, if this column string value can not be empty.
-        /// </summary>
-        public bool IsNonempty
-        {
-            get
-            {
-                return (Options & ColumnOptions.Nonempty) == ColumnOptions.Nonempty;
-            }
-        }
-
+        public bool IsNullable { get; set; }
+        
         /// <summary>
         /// True, if this column allows a DbNull value.
         /// </summary>
-        public bool IsId
-        {
-            get
-            {
-                return (Options & ColumnOptions.Id) == ColumnOptions.Id;
-            }
-        }
-        
+        public bool IsId { get; set; }
+
         /// <summary>
         /// True, if this column is Id and/or read only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return IsId || ((Options & ColumnOptions.ReadOnly) == ColumnOptions.ReadOnly);
-            }
-        }
-
-        /// <summary>
-        /// A constructor.
-        /// </summary>
-        /// <param name="options">Column options.</param>
-        public DbColumnAttribute(ColumnOptions options = ColumnOptions.None)
-            : this(null, Int32.MaxValue, options)
-        {
-        }
+        public bool IsReadOnly { get; set; }
 
         /// <summary>
         /// A constructor.
         /// </summary>
         /// <param name="name">A DB column name.</param>
-        /// <param name="options">Column options.</param>
-        public DbColumnAttribute(string name = null, ColumnOptions options = ColumnOptions.None)
-            : this(name, Int32.MaxValue, options)
+        public DbColumnAttribute(string name = null)
         {
-        }
-        
-        /// <summary>
-        /// A constructor.
-        /// </summary>
-        /// <param name="name">A DB column name.</param>
-        /// <param name="length">A maximal allowed length of a string column.</param>
-        /// <param name="options">Column options.</param>
-        public DbColumnAttribute(string name = null, int length = Int32.MaxValue, ColumnOptions options = ColumnOptions.None)
-        {
+            IsNullable = false;
+            IsId = false;
+            IsReadOnly = false;
+
             Name = name;
-            Length = length;
-            Options = options;
         }
     }
 }

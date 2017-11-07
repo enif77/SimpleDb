@@ -45,8 +45,8 @@
     <Compile Include="AIdEntity.cs" />
     <Compile Include="ALookupEntity.cs" />
     <Compile Include="DatabaseException.cs" />
+    <Compile Include="DbStringColumnAttribute.cs" />
     <Compile Include="DbColumnAttribute.cs" />
-    <Compile Include="DbColumnSettings.cs" />
     <Compile Include="DbColumnTagAttribute.cs" />
     <Compile Include="DbTableAttribute.cs" />
     <Compile Include="EmptyValue.cs" />
