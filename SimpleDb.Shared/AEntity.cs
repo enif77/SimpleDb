@@ -142,23 +142,33 @@ namespace SimpleDb.Shared
 
             return taggedColumns;
         }
-            
+
         /// <summary>
         /// Gets a DbColumn from a property.
         /// Throws an exception, if the propert does not have the DbColumn set.
         /// </summary>
-        /// <param name="column">A PropertyInfo instance of a property.</param>
+        /// <param name="property">A PropertyInfo instance of a property.</param>
         /// <returns>A DbColumn instance.</returns>
-        public static DbColumnAttribute GetDbColumnAttribute(PropertyInfo column)
+        public static DbColumnAttribute GetDbColumnAttribute(PropertyInfo property)
         {
-            var attribute = column.GetCustomAttribute(typeof(DbColumnAttribute)) as DbColumnAttribute;
+            var attribute = property.GetCustomAttribute(typeof(DbColumnAttribute)) as DbColumnAttribute;
             if (attribute == null)
             {
                 // This never happens. We are working with DbColumn properties only.
-                throw new InvalidOperationException(String.Format("The DbColumnAttribute is not defined for the {0} property.", column.Name));
+                throw new InvalidOperationException(String.Format("The DbColumnAttribute is not defined for the {0} property.", property.Name));
             }
 
             return attribute;
+        }
+
+        /// <summary>
+        /// Returns a database column name of a property.
+        /// </summary>
+        /// <param name="property">A property for which we need an database column name.</param>
+        /// <returns>A database column name of a property.</returns>
+        public static string GetDbColumnName(PropertyInfo property)
+        {
+            return GetDbColumnAttribute(property).Name ?? property.Name;
         }
 
         /// <summary>

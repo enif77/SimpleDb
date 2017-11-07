@@ -92,11 +92,8 @@ namespace SimpleDb.Sql
             // For all DB columns...
             foreach (var column in instance.DatabaseColumns)
             {
-                // Get the instance of this column attribute.
-                var attribute = AEntity.GetDbColumnAttribute(column);
-
                 // A column name can be specified by the name of a property itself.
-                var columnData = reader[Provider.TranslateColumnName(attribute.Name ?? column.Name)]; // Can throw IndexOutOfRangeException.
+                var columnData = reader[Provider.TranslateColumnName(AEntity.GetDbColumnName(column))]; // Can throw IndexOutOfRangeException.
                 var columnType = column.PropertyType;
 
                 // Get a value from the reader object and convert it it to a property type.

@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -19,8 +19,8 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
  
  */
-   
-namespace SimpleDbTests.MsSql.Datalayer
+
+namespace SimpleDbTests.Shared.Datalayer
 {
     using SimpleDb.Sql;
 
@@ -28,7 +28,7 @@ namespace SimpleDbTests.MsSql.Datalayer
 
 
     public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames, int>
-    {                                      
+    {
         public LookupColumnNamesDataLayer(Database database)
             : base(database)
         {

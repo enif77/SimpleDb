@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.MySql.Datalayer
+namespace SimpleDbTests.Shared.Datalayer
 {
     using System;
 

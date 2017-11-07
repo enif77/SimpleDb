@@ -67,16 +67,16 @@
     <Compile Include="Files\Datalayer\Initializer.cs" />
     <Compile Include="Files\Datalayer\LookupColumnNamesDatalayer.cs" />
     <Compile Include="Files\Datalayer\LookupDatalayer.cs" />
-    <Compile Include="MsSql\Datalayer\Initializer.cs" />
-    <Compile Include="MsSql\Datalayer\LookupColumnNamesDatalayer.cs" />
-    <Compile Include="MsSql\Datalayer\LookupDatalayer.cs" />
-    <Compile Include="MySql\Datalayer\Initializer.cs" />
-    <Compile Include="MySql\Datalayer\LookupColumnNamesDatalayer.cs" />
-    <Compile Include="MySql\Datalayer\LookupDatalayer.cs" />
+    <Compile Include="MsSql\NamesProvider.cs" />
+    <Compile Include="MySql\NamesProvider.cs" />
+    <Compile Include="Shared\Datalayer\Initializer.cs" />
+    <Compile Include="Shared\Datalayer\LookupColumnNamesDatalayer.cs" />
+    <Compile Include="Shared\Datalayer\LookupDatalayer.cs" />
     <Compile Include="Shared\DataObjects\LookupColumnNames.cs" />
     <Compile Include="Shared\DataObjects\Lookup.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shared\INamesProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

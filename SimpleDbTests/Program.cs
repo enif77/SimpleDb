@@ -30,7 +30,6 @@ namespace SimpleDbTests
     using SimpleDb.Sql;
 
     using SimpleDbTests.Files.Datalayer;
-    using SimpleDbTests.MsSql.Datalayer;
     using SimpleDb.MsSql;
     using SimpleDb.MySql;
 
@@ -85,10 +84,10 @@ namespace SimpleDbTests
 
         private static void MsSqlTests()
         {
-            MsSql.Datalayer.Initializer.InitializeLayers(
+            Shared.Datalayer.Initializer.InitializeLayers(
                 new SimpleDb.Sql.Database(
                     ConfigurationManager.ConnectionStrings["SIMPLEDB_MSSQL"].ConnectionString,
-                    new SimpleDb.MsSql.DatabaseProvider()));
+                    new SimpleDb.MsSql.DatabaseProvider(new SimpleDbTests.MsSql.NamesProvider())));
 
             MsSqlLookupDataLayerTest();
             MsSqlLookupColumnNamesDatalayerTest();
@@ -97,7 +96,7 @@ namespace SimpleDbTests
 
         private static void MsSqlLookupDataLayerTest()
         {
-            var dal = Registry.Get<MsSql.Datalayer.LookupDataLayer>();
+            var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
@@ -111,7 +110,7 @@ namespace SimpleDbTests
 
         private static void MsSqlLookupColumnNamesDatalayerTest()
         {
-            var dal = Registry.Get<MsSql.Datalayer.LookupColumnNamesDataLayer>();
+            var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
@@ -125,19 +124,19 @@ namespace SimpleDbTests
 
         private static void MySqlTests()
         {
-            MySql.Datalayer.Initializer.InitializeLayers(
+            Shared.Datalayer.Initializer.InitializeLayers(
                 new SimpleDb.Sql.Database(
                     ConfigurationManager.ConnectionStrings["SIMPLEDB_MYSQL"].ConnectionString,
-                    new SimpleDb.MySql.DatabaseProvider()));
+                    new SimpleDb.MySql.DatabaseProvider(new SimpleDbTests.MySql.NamesProvider())));
 
             MySqlLookupDataLayerTest();
-            //MySqlLookupColumnNamesDatalayerTest();
+            MySqlLookupColumnNamesDatalayerTest();
         }
 
 
         private static void MySqlLookupDataLayerTest()
         {
-            var dal = Registry.Get<MySql.Datalayer.LookupDataLayer>();
+            var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
@@ -151,7 +150,7 @@ namespace SimpleDbTests
 
         private static void MySqlLookupColumnNamesDatalayerTest()
         {
-            var dal = Registry.Get<MySql.Datalayer.LookupColumnNamesDataLayer>();
+            var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);

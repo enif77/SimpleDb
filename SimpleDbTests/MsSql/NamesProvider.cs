@@ -1,6 +1,6 @@
-﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
+﻿/* SimpleDb - (C) 2017 Premysl Fara 
  
-SimpleDbTests is available under the zlib license:
+SimpleDb is available under the zlib license:
 
 This software is provided 'as-is', without any express or implied
 warranty.  In no event will the authors be held liable for any damages
@@ -20,33 +20,16 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.MsSql.Datalayer
+namespace SimpleDbTests.MsSql
 {
-    using System.Data.SqlClient;
-
-    using SimpleDb.Sql;
-
-    using SimpleDbTests.Shared.DataObjects;
-
-
-    public class LookupDataLayer : LookupDataLayer<Lookup, int>
+    /// <summary>
+    /// Names provider for the MsSQL database implementation.
+    /// </summary>
+    public class NamesProvider : SimpleDb.MsSql.NamesProvider, Shared.INamesProvider
     {
-        public LookupDataLayer(Database database)
-            : base(database)
+        public string GetDeleteAllStoredProcedureName(string storedProcedureBaseName)
         {
-        }
-
-
-        /// <summary>
-        /// Deletes all rows in DB.
-        /// </summary>
-        /// <param name="transaction">A SqlTransaction instance or null.</param>
-        /// <returns>Number of affected rows.</returns>
-        public int DeleteAll(SqlTransaction transaction = null)
-        {
-            OperationAllowed(DatabaseOperation.Delete);
-
-            return Database.ExecuteNonQuery(StoredProcedureBaseName + "_DeleteAll", null, transaction);
+            return storedProcedureBaseName + "_DeleteAll";
         }
     }
 }

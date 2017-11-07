@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -29,7 +29,7 @@ namespace SimpleDbTests.Shared.DataObjects
     /// <summary>
     /// A simple lookup with default colums and column names.
     /// </summary>
-    [DbTable("Lookup")]
+    [DbTable]
     public sealed class Lookup : ALookupEntity<Lookup, int>
     {
         #region ctor
@@ -50,6 +50,7 @@ namespace SimpleDbTests.Shared.DataObjects
         /// The Name column with limited lenght of data. (3 chars only, see the Lookup.sql file.)
         /// </summary>
         [DbStringColumn(MaxLength = 3)]
+        [DbColumnTag("Name")]
         public override string Name
         {
             get { return base.Name; }

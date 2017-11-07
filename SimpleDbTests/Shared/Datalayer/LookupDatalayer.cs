@@ -20,18 +20,33 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.MySql.Datalayer
+namespace SimpleDbTests.Shared.Datalayer
 {
+    using System.Data.SqlClient;
+
     using SimpleDb.Sql;
 
     using SimpleDbTests.Shared.DataObjects;
 
 
-    public class LookupColumnNamesDataLayer : LookupDataLayer<LookupColumnNames, int>
+    public class LookupDataLayer : LookupDataLayer<Lookup, int>
     {
-        public LookupColumnNamesDataLayer(Database database)
+        public LookupDataLayer(Database database)
             : base(database)
         {
+        }
+
+
+        /// <summary>
+        /// Deletes all rows in DB.
+        /// </summary>
+        /// <param name="transaction">A SqlTransaction instance or null.</param>
+        /// <returns>Number of affected rows.</returns>
+        public int DeleteAll(SqlTransaction transaction = null)
+        {
+            OperationAllowed(DatabaseOperation.Delete);
+
+            return Database.ExecuteNonQuery(((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
         }
     }
 }
