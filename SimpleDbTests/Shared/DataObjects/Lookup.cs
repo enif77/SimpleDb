@@ -49,8 +49,7 @@ namespace SimpleDbTests.Shared.DataObjects
         /// <summary>
         /// The Name column with limited lenght of data. (3 chars only, see the Lookup.sql file.)
         /// </summary>
-        [DbStringColumn(MaxLength = 3)]
-        [DbColumnTag("Name")]
+        [DbStringColumn(IsNonempty = true, MaxLength = 3, Tag = NameColumnTagName)]
         public override string Name
         {
             get { return base.Name; }

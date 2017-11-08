@@ -34,7 +34,6 @@ namespace SimpleDb.Shared
         /// A unique entity identifier.
         /// </summary>
         [DbColumn(IsId = true)]
-        [DbColumnTag("Id")]
         public virtual TId Id { get; set; }
 
         // TODO: Validate, that the Id column is not nullable.

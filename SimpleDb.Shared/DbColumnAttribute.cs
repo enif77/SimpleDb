@@ -38,6 +38,12 @@ namespace SimpleDb.Shared
         public string Name { get; }
 
         /// <summary>
+        /// A database column tag.
+        /// Used by the LookupDataLayer to find the Name column. Users can use it freely.
+        /// </summary>
+        public string Tag { get; set; }
+
+        /// <summary>
         /// True, if this column allows the null value.
         /// </summary>
         public bool IsNullable { get; set; }
@@ -58,6 +64,7 @@ namespace SimpleDb.Shared
         /// <param name="name">A DB column name.</param>
         public DbColumnAttribute(string name = null)
         {
+            Tag = null;
             IsNullable = false;
             IsId = false;
             IsReadOnly = false;

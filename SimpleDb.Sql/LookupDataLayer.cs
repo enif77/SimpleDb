@@ -48,14 +48,14 @@ namespace SimpleDb.Sql
             UseCache = false;
 
             // We need a property tagged as a Name database table column.
-            var propertyWithNameTag = TypeInstance.GetColumnsWithTag("Name").FirstOrDefault();
-            if (propertyWithNameTag == null)
+            var columnWithNameTag = TypeInstance.GetColumnsWithTag(ALookupEntity<T, TId>.NameColumnTagName).FirstOrDefault();
+            if (columnWithNameTag == null)
             {
-                throw new InvalidOperationException("A column with the Name tag expected.");
+                throw new InvalidOperationException("A column with the " + ALookupEntity<T, TId>.NameColumnTagName + " tag expected.");
             }
 
             // Such a property should be a DbColumn and can have a DbColumn.Name set.
-            NamePropertyDbColumnName = AEntity.GetDbColumnName(propertyWithNameTag);
+            NamePropertyDbColumnName = AEntity.GetDbColumnName(columnWithNameTag);
         }
 
 

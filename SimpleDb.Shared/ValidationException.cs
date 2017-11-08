@@ -28,6 +28,7 @@ namespace SimpleDb.Shared
     /// <summary>
     /// A validation exception.
     /// </summary>
+    [Serializable]
     public class ValidationException : Exception
     {
         public ValidationException(string message) : base(message) { }

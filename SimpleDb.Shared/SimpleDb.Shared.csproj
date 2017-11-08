@@ -47,7 +47,6 @@
     <Compile Include="DatabaseException.cs" />
     <Compile Include="DbStringColumnAttribute.cs" />
     <Compile Include="DbColumnAttribute.cs" />
-    <Compile Include="DbColumnTagAttribute.cs" />
     <Compile Include="DbTableAttribute.cs" />
     <Compile Include="EmptyValue.cs" />
     <Compile Include="IAuditedEntity.cs" />

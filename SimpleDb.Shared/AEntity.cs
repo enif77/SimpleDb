@@ -77,17 +77,6 @@ namespace SimpleDb.Shared
             }
         }
 
-        /// <summary>
-        /// Returns a collection containing a list of properties with the DbColumnTag attribute or with attributes inherited from the DbColumnTag attribute..
-        /// </summary>
-        public IEnumerable<PropertyInfo> TaggedDatabaseColumns
-        {
-            get
-            {
-                return GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnTagAttribute), true));
-            }
-        }
-
         #endregion
 
 
@@ -133,11 +122,9 @@ namespace SimpleDb.Shared
 
             var taggedColumns = new List<PropertyInfo>();
 
-            foreach (var column in TaggedDatabaseColumns)
+            foreach (var column in DatabaseColumns)
             {
-                var attribute = GetDbColumnTagAttribute(column);
-
-                if (attribute.Tag == tag) taggedColumns.Add(column);
+                if (GetDbColumnAttribute(column).Tag == tag) taggedColumns.Add(column);
             }
 
             return taggedColumns;
@@ -169,24 +156,6 @@ namespace SimpleDb.Shared
         public static string GetDbColumnName(PropertyInfo property)
         {
             return GetDbColumnAttribute(property).Name ?? property.Name;
-        }
-
-        /// <summary>
-        /// Gets a DbColumnTag from a property.
-        /// Throws an exception, if the property does not have the DbColumnTag set.
-        /// </summary>
-        /// <param name="column">A PropertyInfo instance of a property.</param>
-        /// <returns>A DbColumnTag instance.</returns>
-        public static DbColumnTagAttribute GetDbColumnTagAttribute(PropertyInfo column)
-        {
-            var attribute = column.GetCustomAttribute(typeof(DbColumnTagAttribute)) as DbColumnTagAttribute;
-            if (attribute == null)
-            {
-                // This never happens. We are working with DbColumn properties only.
-                throw new InvalidOperationException(String.Format("The DbColumnTagAttribute is not defined for the {0} property.", column.Name));
-            }
-
-            return attribute;
         }
         
         #endregion

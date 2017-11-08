@@ -30,6 +30,16 @@ namespace SimpleDb.Shared
     /// </summary>
     public abstract class ALookupEntity<T, TId> : AIdEntity<TId>, ILookup<TId>, ICloneable, IUpdatable<T> where T : class, ILookup<TId>, new()
     {
+        #region constants
+
+        /// <summary>
+        /// The name of the Name tag.
+        /// </summary>
+        public const string NameColumnTagName = "Name";
+
+        #endregion
+
+
         #region public fields
 
         public static readonly T RequiredValue = EmptyValue<T, TId>.Required;
@@ -45,8 +55,7 @@ namespace SimpleDb.Shared
         /// User can change this column name by overriding this property in his own ALookupEntity implementation.
         /// The DbColumnTag is required by the LookupDataLayer. User should not change it.
         /// </summary>
-        [DbStringColumn(IsNonempty = true)]
-        [DbColumnTag("Name")]
+        [DbStringColumn(IsNonempty = true, Tag = NameColumnTagName)]
         public virtual string Name { get; set; }
 
         /// <summary>
@@ -55,7 +64,6 @@ namespace SimpleDb.Shared
         /// The DbColumnTag is not required by the LookupDataLayer. User can change it.
         /// </summary>
         [DbStringColumn]
-        [DbColumnTag("Description")]
         public virtual string Description { get; set; }
 
         #endregion

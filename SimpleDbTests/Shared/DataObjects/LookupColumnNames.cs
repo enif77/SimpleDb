@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -49,8 +49,7 @@ namespace SimpleDbTests.Shared.DataObjects
         /// <summary>
         /// The renamed Name column and limited length of data. (3 chars only, see the Lookup.sql file.)
         /// </summary>
-        [DbStringColumn("RenamedName", MaxLength = 3)]
-        [DbColumnTag("Name")]
+        [DbStringColumn("RenamedName", IsNonempty = true, MaxLength = 3, Tag = NameColumnTagName)]
         public override string Name
         {
             get { return base.Name; }
