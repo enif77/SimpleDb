@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ABaseIdDatalayer.cs" />
     <Compile Include="ABaseDatalayer.cs" />
     <Compile Include="ABaseNamesProvider.cs" />
     <Compile Include="Database.cs" />

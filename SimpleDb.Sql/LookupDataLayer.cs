@@ -28,7 +28,7 @@ namespace SimpleDb.Sql
     using SimpleDb.Shared;
 
 
-    public class LookupDataLayer<T, TId> : ABaseDatalayer<T, TId> where T : AIdEntity<TId>, ILookup<TId>, new()
+    public class LookupDataLayer<T, TId> : ABaseIdDatalayer<T, TId> where T : AIdEntity<TId>, ILookup<TId>, new()
     {
         /// <summary>      
         /// Constructor.
@@ -51,6 +51,7 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Returns an ID of a lookup item by its name.
         /// </summary>
+        /// <param name="name">A name of a lookup for which an Id is requested.</param>
         /// <returns>An Id of a lookup item or 0.</returns>
         public virtual TId GetIdByName(string name)
         {
