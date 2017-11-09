@@ -30,7 +30,7 @@ namespace SimpleDbTests.Shared.DataObjects
     /// A simple lookup with default colums and column names.
     /// </summary>
     [DbTable]
-    public sealed class Lookup : ALookupEntity<Lookup, int>
+    public class Lookup : ALookupEntity<Lookup, int>
     {
         #region ctor
 
@@ -46,6 +46,15 @@ namespace SimpleDbTests.Shared.DataObjects
 
         #region properties
 
+        /// <inheritdoc />
+        public override bool IsNew
+        {
+            get
+            {
+                return Id == 0;
+            }
+        }
+
         /// <summary>
         /// The Name column with limited lenght of data. (3 chars only, see the Lookup.sql file.)
         /// </summary>
@@ -55,7 +64,7 @@ namespace SimpleDbTests.Shared.DataObjects
             get { return base.Name; }
             set { base.Name = value; }
         }
-
+        
         #endregion
     }
 }

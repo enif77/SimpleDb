@@ -35,7 +35,8 @@ namespace SimpleDb.Sql
     /// The base of all datalayers.
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
-    public abstract class ABaseDatalayer<T> where T : AEntity, new()
+    /// <typeparam name="TId">A type of the entity Id column (int, long, GUID, ...).</typeparam>
+    public abstract class ABaseDatalayer<T, TId> where T : AEntity, new()
     {
         #region constants
 
@@ -184,7 +185,7 @@ namespace SimpleDb.Sql
         /// <param name="id">Id value</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance to object</returns>
-        public virtual T Get(int id, IDbTransaction transaction = null)
+        public virtual T Get(TId id, IDbTransaction transaction = null)
         {
             return Get(id, null, transaction);
         }
@@ -196,10 +197,8 @@ namespace SimpleDb.Sql
         /// <param name="userDataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance to object</returns>
-        public virtual T Get(int id, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
+        public virtual T Get(TId id, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            if (id <= 0) throw new ArgumentException("A positive number expected.", nameof(id));
-
             OperationAllowed(DatabaseOperation.Select);
 
             var res = new List<T>();
@@ -221,32 +220,35 @@ namespace SimpleDb.Sql
         /// <param name="obj">Instance to save</param>
         /// <param name="transaction">Instance to SqlTransaction object</param>
         /// <returns>Id of saved instance or the number of modified rows for non IId instances.</returns>
-        public virtual int Save(T obj, IDbTransaction transaction = null)
+        public virtual TId Save(T obj, IDbTransaction transaction = null)
         {
             var operation = DatabaseOperation.Insert;
 
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            var iid = obj as IIdEntity<int>;
+            var iid = obj as IIdEntity<TId>;
             if (iid == null)
             {
                 OperationAllowed(operation);
 
-                return Database.ExecuteScalar(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
+                Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
+
+                // We have nothing to return here...
+                return default(TId);
             }
 
-            if (iid.Id == 0)
+            if (iid.IsNew)
             {
                 OperationAllowed(operation);
 
-                return iid.Id = Database.ExecuteScalar(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
+                return iid.Id = (TId)Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
             }
 
             operation = DatabaseOperation.Update;
 
             OperationAllowed(operation);
 
-            return Database.ExecuteScalar(UpdateStoredProcedureName, CreateUpdateParameters(obj), transaction);
+            return (TId)Database.ExecuteScalarObject(UpdateStoredProcedureName, CreateUpdateParameters(obj), transaction);
         }
 
         /// <summary>
@@ -258,15 +260,16 @@ namespace SimpleDb.Sql
         {
             if (objects == null) throw new ArgumentNullException(nameof(objects));
 
-            if (objects.Any() == false) return;
-
-            if (transaction == null)
+            if (objects.Any())
             {
-                Database.DoInTransaction(SaveAllOperation, objects);
-            }
-            else
-            {
-                SaveAllOperation(transaction, objects);
+                if (transaction == null)
+                {
+                    Database.DoInTransaction(SaveAllOperation, objects);
+                }
+                else
+                {
+                    SaveAllOperation(transaction, objects);
+                }
             }
         }
 
@@ -287,18 +290,29 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Deletes object from database.
         /// </summary>
-        /// <param name="id">An object ID to delete</param>
+        /// <param name="id">An object Id to delete</param>
         /// <param name="transaction">Instance to SqlTransaction object</param>
-        public virtual void Delete(int id, IDbTransaction transaction = null)
+        public virtual void Delete(TId id, IDbTransaction transaction = null)
         {
-            if (id <= 0) throw new ArgumentException("An object ID expected.", nameof(id));
+            var iid = TypeInstance as IIdEntity<TId>;
+            if (iid == null)
+            {
+                throw new DatabaseException("This entity is not an instance of a IIdEntity type.");
+            }
 
+            // TODO: We should not touch the TypeInstance object ever!
+            iid.Id = id;
+
+            // A hack to know, that we have a "valid" Id of an entity.
+            // The type entity knows the type of its Id column.
+            if (iid.IsNew)
+            {
+                throw new ArgumentException("A valid object Id expected.", nameof(id));
+            }
+                
             OperationAllowed(DatabaseOperation.Delete);
-
-            var iid = TypeInstance as IIdEntity<int>;
-            if (iid == null) throw new NotSupportedException("Object does not contain ID");
-
-            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(iid.Id), transaction);
+                        
+            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(id), transaction);
         }
 
         /// <summary>
@@ -319,8 +333,8 @@ namespace SimpleDb.Sql
         /// <param name="transaction">An optional SQL transaction.</param>
         public virtual void Reload(T obj, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            var iid = obj as IIdEntity<int>;
-            if (iid == null) throw new NotSupportedException("Object does not contain ID");
+            var iid = obj as IIdEntity<TId>;
+            if (iid == null) throw new NotSupportedException("An entity without the Id column can not be reloaded.");
 
             OperationAllowed(DatabaseOperation.Select);
 
@@ -328,7 +342,7 @@ namespace SimpleDb.Sql
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
-                CreateIdParameters(iid.Id),
+                CreateIdParameters(obj),
                 consumer.RecreateInstance,
                 transaction);
         }
@@ -353,7 +367,7 @@ namespace SimpleDb.Sql
         /// <returns>A list of SqlParameters.</returns>
         protected DbParameter[] CreateInsertParameters(AEntity instance)
         {
-            return CreateInsertOrUpdateParameters(instance, instance is IIdEntity<int>);  // TODO: Insert parameters for non IId objects?
+            return CreateInsertOrUpdateParameters(instance, instance is IIdEntity<TId>);
         }
 
         /// <summary>
@@ -418,31 +432,28 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Creates parameters for an GET or an DELETE database operation. 
         /// </summary>
+        /// <param name="id">An entity Id.</param>
         /// <returns>A list of SqlParameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(int id)
+        protected virtual DbParameter[] CreateIdParameters(TId id)
         {
-            if (TypeInstance is IIdEntity<int> == false || EntityReflector.IsDatabaseTable(TypeInstance) == false)
+            if (TypeInstance is IIdEntity<TId> == false)
             {
-                throw new Exception("Can not create an Id parameter from a non IEntity or non database object.");
+                throw new DatabaseException("This entity type is not a database table or an instance of IIdEntity type.");
             }
 
             var paramList = new List<DbParameter>();
 
-            //foreach (var attribute in TypeInstance.DatabaseColumns.Select(ADataObject.GetDbColumnAttribute).Where(attribute => attribute.IsId))
-            //{
-            //    // Add parameter to the list of parameters.
-            //    paramList.Add(Database.DatabaseProvider.CreateDbParameter(attribute.Name, id));
-
-            //    break;
-            //}
-
-            foreach (var column in TypeInstance.DatabaseColumns)
+            foreach (var column in EntityReflector.GetDatabaseColumns(TypeInstance))
             {
+                // Ignore column with a different type.
+                if (column.GetType() != typeof(TId)) continue;
+
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
                 if (attribute.IsId)
                 {
                     paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, id));
 
+                    // Use the first found property only.
                     break;
                 }
             }
@@ -507,7 +518,7 @@ namespace SimpleDb.Sql
                 {
                     var exception = new DatabaseException("Can not save a data item.", ex);
 
-                    exception.Data.Add(obj.GetType().Name, obj.ToString());
+                    exception.Data.Add(obj.GetType().Name, obj);
 
                     throw exception;
                 }

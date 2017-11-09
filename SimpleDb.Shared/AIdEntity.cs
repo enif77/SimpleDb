@@ -30,6 +30,9 @@ namespace SimpleDb.Shared
     {
         #region properties
 
+        /// <inheritdoc />
+        public abstract bool IsNew { get; }
+
         /// <summary>
         /// A unique entity identifier.
         /// </summary>

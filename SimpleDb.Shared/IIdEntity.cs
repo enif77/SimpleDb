@@ -29,6 +29,11 @@ namespace SimpleDb.Shared
     public interface IIdEntity<TId>
     {
         /// <summary>
+        /// Is true, if this instance is a new one - it never was in the database.
+        /// </summary>
+        bool IsNew { get; }
+
+        /// <summary>
         /// An instance Id.
         /// </summary>
         TId Id { get; set; }

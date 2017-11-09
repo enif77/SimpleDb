@@ -28,7 +28,7 @@ namespace SimpleDb.Sql
     using SimpleDb.Shared;
 
 
-    public class LookupDataLayer<T, TId> : ABaseDatalayer<T> where T : AIdEntity<TId>, ILookup<TId>, new()
+    public class LookupDataLayer<T, TId> : ABaseDatalayer<T, TId> where T : AIdEntity<TId>, ILookup<TId>, new()
     {
         /// <summary>      
         /// Constructor.
@@ -52,13 +52,13 @@ namespace SimpleDb.Sql
         /// Returns an ID of a lookup item by its name.
         /// </summary>
         /// <returns>An Id of a lookup item or 0.</returns>
-        public virtual int GetIdByName(string name)
+        public virtual TId GetIdByName(string name)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
 
             OperationAllowed(DatabaseOperation.Select);
 
-            return Database.ExecuteScalarFunction<int>(
+            return Database.ExecuteScalarFunction<TId>(
                 NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
                 new[]
                 {

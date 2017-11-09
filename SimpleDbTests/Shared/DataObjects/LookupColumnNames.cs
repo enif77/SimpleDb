@@ -46,6 +46,15 @@ namespace SimpleDbTests.Shared.DataObjects
 
         #region properties
 
+        /// <inheritdoc />
+        public override bool IsNew
+        {
+            get
+            {
+                return Id == 0;
+            }
+        }
+
         /// <summary>
         /// The renamed Name column and limited length of data. (3 chars only, see the Lookup.sql file.)
         /// </summary>
