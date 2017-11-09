@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 namespace SimpleDb.Sql
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using SimpleDb.Shared;
@@ -31,13 +30,6 @@ namespace SimpleDb.Sql
 
     public class LookupDataLayer<T, TId> : ABaseDatalayer<T> where T : AIdEntity<TId>, ILookup<TId>, new()
     {
-        /// <summary>
-        /// If true, lookups are cached in the memory.
-        /// False by default.
-        /// </summary>
-        public bool UseCache { get; set; }
-
-
         /// <summary>      
         /// Constructor.
         /// </summary>
@@ -45,8 +37,6 @@ namespace SimpleDb.Sql
         public LookupDataLayer(Database database)
             : base(database)
         {
-            UseCache = false;
-
             // We need a property tagged as a Name database table column.
             var columnWithNameTag = TypeInstance.GetColumnsWithTag(ALookupEntity<T, TId>.NameColumnTagName).FirstOrDefault();
             if (columnWithNameTag == null)
@@ -58,37 +48,6 @@ namespace SimpleDb.Sql
             NamePropertyDbColumnName = AEntity.GetDbColumnName(columnWithNameTag);
         }
 
-
-        /// <summary>
-        /// Checks, if a lookup is in the internal cache.
-        /// </summary>
-        /// <param name="name">A lookup Name.</param>
-        /// <returns>True, if a lookup with a specified name is in the local cache.</returns>
-        protected bool HasCachedLookup(string name)
-        {
-            lock (_lookupCacheLock)
-            {
-                if (UseCache)
-                {
-                    return _lookupCache.ContainsKey(name);
-
-                }
-
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Clears the internal lookup cache.
-        /// </summary>
-        public void ClearCache()
-        {
-            lock (_lookupCacheLock)
-            {
-                _lookupCache.Clear();
-            }
-        }
-        
         /// <summary>
         /// Returns an ID of a lookup item by its name.
         /// </summary>
@@ -100,33 +59,14 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Select);
 
-            lock (_lookupCacheLock)
-            {
-                if (HasCachedLookup(name))
+            return Database.ExecuteScalarFunction<int>(
+                NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
+                new[]
                 {
-                    return _lookupCache[name];
-                }
-
-                var id = Database.ExecuteScalarFunction<int>(
-                    NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
-                    new[]
-                    {
-                        Database.Provider.CreateDbParameter(NamePropertyDbColumnName, name)
-                    },
-                    null);
-
-                if (UseCache)
-                {
-                    _lookupCache.Add(name, id);
-                }
-
-                return id;
-            }
+                    Database.Provider.CreateDbParameter(NamePropertyDbColumnName, name)
+                },
+                null);
         }
-
-
-        private readonly object _lookupCacheLock = new object();
-        private readonly Dictionary<string, int> _lookupCache = new Dictionary<string, int>();
 
 
         /// <summary>
