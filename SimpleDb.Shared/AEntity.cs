@@ -22,10 +22,10 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Shared
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
+
+    using SimpleDb.Shared.Validators;
 
 
     /// <summary>
@@ -36,34 +36,11 @@ namespace SimpleDb.Shared
         #region properties
         
         /// <summary>
-        /// Returns true, if this entity has defined the DbTable attribute.
+        /// Returns a name of a database table, that is represented by this entity.
         /// </summary>
-        /// <returns></returns>
-        public bool IsDatabaseTable
+        public string DataTableName
         {
-            get { return Attribute.IsDefined(GetType(), typeof(DbTableAttribute)); }
-        }
-
-        /// <summary>
-        /// Returns a database table name of this instance.
-        /// If this type does not have the DbTableAttribute attribute set, an InvalidOperationException is thrown.
-        /// If the Name of the DbTableAttribute attribute is null, the name of this class is returned.
-        /// </summary>
-        public string DatabaseTableName
-        {
-            get
-            {
-                var thisType = GetType();
-
-                var attribute = thisType.GetCustomAttribute(typeof(DbTableAttribute)) as DbTableAttribute;
-                if (attribute == null)
-                {
-                    throw new InvalidOperationException(string.Format("The '{0}' has not the DBTable attribute set.", thisType.FullName));
-                }
-                
-                // The name of a table can be defined by the name of the class.
-                return attribute.Name ?? thisType.Name;
-            }
+            get { return EntityReflector.GetDatabaseTableName(this); }
         }
 
         /// <summary>
@@ -73,7 +50,7 @@ namespace SimpleDb.Shared
         {
             get
             {
-                return GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnAttribute), true));
+                return EntityReflector.GetDatabaseColumns(this);
             }
         }
 
@@ -88,190 +65,23 @@ namespace SimpleDb.Shared
         /// <returns>True, if this instance is valid.</returns>
         public virtual void Validate()
         {
-            // If this object does not represent a database table, do not run column checks below.
-            if (IsDatabaseTable == false)
-            {
-                return;
-            }
-
             // Check all properties defined as database table columns.
             foreach (var column in DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = GetDbColumnAttribute(column);
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
 
                 // Check for non nullable type, when the a.IsNullable is true.
-                CheckNullableType(attribute, column);
+                StaticEntityValidator.CheckNullableType(attribute, column);
+
+                var columnValue = column.GetValue(this);
 
                 // Check for a null value when the a.IsNullable is false.
-                CheckNullValue(attribute, column);
-                
+                EntityColumnValueValidator.CheckNullValue(attribute, column, columnValue);
+
                 // Check know value limits of supported data types.
-                CheckTypeValues(attribute, column);
+                EntityColumnValueValidator.CheckTypeValues(attribute, column, columnValue);
             }
-        }
-
-        /// <summary>
-        /// Returns all properties with a given tag.
-        /// </summary>
-        /// <param name="tag">A tag.</param>
-        /// <returns>All properties with a given tag</returns>
-        public IEnumerable<PropertyInfo> GetColumnsWithTag(string tag)
-        {
-            if (string.IsNullOrEmpty(tag)) throw new ArgumentException("A database column tag expected.", nameof(tag));
-
-            var taggedColumns = new List<PropertyInfo>();
-
-            foreach (var column in DatabaseColumns)
-            {
-                if (GetDbColumnAttribute(column).Tag == tag) taggedColumns.Add(column);
-            }
-
-            return taggedColumns;
-        }
-
-        /// <summary>
-        /// Gets a DbColumn from a property.
-        /// Throws an exception, if the propert does not have the DbColumn set.
-        /// </summary>
-        /// <param name="property">A PropertyInfo instance of a property.</param>
-        /// <returns>A DbColumn instance.</returns>
-        public static DbColumnAttribute GetDbColumnAttribute(PropertyInfo property)
-        {
-            var attribute = property.GetCustomAttribute(typeof(DbColumnAttribute)) as DbColumnAttribute;
-            if (attribute == null)
-            {
-                // This never happens. We are working with DbColumn properties only.
-                throw new InvalidOperationException(String.Format("The DbColumnAttribute is not defined for the {0} property.", property.Name));
-            }
-
-            return attribute;
-        }
-
-        /// <summary>
-        /// Returns a database column name of a property.
-        /// </summary>
-        /// <param name="property">A property for which we need an database column name.</param>
-        /// <returns>A database column name of a property.</returns>
-        public static string GetDbColumnName(PropertyInfo property)
-        {
-            return GetDbColumnAttribute(property).Name ?? property.Name;
-        }
-        
-        #endregion
-
-
-        #region private
-
-        /// <summary>
-        /// Checks, if nullability of a DbColumn matches the type of a property.
-        /// </summary>
-        /// <param name="attribute">An DbColumn instance od a property.</param>
-        /// <param name="column">A PropertyInfo instance of a property.</param>
-        private void CheckNullableType(DbColumnAttribute attribute, PropertyInfo column)
-        {
-            if (attribute.IsNullable && column.PropertyType.IsValueType)  // A value type.
-            {
-                if (Nullable.GetUnderlyingType(column.PropertyType) == null)  // A value type that is NOT a Nullable<T>.)
-                {
-                    throw new ValidationException(String.Format("The {0} property is not a nullable type.", column.Name));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks, if a null can be set to a certain property.
-        /// </summary>
-        /// <param name="attribute">An DbColumn instance od a property.</param>
-        /// <param name="column">A PropertyInfo instance of a property.</param>
-        private void CheckNullValue(DbColumnAttribute attribute, PropertyInfo column)
-        {
-            if (attribute.IsNullable == false &&
-                    (column.PropertyType.IsValueType == false ||   // A ref. type.
-                    (column.PropertyType.IsValueType && Nullable.GetUnderlyingType(column.PropertyType) != null)) &&   // Nullable<T>
-                    column.GetValue(this) == null)
-            {
-                throw new ValidationException(String.Format("The {0} property value can not be null.", column.Name));
-            }
-        }
-
-        /// <summary>
-        /// Checks a value of a property agains know type-based constraints.
-        /// </summary>
-        /// <param name="attribute">An DbColumn instance od a property.</param>
-        /// <param name="column">A PropertyInfo instance of a property.</param>
-        private void CheckTypeValues(DbColumnAttribute attribute, PropertyInfo column)
-        {
-            // Read only colums can contain any value, when they are inserted/saved.
-            if (attribute.IsReadOnly)
-            {
-                return;
-            }
-
-            if (column.PropertyType == typeof(string))
-            {
-                // Get the property value.
-                var value = column.GetValue(this) as string;
-                if (value == null)
-                {
-                    if (attribute.IsNullable == false)
-                    {
-                        // Strings are a value type, so we have to check for the null here too.
-                        throw new ValidationException(String.Format("The {0} property value can not be null.", column.Name));
-                    }
-
-                    // The value is null and because this column is nullable, 
-                    // we do not have to do anything with the Nonempty column option here.
-                }
-                else
-                {
-                    // String lengths are limited.
-                    var stringColumnAttribute = attribute as DbStringColumnAttribute;
-                    if (stringColumnAttribute != null)
-                    {
-                        if (stringColumnAttribute.IsNonempty && String.IsNullOrWhiteSpace(value))
-                        {
-                            // Nonempty strings should contain something.
-                            throw new ValidationException(String.Format("The {0} property value can not be empty.", column.Name));
-                        }
-
-                        if (value.Length > stringColumnAttribute.MaxLength)
-                        {
-                            // The maximum length of a string column can be limited.
-                            throw new ValidationException(
-                                String.Format("The {0} property value '{1}' is too long. ({2}/{3})", 
-                                    column.Name, value,
-                                    value.Length,
-                                    stringColumnAttribute.MaxLength));
-                        }
-                    }
-                }
-            }
-            else if (column.PropertyType == typeof(DateTime))
-            {
-                CheckDateTimeMinValue((DateTime)column.GetValue(this), column.Name);
-            }
-            else if (column.PropertyType == typeof(DateTime?))
-            {
-                var value = (DateTime?)column.GetValue(this);
-                if (value != null)
-                {
-                    CheckDateTimeMinValue(value.Value, column.Name);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Checks, if a value of a DateTime property can be stored in the database.
-        /// </summary>
-        /// <param name="value">A value.</param>
-        /// <param name="columnName">A table column name.</param>
-        private void CheckDateTimeMinValue(DateTime value, string columnName)
-        {
-            // SQL DateTime min value is January 1, 1753.
-            if (value >= new DateTime(1753, 1, 1)) return;
-
-            throw new ValidationException(String.Format("The {0} property value {1} is less than 1.1.1753.", columnName, value));
         }
 
         #endregion

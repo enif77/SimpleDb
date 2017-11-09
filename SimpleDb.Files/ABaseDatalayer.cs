@@ -59,7 +59,7 @@ namespace SimpleDb.Files
             TypeInstance = new T();
 
             // TODO: Fails, when DatabaseTableName/DbTable attribute is not set.
-            DataDirectory = Path.Combine(Database.RootDirectoryPath, TypeInstance.DatabaseTableName); 
+            DataDirectory = Path.Combine(Database.RootDirectoryPath, EntityReflector.GetDatabaseTableName(TypeInstance));
 
             if (Directory.Exists(DataDirectory) == false)
             {
@@ -372,7 +372,7 @@ namespace SimpleDb.Files
             foreach (var column in obj.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = AEntity.GetDbColumnAttribute(column);
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
 
                 var columnType = column.PropertyType;
                 switch (columnType.Name)
@@ -437,7 +437,7 @@ namespace SimpleDb.Files
         /// <returns>A full path to the entity data file.</returns>
         private string GetEntityFilePath(int id)
         {
-            return Path.Combine(DataDirectory, String.Format("{0}_{1}.txt", id, TypeInstance.DatabaseTableName));
+            return Path.Combine(DataDirectory, String.Format("{0}_{1}.txt", id, EntityReflector.GetDatabaseTableName(TypeInstance)));
         }
 
         #endregion

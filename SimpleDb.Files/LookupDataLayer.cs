@@ -42,7 +42,7 @@ namespace SimpleDb.Files
             _lookupCache = new Dictionary<string, int>();
 
             // TODO: Replace "Name" with the ALookupEntity<T, TId>.NameColumnTagName constant.
-            NamePropertyDbColumnName = AEntity.GetDbColumnAttribute(TypeInstance.GetColumnsWithTag("Name").FirstOrDefault()).Name;
+            NamePropertyDbColumnName = EntityReflector.GetDbColumnAttribute(EntityReflector.GetColumnsWithTag("Name", TypeInstance).FirstOrDefault()).Name;
         }
 
 

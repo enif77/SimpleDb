@@ -38,14 +38,14 @@ namespace SimpleDb.Sql
             : base(database)
         {
             // We need a property tagged as a Name database table column.
-            var columnWithNameTag = TypeInstance.GetColumnsWithTag(ALookupEntity<T, TId>.NameColumnTagName).FirstOrDefault();
+            var columnWithNameTag = EntityReflector.GetColumnsWithTag(ALookupEntity<T, TId>.NameColumnTagName, TypeInstance).FirstOrDefault();
             if (columnWithNameTag == null)
             {
                 throw new InvalidOperationException("A column with the " + ALookupEntity<T, TId>.NameColumnTagName + " tag expected.");
             }
 
             // Such a property should be a DbColumn and can have a DbColumn.Name set.
-            NamePropertyDbColumnName = AEntity.GetDbColumnName(columnWithNameTag);
+            NamePropertyDbColumnName = EntityReflector.GetDbColumnName(columnWithNameTag);
         }
 
         /// <summary>

@@ -79,7 +79,7 @@ namespace SimpleDb.Sql
             Database = database ?? throw new ArgumentNullException(nameof(database));
             TypeInstance = new T();
 
-            var baseName = TypeInstance.DatabaseTableName;
+            var baseName = EntityReflector.GetDatabaseTableName(TypeInstance);
 
             StoredProcedureBaseName = NamesProvider.GetStoredProcedureBaseName(baseName);
             FunctionBaseName = NamesProvider.GetFunctionBaseName(baseName);
@@ -376,7 +376,7 @@ namespace SimpleDb.Sql
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = AEntity.GetDbColumnAttribute(column);
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
 
                 // Skip Id attributes on insert and read only attributes.
                 if ((insert && attribute.IsId) || attribute.IsReadOnly)
@@ -402,7 +402,7 @@ namespace SimpleDb.Sql
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = AEntity.GetDbColumnAttribute(column);
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
 
                 // Add Id attributes only.
                 if (attribute.IsId)
@@ -421,7 +421,7 @@ namespace SimpleDb.Sql
         /// <returns>A list of SqlParameters.</returns>
         protected virtual DbParameter[] CreateIdParameters(int id)
         {
-            if (TypeInstance is IEntity<int> == false || TypeInstance.IsDatabaseTable == false)
+            if (TypeInstance is IEntity<int> == false || EntityReflector.IsDatabaseTable(TypeInstance) == false)
             {
                 throw new Exception("Can not create an Id parameter from a non IEntity or non database object.");
             }
@@ -438,7 +438,7 @@ namespace SimpleDb.Sql
 
             foreach (var column in TypeInstance.DatabaseColumns)
             {
-                var attribute = AEntity.GetDbColumnAttribute(column);
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
                 if (attribute.IsId)
                 {
                     paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, id));

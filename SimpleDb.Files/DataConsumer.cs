@@ -99,7 +99,7 @@ namespace SimpleDb.Files
             foreach (var column in instance.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
-                var attribute = AEntity.GetDbColumnAttribute(column);
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
 
                 var columnType = column.PropertyType;
                 switch (columnType.Name)
