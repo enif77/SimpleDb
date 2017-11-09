@@ -227,7 +227,7 @@ namespace SimpleDb.Sql
 
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            var iid = obj as IEntity<int>;
+            var iid = obj as IIdEntity<int>;
             if (iid == null)
             {
                 OperationAllowed(operation);
@@ -295,7 +295,7 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Delete);
 
-            var iid = TypeInstance as IEntity<int>;
+            var iid = TypeInstance as IIdEntity<int>;
             if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
             Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(iid.Id), transaction);
@@ -319,7 +319,7 @@ namespace SimpleDb.Sql
         /// <param name="transaction">An optional SQL transaction.</param>
         public virtual void Reload(T obj, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            var iid = obj as IEntity<int>;
+            var iid = obj as IIdEntity<int>;
             if (iid == null) throw new NotSupportedException("Object does not contain ID");
 
             OperationAllowed(DatabaseOperation.Select);
@@ -353,7 +353,7 @@ namespace SimpleDb.Sql
         /// <returns>A list of SqlParameters.</returns>
         protected DbParameter[] CreateInsertParameters(AEntity instance)
         {
-            return CreateInsertOrUpdateParameters(instance, instance is IEntity<int>);  // TODO: Insert parameters for non IId objects?
+            return CreateInsertOrUpdateParameters(instance, instance is IIdEntity<int>);  // TODO: Insert parameters for non IId objects?
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace SimpleDb.Sql
         /// <returns>A list of SqlParameters.</returns>
         protected virtual DbParameter[] CreateIdParameters(int id)
         {
-            if (TypeInstance is IEntity<int> == false || EntityReflector.IsDatabaseTable(TypeInstance) == false)
+            if (TypeInstance is IIdEntity<int> == false || EntityReflector.IsDatabaseTable(TypeInstance) == false)
             {
                 throw new Exception("Can not create an Id parameter from a non IEntity or non database object.");
             }

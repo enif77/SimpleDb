@@ -29,7 +29,7 @@ namespace SimpleDb.Shared
     /// Base interface for an audited entity.
     /// </summary>
     /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
-    public interface IAuditedEntity<TId> : IEntity<TId>
+    public interface IAuditedEntity<TId> : IIdEntity<TId>
     {
         /// <summary>
         /// The last update date.

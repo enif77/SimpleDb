@@ -26,7 +26,7 @@ namespace SimpleDb.Shared
     /// A base class for an entity with an Id column.
     /// </summary>
     /// <typeparam name="TId">A type of the entity Id column (int, long, GUID, ...).</typeparam>
-    public abstract class AIdEntity<TId> : AEntity, IEntity<TId>
+    public abstract class AIdEntity<TId> : AEntity, IIdEntity<TId>
     {
         #region properties
 

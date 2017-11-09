@@ -51,7 +51,7 @@
     <Compile Include="EmptyValue.cs" />
     <Compile Include="EntityReflector.cs" />
     <Compile Include="IAuditedEntity.cs" />
-    <Compile Include="IEntity.cs" />
+    <Compile Include="IIdEntity.cs" />
     <Compile Include="ILookup.cs" />
     <Compile Include="INamesProvider.cs" />
     <Compile Include="IUpdatable.cs" />

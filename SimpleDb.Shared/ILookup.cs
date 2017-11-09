@@ -26,7 +26,7 @@ namespace SimpleDb.Shared
     /// An interface describing an lookup.
     /// </summary>
     /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
-    public interface ILookup<TId> : IEntity<TId>
+    public interface ILookup<TId> : IIdEntity<TId>
     {
         /// <summary>
         /// A name.

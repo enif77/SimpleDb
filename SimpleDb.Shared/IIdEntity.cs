@@ -26,7 +26,7 @@ namespace SimpleDb.Shared
     /// An interface for identifiable objects.
     /// </summary>
     /// <typeparam name="TId">A type of the entity Id (int, long, GUID, ...).</typeparam>
-    public interface IEntity<TId>
+    public interface IIdEntity<TId>
     {
         /// <summary>
         /// An instance Id.

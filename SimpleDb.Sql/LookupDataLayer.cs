@@ -55,7 +55,6 @@ namespace SimpleDb.Sql
         public virtual int GetIdByName(string name)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
-            if (string.IsNullOrEmpty(NamePropertyDbColumnName)) throw new Exception("A Name column expected.");
 
             OperationAllowed(DatabaseOperation.Select);
 
