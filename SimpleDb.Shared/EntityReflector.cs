@@ -36,6 +36,7 @@ namespace SimpleDb.Shared
         /// <summary>
         /// Returns true, if an entity has defined the DbTable attribute.
         /// </summary>
+        /// <param name="entity">An entity instance.</param>
         /// <returns>True, if an entity has defined the DbTable attribute.</returns>
         public static bool IsDatabaseTable(object entity)
         {
@@ -47,6 +48,7 @@ namespace SimpleDb.Shared
         /// If the given entity does not have the DbTableAttribute attribute set, an InvalidOperationException is thrown.
         /// If the Name of the DbTableAttribute attribute is null, the name of the entity class is returned.
         /// </summary>
+        /// <param name="entity">An entity instance.</param>
         public static string GetDatabaseTableName(object entity)
         {
             var entityType = entity.GetType();
@@ -64,6 +66,7 @@ namespace SimpleDb.Shared
         /// <summary>
         /// Returns a collection containing a list of properties with the DbColumn attribute or with attributes inherited from the DbColumn attribute.
         /// </summary>
+        /// <param name="entity">An entity instance.</param>
         public static IEnumerable<PropertyInfo> GetDatabaseColumns(object entity)
         {
             return entity.GetType().GetProperties().Where(property => Attribute.IsDefined(property, typeof(DbColumnAttribute), true));
@@ -73,6 +76,7 @@ namespace SimpleDb.Shared
         /// Returns all properties with a given tag.
         /// </summary>
         /// <param name="tag">A tag.</param>
+        /// <param name="entity">An entity instance.</param>
         /// <returns>All properties with a given tag</returns>
         public static IEnumerable<PropertyInfo> GetColumnsWithTag(string tag, object entity)
         {
@@ -99,7 +103,6 @@ namespace SimpleDb.Shared
             var attribute = property.GetCustomAttribute(typeof(DbColumnAttribute)) as DbColumnAttribute;
             if (attribute == null)
             {
-                // This never happens. We are working with DbColumn properties only.
                 throw new InvalidOperationException(String.Format("The DbColumnAttribute is not defined for the {0} property.", property.Name));
             }
 

@@ -28,6 +28,8 @@ namespace SimpleDb.Shared
     /// <summary>
     /// A base class for an entity with Id, Name and Description columns.
     /// </summary>
+    /// <typeparam name="T">A type of the entity.</typeparam>
+    /// <typeparam name="TId">A type of the entity Id column (int, long, GUID, ...).</typeparam>
     public abstract class ALookupEntity<T, TId> : AIdEntity<TId>, ILookup<TId>, ICloneable, IUpdatable<T> where T : class, ILookup<TId>, new()
     {
         #region constants

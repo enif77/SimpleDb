@@ -106,7 +106,7 @@ namespace SimpleDb.Sql
         protected T TypeInstance { get; }
 
         /// <summary>
-        /// If true, the AuthorizationManager security is nod used.
+        /// If true, the security is not used.
         /// True by default (the security is not used).
         /// </summary>
         protected virtual bool BypassSecurity => true;
@@ -179,38 +179,37 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Inserts/updates object in database
+        /// Inserts an entity into a database.
         /// </summary>
-        /// <param name="obj">Instance to save</param>
-        /// <param name="transaction">Instance to SqlTransaction object</param>
-        /// <returns>Id of saved instance or the number of modified rows for non IId instances.</returns>
-        public virtual void Save(T obj, IDbTransaction transaction = null)
+        /// <param name="entity">An entity instance to be saved.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
+        public virtual void Save(T entity, IDbTransaction transaction = null)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             OperationAllowed(DatabaseOperation.Insert);
 
-            Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
+            Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(entity), transaction);
         }
 
         /// <summary>
-        /// Inserts/updates all objects in transaction.
+        /// Inserts all entities into a database.
         /// </summary>
-        /// <param name="objects">A list of objects.</param>
-        /// <param name="transaction">A transaction.</param>
-        public virtual void SaveAll(IEnumerable<T> objects, IDbTransaction transaction = null)
+        /// <param name="entities">A list of entities.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
+        public virtual void SaveAll(IEnumerable<T> entities, IDbTransaction transaction = null)
         {
-            if (objects == null) throw new ArgumentNullException(nameof(objects));
+            if (entities == null) throw new ArgumentNullException(nameof(entities));
 
-            if (objects.Any())
+            if (entities.Any())
             {
                 if (transaction == null)
                 {
-                    Database.DoInTransaction(SaveAllOperation, objects);
+                    Database.DoInTransaction(SaveAllOperation, entities);
                 }
                 else
                 {
-                    SaveAllOperation(transaction, objects);
+                    SaveAllOperation(transaction, entities);
                 }
             }
         }
@@ -221,53 +220,59 @@ namespace SimpleDb.Sql
         #region non-public methods
 
         /// <summary>
-        /// Creates parameters for a SELECT database operation. 
+        /// Creates parameters for the SELECT database operation. 
         /// </summary>
-        /// <returns>A list of SqlParameters.</returns>
+        /// <returns>A list of database parameters.</returns>
         protected virtual DbParameter[] CreateSelectListParameters()
         {
+            // TODO: Toto odstranit a umožnit do GetAll() předat seznam parametrů.
+
             return null;
         }
 
         /// <summary>
-        /// Creates parameters for a INSERT database operation. 
+        /// Creates parameters for the INSERT database operation. 
         /// </summary>
-        /// <returns>A list of SqlParameters.</returns>
-        protected DbParameter[] CreateInsertParameters(AEntity instance)
+        /// <param name="entity">An entity instance.</param>
+        /// <returns>A list of database parameters.</returns>
+        protected DbParameter[] CreateInsertParameters(AEntity entity)
         {
-            return CreateInsertOrUpdateParameters(instance, true);
+            return CreateInsertOrUpdateParameters(entity, true);
         }
 
         /// <summary>
-        /// Creates parameters for a UPDATE database operation. 
+        /// Creates parameters for the UPDATE database operation. 
         /// </summary>
-        /// <returns>A list of SqlParameters.</returns>
-        protected DbParameter[] CreateUpdateParameters(AEntity instance)
+        /// <param name="entity">An entity instance.</param>
+        /// <returns>A list of database parameters.</returns>
+        protected DbParameter[] CreateUpdateParameters(AEntity entity)
         {
-            return CreateInsertOrUpdateParameters(instance, false);
+            return CreateInsertOrUpdateParameters(entity, false);
         }
 
         /// <summary>
-        /// Creates parameters for an INSERT or an UPDATE database operation. 
+        /// Creates parameters for the INSERT or the UPDATE database operation. 
         /// </summary>
-        /// <returns>A list of SqlParameters.</returns>
-        protected virtual DbParameter[] CreateInsertOrUpdateParameters(AEntity instance, bool insert)
+        /// <param name="entity">An entity instance.</param>
+        /// <param name="insert">If true, we are inserting, so the Id columns are not generated into the list of database parameters.</param>
+        /// <returns>A list of database parameters.</returns>
+        protected virtual DbParameter[] CreateInsertOrUpdateParameters(AEntity entity, bool insert)
         {
             var paramList = new List<DbParameter>();
 
-            foreach (var column in instance.DatabaseColumns)
+            foreach (var column in entity.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
 
-                // Skip Id attributes on insert and read only attributes.
+                // Skip Id attributes on insert and read only attributes allways.
                 if ((insert && attribute.IsId) || attribute.IsReadOnly)
                 {
                     continue;
                 }
 
                 // Add parameter to the list of parameters.
-                paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
+                paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(entity)));
             }
 
             return paramList.ToArray();
@@ -314,23 +319,23 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// The SaveAll operation.
+        /// The save-all operation implementation.
         /// </summary>
         /// <param name="transaction">A SQL transaction.</param>
-        /// <param name="data">A list of object to be stored in the database.</param>
+        /// <param name="data">A list of objects to be stored in the database.</param>
         protected void SaveAllOperation(IDbTransaction transaction, object data)
         {
-            foreach (var obj in (IEnumerable<T>)data)
+            foreach (var entity in (IEnumerable<T>)data)
             {
                 try
                 {
-                    Save(obj, transaction);
+                    Save(entity, transaction);
                 }
                 catch (Exception ex)
                 {
-                    var exception = new DatabaseException("Can not save a data item.", ex);
+                    var exception = new DatabaseException("Can not save an entity.", ex);
 
-                    exception.Data.Add(obj.GetType().Name, obj);
+                    exception.Data.Add(entity.GetType().Name, entity);
 
                     throw exception;
                 }

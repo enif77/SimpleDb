@@ -32,7 +32,7 @@ namespace SimpleDb.Sql
 
 
     /// <summary>
-    /// The base of all datalayers.
+    /// The base of all datalayers for entities with an Id column.
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
     /// <typeparam name="TId">A type of the entity Id column (int, long, GUID, ...).</typeparam>
@@ -55,30 +55,30 @@ namespace SimpleDb.Sql
         #region public methods
 
         /// <summary>
-        /// Returns instance to object by id
+        /// Returns an entity instance with a specific Id.
         /// </summary>
-        /// <param name="id">Id value</param>
+        /// <param name="id">An entity Id.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        /// <returns>Instance to object</returns>
+        /// <returns>Instance of an entity or null.</returns>
         public virtual T Get(TId id, IDbTransaction transaction = null)
         {
             return Get(id, null, transaction);
         }
 
         /// <summary>
-        /// Returns instance to object by id
+        /// Returns an entity instance with a specific Id.
         /// </summary>
-        /// <param name="id">Id value</param>
-        /// <param name="userDataConsumer">An optional user data consumer instance.</param>
+        /// <param name="id">An entity Id.</param>
+        /// <param name="dataConsumer">An optional data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        /// <returns>Instance to object</returns>
-        public virtual T Get(TId id, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
+        /// <returns>Instance of an entity or null.</returns>
+        public virtual T Get(TId id, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, res);
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, res);
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -90,46 +90,46 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Inserts/updates object in database
+        /// Inserts or updates entity in database.
         /// </summary>
-        /// <param name="obj">Instance to save</param>
-        /// <param name="transaction">Instance to SqlTransaction object</param>
-        /// <returns>Id of saved instance or the number of modified rows for non IId instances.</returns>
-        public new TId Save(T obj, IDbTransaction transaction = null)
+        /// <param name="entity">An entity instance to be saved.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
+        /// <returns>An Id of the saved instance.</returns>
+        public new TId Save(T entity, IDbTransaction transaction = null)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            if (obj.IsNew)
+            if (entity.IsNew)
             {
                 OperationAllowed(DatabaseOperation.Insert);
 
-                return obj.Id = (TId)Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(obj), transaction);
+                return entity.Id = (TId)Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(entity), transaction);
             }
 
             OperationAllowed(DatabaseOperation.Update);
 
-            return (TId)Database.ExecuteScalarObject(UpdateStoredProcedureName, CreateUpdateParameters(obj), transaction);
+            return (TId)Database.ExecuteScalarObject(UpdateStoredProcedureName, CreateUpdateParameters(entity), transaction);
         }
 
         /// <summary>
-        /// Deletes object from database
+        /// Deletes an entity from a database.
         /// </summary>
-        /// <param name="obj">Instance to delete</param>
-        /// <param name="transaction">Instance to SqlTransaction object</param>
-        public virtual void Delete(T obj, IDbTransaction transaction = null)
+        /// <param name="entity">An entity instance to be deleted.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
+        public virtual void Delete(T entity, IDbTransaction transaction = null)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             OperationAllowed(DatabaseOperation.Delete);
 
-            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(obj), transaction);
+            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(entity), transaction);
         }
 
         /// <summary>
-        /// Deletes object from database.
+        /// Deletes an entity from a database.
         /// </summary>
-        /// <param name="id">An object Id to delete</param>
-        /// <param name="transaction">Instance to SqlTransaction object</param>
+        /// <param name="id">An entity Id to be deleted.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
         public virtual void Delete(TId id, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Delete);
@@ -138,33 +138,30 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Reloads an object from the database.
+        /// Reloads an entity from a database.
         /// </summary>
-        /// <param name="obj">An object instance to be reloaded from a database.</param>
+        /// <param name="entity">An entity instance to be reloaded from a database.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T obj, IDbTransaction transaction = null)
+        public virtual void Reload(T entity, IDbTransaction transaction = null)
         {
-            Reload(obj, null, transaction);
+            Reload(entity, null, transaction);
         }
 
         /// <summary>
-        /// Reloads an object from the database.
+        /// Reloads an entity from the database.
         /// </summary>
-        /// <param name="obj">An object instance to be reloaded from a database.</param>
+        /// <param name="entity">An entity instance to be reloaded from a database.</param>
         /// <param name="userDataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T obj, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
+        public virtual void Reload(T entity, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
         {
-            var iid = obj as IIdEntity<TId>;
-            if (iid == null) throw new NotSupportedException("An entity without the Id column can not be reloaded.");
-
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, new List<T> { obj });
+            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, new List<T> { entity });
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
-                CreateIdParameters(obj),
+                CreateIdParameters(entity),
                 consumer.RecreateInstance,
                 transaction);
         }
@@ -175,14 +172,15 @@ namespace SimpleDb.Sql
         #region non-public methods
 
         /// <summary>
-        /// Creates parameters for an GET or an DELETE database operation. 
+        /// Creates parameters for the GET or the DELETE database operation. 
         /// </summary>
-        /// <returns>A list of SqlParameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(AEntity instance)
+        /// <param name="entity">An entity instance from which we want to get Id parameters.</param>
+        /// <returns>A list of database parameters.</returns>
+        protected virtual DbParameter[] CreateIdParameters(AEntity entity)
         {
             var paramList = new List<DbParameter>();
 
-            foreach (var column in instance.DatabaseColumns)
+            foreach (var column in entity.DatabaseColumns)
             {
                 // Get the instance of this column attribute.
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
@@ -191,7 +189,7 @@ namespace SimpleDb.Sql
                 if (attribute.IsId)
                 {
                     // Add parameter to the list of parameters.
-                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(instance)));
+                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(entity)));
                 }
             }
 
@@ -199,15 +197,15 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Creates parameters for an GET or an DELETE database operation. 
+        /// Creates an Id parameter for the GET or the DELETE database operation. 
         /// </summary>
         /// <param name="id">An entity Id.</param>
-        /// <returns>A list of SqlParameters.</returns>
+        /// <returns>A list of database parameters.</returns>
         protected virtual DbParameter[] CreateIdParameters(TId id)
         {
             var paramList = new List<DbParameter>();
 
-            foreach (var column in EntityReflector.GetDatabaseColumns(TypeInstance))
+            foreach (var column in TypeInstance.DatabaseColumns)
             {
                 // Ignore column with a different type.
                 if (column.GetType() != typeof(TId)) continue;
