@@ -28,6 +28,7 @@ namespace SimpleDb.Sql
     using System.Linq;
 
     using SimpleDb.Shared;
+    using System.Reflection;
 
 
     /// <summary>
@@ -41,9 +42,10 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="provider">A INamesProvider instance.</param>
         /// <param name="instances">A collection, where created instances are stored.</param>
-        public DataConsumer(INamesProvider provider, ICollection<T> instances)
+        public DataConsumer(INamesProvider provider, IEnumerable<PropertyInfo> databaseColumns, ICollection<T> instances)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            DatabaseColumns = databaseColumns ?? throw new ArgumentNullException(nameof(databaseColumns));
             Instances = instances ?? throw new ArgumentNullException(nameof(instances));
         }
 
@@ -81,6 +83,11 @@ namespace SimpleDb.Sql
         /// </summary>
         private INamesProvider Provider { get; }
 
+        /// <summary>
+        /// The list of database columns we should get from the reader.
+        /// </summary>
+        private IEnumerable<PropertyInfo> DatabaseColumns { get; }
+
 
         /// <summary>
         /// Extracts data from DB reader to the given instance.
@@ -90,7 +97,7 @@ namespace SimpleDb.Sql
         private void GetData(IDataReader reader, T instance)
         {
             // For all DB columns...
-            foreach (var column in instance.DatabaseColumns)
+            foreach (var column in DatabaseColumns)
             {
                 // A column name can be specified by the name of a property itself.
                 var columnData = reader[Provider.TranslateColumnName(EntityReflector.GetDbColumnName(column))]; // Can throw IndexOutOfRangeException.

@@ -78,7 +78,7 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, res);
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -157,7 +157,7 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, new List<T> { entity });
+            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,

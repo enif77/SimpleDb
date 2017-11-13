@@ -29,6 +29,7 @@ namespace SimpleDb.Sql
     using System.Linq;
 
     using SimpleDb.Shared;
+    using System.Reflection;
 
 
     /// <summary>
@@ -83,6 +84,8 @@ namespace SimpleDb.Sql
 
             StoredProcedureBaseName = NamesProvider.GetStoredProcedureBaseName(baseName);
             FunctionBaseName = NamesProvider.GetFunctionBaseName(baseName);
+
+            DatabaseColumns = EntityReflector.GetDatabaseColumns(TypeInstance);
         }
 
         #endregion
@@ -104,6 +107,11 @@ namespace SimpleDb.Sql
         /// An instance of a T, used for reflection operations.
         /// </summary>
         protected T TypeInstance { get; }
+
+        /// <summary>
+        /// The list of database columns this entity has.
+        /// </summary>
+        protected IEnumerable<PropertyInfo> DatabaseColumns { get; }
 
         /// <summary>
         /// If true, the security is not used.
@@ -167,7 +175,7 @@ namespace SimpleDb.Sql
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, res);
+            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
 
             Database.ExecuteReader(
                 SelectStoredProcedureName,
