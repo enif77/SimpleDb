@@ -41,8 +41,8 @@ namespace SimpleDbTests
             try
             {
                 //FilesTests();
-                MsSqlTests();
-                //MySqlTests();
+                //MsSqlTests();
+                MySqlTests();
             }
             finally 
             {
@@ -81,9 +81,13 @@ namespace SimpleDbTests
 
 
         #region MsSQL
-
+        
         private static void MsSqlTests()
         {
+            Console.WriteLine("========================================");
+            Console.WriteLine("MSSQL");
+            Console.WriteLine("========================================");
+
             Shared.Datalayer.Initializer.InitializeLayers(
                 new SimpleDb.Sql.Database(
                     ConfigurationManager.ConnectionStrings["SIMPLEDB_MSSQL"].ConnectionString,
@@ -124,6 +128,10 @@ namespace SimpleDbTests
 
         private static void MySqlTests()
         {
+            Console.WriteLine("========================================");
+            Console.WriteLine("MySQL");
+            Console.WriteLine("========================================");
+
             Shared.Datalayer.Initializer.InitializeLayers(
                 new SimpleDb.Sql.Database(
                     ConfigurationManager.ConnectionStrings["SIMPLEDB_MYSQL"].ConnectionString,

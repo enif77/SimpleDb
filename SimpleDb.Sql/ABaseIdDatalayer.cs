@@ -151,13 +151,13 @@ namespace SimpleDb.Sql
         /// Reloads an entity from the database.
         /// </summary>
         /// <param name="entity">An entity instance to be reloaded from a database.</param>
-        /// <param name="userDataConsumer">An optional user data consumer instance.</param>
+        /// <param name="dataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T entity, IDataConsumer<T> userDataConsumer, IDbTransaction transaction = null)
+        public virtual void Reload(T entity, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
 
             Database.ExecuteReader(
                 SelectDetailsStoredProcedureName,
@@ -180,7 +180,7 @@ namespace SimpleDb.Sql
         {
             var paramList = new List<DbParameter>();
 
-            foreach (var column in entity.DatabaseColumns)
+            foreach (var column in DatabaseColumns)
             {
                 // Get the instance of this column attribute.
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
@@ -205,7 +205,7 @@ namespace SimpleDb.Sql
         {
             var paramList = new List<DbParameter>();
 
-            foreach (var column in TypeInstance.DatabaseColumns)
+            foreach (var column in DatabaseColumns)
             {
                 // Ignore column with a different type.
                 if (column.GetType() != typeof(TId)) continue;

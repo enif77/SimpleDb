@@ -167,19 +167,20 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Returns all instances of a T.
         /// </summary>
-        /// <param name="userDataConsumer">An optional user data consumer instance.</param>
+        /// <param name="parameters">A list of parameters for the SELECT stored procedure. Usually empty.</param>
+        /// <param name="dataConsumer">An optional user data consumer instance.</param>
         /// <returns>IEnumerable of all object instances.</returns>
-        public virtual IEnumerable<T> GetAll(IDataConsumer<T> userDataConsumer = null)
+        public virtual IEnumerable<T> GetAll(DbParameter[] parameters = null, IDataConsumer<T> dataConsumer = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
             var res = new List<T>();
 
-            var consumer = userDataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
 
             Database.ExecuteReader(
                 SelectStoredProcedureName,
-                CreateSelectListParameters(),
+                parameters,
                 consumer.CreateInstance,
                 null);
 
@@ -226,17 +227,6 @@ namespace SimpleDb.Sql
 
 
         #region non-public methods
-
-        /// <summary>
-        /// Creates parameters for the SELECT database operation. 
-        /// </summary>
-        /// <returns>A list of database parameters.</returns>
-        protected virtual DbParameter[] CreateSelectListParameters()
-        {
-            // TODO: Toto odstranit a umožnit do GetAll() předat seznam parametrů.
-
-            return null;
-        }
 
         /// <summary>
         /// Creates parameters for the INSERT database operation. 
