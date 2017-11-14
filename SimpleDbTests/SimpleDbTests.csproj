@@ -77,6 +77,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\INamesProvider.cs" />
+    <Compile Include="SqLite\Initializer.cs" />
+    <Compile Include="SqLite\Lookup.cs" />
+    <Compile Include="SqLite\LookupDatalayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -98,6 +101,10 @@
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
       <Name>SimpleDb.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.SqLite\SimpleDb.SqLite.csproj">
+      <Project>{20c4a535-6ea8-4409-b788-9100018f7415}</Project>
+      <Name>SimpleDb.SqLite</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Sql\SimpleDb.Sql.csproj">
       <Project>{22684e08-ec5b-482e-90e3-d3a7c4fccf3a}</Project>

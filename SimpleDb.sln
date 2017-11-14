@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A2D2514-458A-4E9D-AC96-55A86753D95A}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,6 +19,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.MsSql", "SimpleDb.MsSql\SimpleDb.MsSql.csproj", "{0DD21056-8E5D-45E2-8B71-3C9E6157B8E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.MySql", "SimpleDb.MySql\SimpleDb.MySql.csproj", "{79EED3E2-411A-4506-9384-68153CE84C10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.SqLite", "SimpleDb.SqLite\SimpleDb.SqLite.csproj", "{20C4A535-6EA8-4409-B788-9100018F7415}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{79EED3E2-411A-4506-9384-68153CE84C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79EED3E2-411A-4506-9384-68153CE84C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79EED3E2-411A-4506-9384-68153CE84C10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20C4A535-6EA8-4409-B788-9100018F7415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C4A535-6EA8-4409-B788-9100018F7415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C4A535-6EA8-4409-B788-9100018F7415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C4A535-6EA8-4409-B788-9100018F7415}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

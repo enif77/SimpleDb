@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Sql
+namespace SimpleDb.SqLite
 {
     using System;
     using System.Collections.Generic;
@@ -29,6 +29,8 @@ namespace SimpleDb.Sql
     using System.Linq;
 
     using SimpleDb.Shared;
+    using SimpleDb.Sql;
+    using System.Text;
 
 
     /// <summary>
@@ -36,7 +38,7 @@ namespace SimpleDb.Sql
     /// </summary>
     /// <typeparam name="T">An ABusinessObject type.</typeparam>
     /// <typeparam name="TId">A type of the entity Id column (int, long, GUID, ...).</typeparam>
-    public abstract class ABaseIdDatalayer<T, TId> : ABaseDatalayer<T> where T : AIdEntity<TId>, new()
+    public abstract class ABaseIdDatalayer<T, TId> : SimpleDb.Sql.ABaseIdDatalayer<T, TId> where T : AIdEntity<TId>, new()
     {
         #region ctor
 
@@ -52,6 +54,30 @@ namespace SimpleDb.Sql
         #endregion
 
 
+        #region public methods ABaseDataLayer
+
+        /// <inheritdoc />
+        public override IEnumerable<T> GetAll(DbParameter[] parameters = null, IDataConsumer<T> dataConsumer = null)
+        {
+            OperationAllowed(DatabaseOperation.Select);
+
+            var res = new List<T>();
+
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
+
+            // TODO: Replace "*" with the list of DbColumns.
+            // TODO: Generate the WHERE clausule using parameters.
+            Database.ExecuteReaderQuery(
+                "SELECT * FROM " + TypeInstance.DataTableName, 
+                null,
+                consumer.CreateInstance);
+
+            return res;
+        }
+
+        #endregion
+
+
         #region public methods
 
         /// <summary>
@@ -60,7 +86,7 @@ namespace SimpleDb.Sql
         /// <param name="id">An entity Id.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance of an entity or null.</returns>
-        public virtual T Get(TId id, IDbTransaction transaction = null)
+        public override T Get(TId id, IDbTransaction transaction = null)
         {
             return Get(id, null, transaction);
         }
@@ -72,7 +98,7 @@ namespace SimpleDb.Sql
         /// <param name="dataConsumer">An optional data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance of an entity or null.</returns>
-        public virtual T Get(TId id, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
+        public override T Get(TId id, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
@@ -80,9 +106,21 @@ namespace SimpleDb.Sql
 
             var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
 
-            Database.ExecuteReader(
-                SelectDetailsStoredProcedureName,
-                CreateIdParameters(id),
+            var idParameters = CreateIdParameters(id);
+
+            // SELECT * FROM Table WHERE Id = @Id
+
+            var sb = new StringBuilder("SELECT * FROM ");
+
+            sb.Append(TypeInstance.DataTableName);
+            sb.Append(" WHERE ");
+            sb.Append(idParameters[0].ParameterName.Substring(1));  // TODO: Get a clean column name.
+            sb.Append(" = ");
+            sb.Append(idParameters[0].Value);
+
+            Database.ExecuteReaderQuery(
+                sb.ToString(),
+                idParameters,
                 consumer.CreateInstance,
                 transaction);
 
@@ -95,20 +133,24 @@ namespace SimpleDb.Sql
         /// <param name="entity">An entity instance to be saved.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>An Id of the saved instance.</returns>
-        new public virtual TId Save(T entity, IDbTransaction transaction = null)
+        public override TId Save(T entity, IDbTransaction transaction = null)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            throw new NotImplementedException();
 
-            if (entity.IsNew)
-            {
-                OperationAllowed(DatabaseOperation.Insert);
+            //if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-                return entity.Id = (TId)Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(entity), transaction);
-            }
+            //if (entity.IsNew)
+            //{
+            //    OperationAllowed(DatabaseOperation.Insert);
 
-            OperationAllowed(DatabaseOperation.Update);
+            //    return entity.Id = (TId)Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(entity), transaction);
+            //}
 
-            return (TId)Database.ExecuteScalarObject(UpdateStoredProcedureName, CreateUpdateParameters(entity), transaction);
+            //OperationAllowed(DatabaseOperation.Update);
+
+            // UPDATE players SET name = @name, score = @score, active = @active WHERE jerseyNum = @jerseyNum";
+
+            //return (TId)Database.ExecuteScalarObject(UpdateStoredProcedureName, CreateUpdateParameters(entity), transaction);
         }
 
         /// <summary>
@@ -116,13 +158,15 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="entity">An entity instance to be deleted.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Delete(T entity, IDbTransaction transaction = null)
+        public override void Delete(T entity, IDbTransaction transaction = null)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            throw new NotImplementedException();
 
-            OperationAllowed(DatabaseOperation.Delete);
+            //if (entity == null) throw new ArgumentNullException(nameof(entity));
 
-            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(entity), transaction);
+            //OperationAllowed(DatabaseOperation.Delete);
+
+            //Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(entity), transaction);
         }
 
         /// <summary>
@@ -130,11 +174,13 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="id">An entity Id to be deleted.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Delete(TId id, IDbTransaction transaction = null)
+        public override void Delete(TId id, IDbTransaction transaction = null)
         {
-            OperationAllowed(DatabaseOperation.Delete);
+            throw new NotImplementedException();
 
-            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(id), transaction);
+            //OperationAllowed(DatabaseOperation.Delete);
+
+            //Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(id), transaction);
         }
 
         /// <summary>
@@ -142,7 +188,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="entity">An entity instance to be reloaded from a database.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T entity, IDbTransaction transaction = null)
+        public override void Reload(T entity, IDbTransaction transaction = null)
         {
             Reload(entity, null, transaction);
         }
@@ -153,17 +199,19 @@ namespace SimpleDb.Sql
         /// <param name="entity">An entity instance to be reloaded from a database.</param>
         /// <param name="dataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T entity, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
+        public override void Reload(T entity, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
-            OperationAllowed(DatabaseOperation.Select);
+            throw new NotImplementedException();
 
-            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
+            //OperationAllowed(DatabaseOperation.Select);
 
-            Database.ExecuteReader(
-                SelectDetailsStoredProcedureName,
-                CreateIdParameters(entity),
-                consumer.RecreateInstance,
-                transaction);
+            //var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
+
+            //Database.ExecuteReader(
+            //    SelectDetailsStoredProcedureName,
+            //    CreateIdParameters(entity),
+            //    consumer.RecreateInstance,
+            //    transaction);
         }
 
         #endregion
@@ -171,57 +219,7 @@ namespace SimpleDb.Sql
 
         #region non-public methods
 
-        /// <summary>
-        /// Creates parameters for the GET or the DELETE database operation. 
-        /// </summary>
-        /// <param name="entity">An entity instance from which we want to get Id parameters.</param>
-        /// <returns>A list of database parameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(AEntity entity)
-        {
-            var paramList = new List<DbParameter>();
-
-            foreach (var column in DatabaseColumns)
-            {
-                // Get the instance of this column attribute.
-                var attribute = EntityReflector.GetDbColumnAttribute(column);
-
-                // Add Id attributes only.
-                if (attribute.IsId)
-                {
-                    // Add parameter to the list of parameters.
-                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(entity)));
-                }
-            }
-
-            return paramList.ToArray();
-        }
-
-        /// <summary>
-        /// Creates an Id parameter for the GET or the DELETE database operation. 
-        /// </summary>
-        /// <param name="id">An entity Id.</param>
-        /// <returns>A list of database parameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(TId id)
-        {
-            var paramList = new List<DbParameter>();
-
-            foreach (var column in DatabaseColumns)
-            {
-                // Ignore column with a different type.
-                if (column.GetType() != typeof(TId)) continue;
-
-                var attribute = EntityReflector.GetDbColumnAttribute(column);
-                if (attribute.IsId)
-                {
-                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, id));
-
-                    // Use the first found property only.
-                    break;
-                }
-            }
-
-            return paramList.ToArray();
-        }
+        // Nothing here yet... :-)
 
         #endregion
     }

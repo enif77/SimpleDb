@@ -42,7 +42,8 @@ namespace SimpleDbTests
             {
                 //FilesTests();
                 //MsSqlTests();
-                MySqlTests();
+                //MySqlTests();
+                SqLiteTests();
             }
             finally 
             {
@@ -164,6 +165,50 @@ namespace SimpleDbTests
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
         }
+
+        #endregion
+
+
+        #region SqLite
+
+        private static void SqLiteTests()
+        {
+            Console.WriteLine("========================================");
+            Console.WriteLine("SQLITE");
+            Console.WriteLine("========================================");
+
+            SqLite.Datalayer.Initializer.InitializeLayers(
+                new SimpleDb.Sql.Database(
+                    ConfigurationManager.ConnectionStrings["SIMPLEDB_SQLITE"].ConnectionString,
+                    new SimpleDb.SqLite.DatabaseProvider(new SimpleDb.SqLite.NamesProvider())));
+
+            SqLiteLookupDataLayerTest();
+            //SqLiteLookupColumnNamesDatalayerTest();
+        }
+
+
+        private static void SqLiteLookupDataLayerTest()
+        {
+            var dal = Registry.Get<SqLite.Datalayer.LookupDataLayer>();
+            foreach (var lookup in dal.GetAll())
+            {
+                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+            }
+
+            //var name = "V1";
+            //var id = dal.GetIdByName(name);
+            //Console.WriteLine("The '{0}' Id is: {1}", name, id);
+        }
+
+
+        //private static void SqLiteLookupColumnNamesDatalayerTest()
+        //{
+        //    var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
+        //    foreach (var lookup in dal.GetAll())
+        //    {
+        //        Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+        //    }
+        //}
 
         #endregion
     }

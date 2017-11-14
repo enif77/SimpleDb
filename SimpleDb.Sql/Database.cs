@@ -231,12 +231,13 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        ///  Executes SQL command returning a data.
+        ///  Executes SQL query returning a data.
         /// </summary>
         /// <param name="query">A SQL query.</param>
+        /// <param name="parameters">Array of SQL parameters.</param>
         /// <param name="dataConsumer">A method consuming data from a SqlDataReader reader.</param>
         /// <param name="transaction">A SQL transaction or null.</param>
-        public void ExecuteReaderQuery(string query, DataConsumer dataConsumer, IDbTransaction transaction = null)
+        public void ExecuteReaderQuery(string query, DbParameter[] parameters, DataConsumer dataConsumer, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(query)) throw new ArgumentException("A SQL query expected.", nameof(query));
             if (dataConsumer == null) throw new ArgumentNullException(nameof(dataConsumer));
@@ -247,7 +248,7 @@ namespace SimpleDb.Sql
                 {
                     using (var connection = CreateConnection())
                     {
-                        using (var command = CreateTextCommand(query, null, connection.Connection, null))
+                        using (var command = CreateTextCommand(query, parameters, connection.Connection, null))
                         {
                             ReadData(command, dataConsumer);
                         }
@@ -255,7 +256,7 @@ namespace SimpleDb.Sql
                 }
                 else
                 {
-                    using (var command = CreateTextCommand(query, null, transaction.Connection, transaction))
+                    using (var command = CreateTextCommand(query, parameters, transaction.Connection, transaction))
                     {
                         ReadData(command, dataConsumer);
                     }
@@ -266,6 +267,44 @@ namespace SimpleDb.Sql
                 throw new DatabaseException(ex.Message, ex);
             }
         }
+
+        /// <summary>
+        ///  Executes SQL query not returning a data.
+        /// </summary>
+        /// <param name="query">A SQL query.</param>
+        /// <param name="parameters">Array of SQL parameters.</param>
+        /// <param name="dataConsumer">A method consuming data from a SqlDataReader reader.</param>
+        /// <param name="transaction">A SQL transaction or null.</param>
+        public void ExecuteNonReaderQuery(string query, DbParameter[] parameters, IDbTransaction transaction = null)
+        {
+            if (string.IsNullOrEmpty(query)) throw new ArgumentException("A SQL query expected.", nameof(query));
+
+            try
+            {
+                if (transaction == null)
+                {
+                    using (var connection = CreateConnection())
+                    {
+                        using (var command = CreateTextCommand(query, parameters, connection.Connection, null))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                }
+                else
+                {
+                    using (var command = CreateTextCommand(query, parameters, transaction.Connection, transaction))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException(ex.Message, ex);
+            }
+        }
+
 
         /// <summary>
         /// Executes SQL reader to database.

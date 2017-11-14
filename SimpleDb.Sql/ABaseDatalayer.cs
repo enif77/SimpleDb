@@ -27,10 +27,10 @@ namespace SimpleDb.Sql
     using System.Data;
     using System.Data.Common;
     using System.Linq;
-
-    using SimpleDb.Shared;
     using System.Reflection;
 
+    using SimpleDb.Shared;
+    
 
     /// <summary>
     /// The base of all datalayers.
