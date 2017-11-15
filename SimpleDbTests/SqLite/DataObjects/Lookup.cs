@@ -20,30 +20,52 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.SqLite.Datalayer
+namespace SimpleDbTests.SqLite.DataObjects
 {
     using System;
 
-    using Injektor;
-
-    using SimpleDb.Sql;
-    
+    using SimpleDb.Shared;
 
     /// <summary>
-    /// Global class for registering and initializing data layers.
+    /// A simple lookup with default colums and column names.
+    /// SQLITE supports Int64 only and not Int32.
     /// </summary>
-    public static class Initializer
+    [DbTable]
+    public class Lookup : ALookupEntity<Lookup, long>
     {
-        /// <summary>
-        /// Initializes and registers all data layers.
-        /// </summary>
-        /// <param name="database"></param>
-        public static void InitializeLayers(Database database)
-        {
-            if (database == null) throw new ArgumentNullException(nameof(database));
+        #region ctor
 
-            Registry.RegisterInstance(new LookupDataLayer(database));
-            //Registry.RegisterInstance(new LookupColumnNamesDataLayer(database));
+        public Lookup()
+        {
+            // The description is not required. 
+            // Because it is not nullable by default, we set some non-null value here. 
+            Description = String.Empty;
         }
+
+        #endregion
+
+
+        #region properties
+
+        /// <inheritdoc />
+        public override bool IsNew
+        {
+            get
+            {
+                return Id == 0;
+            }
+        }
+
+        /// <summary>
+        /// The Name column with limited lenght of data. (3 chars only, see the Lookup.sql file.)
+        /// </summary>
+        [DbStringColumn(IsNonempty = true, MaxLength = 3, Tag = NameColumnTagName)]
+        public override string Name
+        {
+            get { return base.Name; }
+            set { base.Name = value; }
+        }
+        
+        #endregion
     }
 }

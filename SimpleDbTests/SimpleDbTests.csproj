@@ -77,9 +77,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\INamesProvider.cs" />
-    <Compile Include="SqLite\Initializer.cs" />
-    <Compile Include="SqLite\Lookup.cs" />
-    <Compile Include="SqLite\LookupDatalayer.cs" />
+    <Compile Include="SqLite\Datalayer\Initializer.cs" />
+    <Compile Include="SqLite\Datalayer\LookupDatalayer.cs" />
+    <Compile Include="SqLite\DataObjects\Lookup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

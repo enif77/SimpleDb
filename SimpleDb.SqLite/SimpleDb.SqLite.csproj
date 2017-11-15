@@ -45,10 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ABaseDatalayer.cs" />
-    <Compile Include="ABaseIdDatalayer.cs" />
     <Compile Include="DatabaseProvider.cs" />
-    <Compile Include="LookupDataLayer.cs" />
     <Compile Include="NamesProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -20,51 +20,29 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.SqLite
+namespace SimpleDbTests.SqLite.Datalayer
 {
     using System;
 
-    using SimpleDb.Shared;
+    using Injektor;
+    using SimpleDb.Sql;
+    
 
     /// <summary>
-    /// A simple lookup with default colums and column names.
+    /// Global class for registering and initializing data layers.
     /// </summary>
-    [DbTable]
-    public class Lookup : ALookupEntity<Lookup, long>
+    public static class Initializer
     {
-        #region ctor
-
-        public Lookup()
-        {
-            // The description is not required. 
-            // Because it is not nullable by default, we set some non-null value here. 
-            Description = String.Empty;
-        }
-
-        #endregion
-
-
-        #region properties
-
-        /// <inheritdoc />
-        public override bool IsNew
-        {
-            get
-            {
-                return Id == 0;
-            }
-        }
-
         /// <summary>
-        /// The Name column with limited lenght of data. (3 chars only, see the Lookup.sql file.)
+        /// Initializes and registers all data layers.
         /// </summary>
-        [DbStringColumn(IsNonempty = true, MaxLength = 3, Tag = NameColumnTagName)]
-        public override string Name
+        /// <param name="database"></param>
+        public static void InitializeLayers(Database database)
         {
-            get { return base.Name; }
-            set { base.Name = value; }
+            if (database == null) throw new ArgumentNullException(nameof(database));
+
+            Registry.RegisterInstance(new LookupDataLayer(database));
+            //Registry.RegisterInstance(new LookupColumnNamesDataLayer(database));
         }
-        
-        #endregion
     }
 }

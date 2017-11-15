@@ -22,17 +22,19 @@ freely, subject to the following restrictions:
 
 namespace SimpleDbTests.SqLite.Datalayer
 {
-    using System;
     using System.Data.SqlClient;
 
     using SimpleDb.Sql;
-   
 
-    public class LookupDataLayer : SimpleDb.SqLite.LookupDataLayer<Lookup, long>
+    using SimpleDbTests.SqLite.DataObjects;
+
+    public class LookupDataLayer : LookupDataLayer<Lookup, long>
     {
         public LookupDataLayer(Database database)
             : base(database)
         {
+            // For SQLITE we have to use SQL queries.
+            UseQueries = true;
         }
 
 
@@ -43,11 +45,9 @@ namespace SimpleDbTests.SqLite.Datalayer
         /// <returns>Number of affected rows.</returns>
         public int DeleteAll(SqlTransaction transaction = null)
         {
-            throw new NotImplementedException();
+            OperationAllowed(DatabaseOperation.Delete);
 
-            //OperationAllowed(DatabaseOperation.Delete);
-
-            //return Database.ExecuteNonQuery(((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
+            return Database.ExecuteNonQuery(((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
         }
     }
 }

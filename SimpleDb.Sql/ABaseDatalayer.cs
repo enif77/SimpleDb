@@ -25,12 +25,12 @@ namespace SimpleDb.Sql
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Data.Common;
     using System.Linq;
     using System.Reflection;
+    using System.Text;
 
     using SimpleDb.Shared;
-    
+
 
     /// <summary>
     /// The base of all datalayers.
@@ -102,6 +102,11 @@ namespace SimpleDb.Sql
         /// An INamesProvider instance used by this DALs database.
         /// </summary>
         public INamesProvider NamesProvider { get { return Database.Provider.NamesProvider; } }
+
+        /// <summary>
+        /// If true, all database operations are done by SQL queries and not by stored procedures.
+        /// </summary>
+        public bool UseQueries { get; set; }
 
         /// <summary>
         /// An instance of a T, used for reflection operations.
@@ -179,12 +184,23 @@ namespace SimpleDb.Sql
 
             var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
 
-            Database.ExecuteReader(
+            if (UseQueries)
+            {
+                Database.ExecuteReaderQuery(
+                    GenerateSelectQuery(CreateSelectColumnNames(), parameters),  // TODO: SELECT column names can be precomputed.
+                    parameters,
+                    consumer.CreateInstance,
+                    transaction);
+            }
+            else
+            {
+                Database.ExecuteReader(
                 SelectStoredProcedureName,
                 parameters,
                 consumer.CreateInstance,
                 transaction);
-
+            }
+            
             return res;
         }
 
@@ -199,7 +215,16 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Insert);
 
-            Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(entity), transaction);
+            var parameters = CreateInsertParameters(entity);
+
+            if (UseQueries)
+            {
+                Database.ExecuteNonReaderQuery(GenerateInsertQuery(parameters), parameters, transaction);
+            }
+            else
+            {
+                Database.ExecuteScalarObject(InsertStoredProcedureName, parameters, transaction);
+            }
         }
 
         /// <summary>
@@ -259,7 +284,7 @@ namespace SimpleDb.Sql
         {
             var paramList = new List<NamedDbParameter>();
 
-            foreach (var column in entity.DatabaseColumns)
+            foreach (var column in DatabaseColumns)
             {
                 // Get the instance of this column attribute.
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
@@ -282,6 +307,33 @@ namespace SimpleDb.Sql
             }
 
             return paramList;
+        }
+
+        /// <summary>
+        /// Creates column parameters for the SELECT database operation. 
+        /// These parameters contain names only.
+        /// </summary> 
+        /// <param name="entity">An entity instance.</param>
+        /// <returns>A list of database parameters.</returns>
+        protected virtual IEnumerable<NamedDbParameter> CreateSelectColumnNames()
+        {
+            var columnList = new List<NamedDbParameter>();
+
+            foreach (var column in DatabaseColumns)
+            {
+                // Get the instance of this column attribute.
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
+
+                // Add column to the list of columns.
+                var baseName = attribute.Name ?? column.Name;
+                columnList.Add(new NamedDbParameter()
+                {
+                    BaseName = baseName,
+                    Name = NamesProvider.TranslateColumnName(baseName)
+                });
+            }
+
+            return columnList;
         }
 
         /// <summary>
@@ -325,6 +377,101 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
+        /// Generates a parametrized SELECT query.
+        /// </summary>
+        /// <param name="columnNames">An optional list of columns we wanna to get.</param>
+        /// <param name="parameters">An optional list of WHERE parameters.</param>
+        /// <returns>A parametrized SELECT query.</returns>
+        protected virtual string GenerateSelectQuery(IEnumerable<NamedDbParameter> columnNames, IEnumerable<NamedDbParameter> parameters)
+        {
+            // Get all columns by default.
+            var columnsListString = "*";
+            
+            // If we have a non empty list of columns.
+            var count = columnNames.Count();
+            if (count > 0)
+            {
+                var columNamesStringBuilder = new StringBuilder();
+
+                foreach (var column in columnNames)
+                {
+                    columNamesStringBuilder.Append(column.Name);
+
+                    count--;
+                    if (count < 1)
+                    {
+                        break;
+                    }
+
+                    columNamesStringBuilder.Append(",");
+                }
+
+                columnsListString = columNamesStringBuilder.ToString();
+            }
+
+            // Generate the WHERE clausule using parameters.
+            // WHERE param1 = @param1 AND param2 = @param2 ...
+            if (parameters != null && parameters.Any())
+            {
+                var whereClausuleStringBuilder = new StringBuilder(" WHERE ");
+
+                count = parameters.Count();
+                foreach (var parameter in parameters)
+                {
+                    whereClausuleStringBuilder.Append(parameter.Name);
+                    whereClausuleStringBuilder.Append("=");
+                    whereClausuleStringBuilder.Append(parameter.DbParameter.ParameterName);
+
+                    count--;
+                    if (count < 1)
+                    {
+                        break;
+                    }
+
+                    whereClausuleStringBuilder.Append(" AND ");
+                }
+
+                return string.Format("SELECT {0} FROM {1} WHERE {2}", columnsListString, TypeInstance.DataTableName, whereClausuleStringBuilder.ToString());
+            }
+            else
+            {
+                return string.Format("SELECT {0} FROM {1}", columnsListString, TypeInstance.DataTableName);
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Generates a parametrized INSERT query.
+        /// </summary>
+        /// <param name="insertParameters">A list of INSERT parameters.</param>
+        /// <returns>A parametrized INSERT query.</returns>
+        protected virtual string GenerateInsertQuery(IEnumerable<NamedDbParameter> insertParameters)
+        {
+            var columsStringBuilder = new StringBuilder();
+            var valuesStringBuilder = new StringBuilder();
+                        
+            var count = insertParameters.Count();
+            foreach (var parameter in insertParameters)
+            {
+                columsStringBuilder.Append(parameter.Name);
+                valuesStringBuilder.Append(parameter.DbParameter.ParameterName);
+
+                count--;
+                if (count < 1)
+                {
+                    break;
+                }
+
+                columsStringBuilder.Append(",");
+                valuesStringBuilder.Append(",");
+            }
+
+            // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description)
+            return string.Format("INSERT INTO {0} ({1}) VALUES ({2})", TypeInstance.DataTableName, columsStringBuilder.ToString(), valuesStringBuilder.ToString());
+        }
+
+        /// <summary>
         /// The save-all operation implementation.
         /// </summary>
         /// <param name="transaction">A SQL transaction.</param>
@@ -351,3 +498,35 @@ namespace SimpleDb.Sql
         #endregion
     }
 }
+
+
+/*
+ 
+https://stackoverflow.com/questions/2662999/system-data-sqlite-parameterized-queries-with-multiple-values
+
+-------------------
+
+pendingDeletions = new SQLiteCommand(@"DELETE FROM [centres] WHERE [name] = $name", conn);
+foreach (string name in selected)
+{
+    pendingDeletions.Parameters.AddWithValue("$name", centre.Name);
+    pendingDeletions.ExecuteNonQuery();
+}   
+
+------------------- 
+
+SqlConnection tConn = new SqlConnection("ConnectionString");
+
+SqlCommand tCommand = new SqlCommand();
+
+tCommand.Connection = tConn;
+tCommand.CommandText = "UPDATE players SET name = @name, score = @score, active = @active WHERE jerseyNum = @jerseyNum";
+
+tCommand.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar).Value = "Smith, Steve");
+tCommand.Parameters.Add(new SqlParameter("@score", System.Data.SqlDbType.Int).Value = "42");
+tCommand.Parameters.Add(new SqlParameter("@active", System.Data.SqlDbType.Bit).Value = true);
+tCommand.Parameters.Add(new SqlParameter("@jerseyNum", System.Data.SqlDbType.Int).Value = "99");
+
+tCommand.ExecuteNonQuery();
+    
+*/

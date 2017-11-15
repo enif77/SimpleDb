@@ -60,6 +60,11 @@ namespace SimpleDb.Sql
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
 
+            if (UseQueries)
+            {
+                throw new NotImplementedException();
+            }
+
             OperationAllowed(DatabaseOperation.Select);
 
             var paramList = new List<NamedDbParameter>();

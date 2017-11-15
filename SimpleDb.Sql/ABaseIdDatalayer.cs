@@ -29,6 +29,7 @@ namespace SimpleDb.Sql
     using System.Linq;
 
     using SimpleDb.Shared;
+    using System.Text;
 
 
     /// <summary>
@@ -80,12 +81,25 @@ namespace SimpleDb.Sql
 
             var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
 
-            Database.ExecuteReader(
-                SelectDetailsStoredProcedureName,
-                CreateIdParameters(id),
-                consumer.CreateInstance,
-                transaction);
+            if (UseQueries)
+            {
+                var idParameters = CreateIdParameters(id);
 
+                Database.ExecuteReaderQuery(
+                    GenerateSelectQuery(CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
+                    idParameters,
+                    consumer.CreateInstance,
+                    transaction);
+            }
+            else
+            {
+                Database.ExecuteReader(
+                    SelectDetailsStoredProcedureName,
+                    CreateIdParameters(id),
+                    consumer.CreateInstance,
+                    transaction);
+            }
+            
             return res.FirstOrDefault();
         }
 
@@ -99,6 +113,11 @@ namespace SimpleDb.Sql
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
+            if (UseQueries)
+            {
+                throw new NotImplementedException();
+            }
+            
             if (entity.IsNew)
             {
                 OperationAllowed(DatabaseOperation.Insert);
@@ -122,6 +141,11 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Delete);
 
+            if (UseQueries)
+            {
+                throw new NotImplementedException();
+            }
+
             Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(entity), transaction);
         }
 
@@ -133,6 +157,11 @@ namespace SimpleDb.Sql
         public virtual void Delete(TId id, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Delete);
+
+            if (UseQueries)
+            {
+                throw new NotImplementedException();
+            }
 
             Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(id), transaction);
         }
@@ -156,6 +185,11 @@ namespace SimpleDb.Sql
         public virtual void Reload(T entity, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
+
+            if (UseQueries)
+            {
+                throw new NotImplementedException();
+            }
 
             var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
 
