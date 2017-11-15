@@ -102,6 +102,9 @@ namespace SimpleDbTests
         private static void MsSqlLookupDataLayerTest()
         {
             var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
+
+            dal.UseQueries = true;
+
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
@@ -116,6 +119,9 @@ namespace SimpleDbTests
         private static void MsSqlLookupColumnNamesDatalayerTest()
         {
             var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
+
+            dal.UseQueries = true;
+
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
@@ -190,6 +196,9 @@ namespace SimpleDbTests
         private static void SqLiteLookupDataLayerTest()
         {
             var dal = Registry.Get<SqLite.Datalayer.LookupDataLayer>();
+
+            dal.UseQueries = true;
+
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);

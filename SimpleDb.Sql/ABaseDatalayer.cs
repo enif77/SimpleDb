@@ -313,7 +313,6 @@ namespace SimpleDb.Sql
         /// Creates column parameters for the SELECT database operation. 
         /// These parameters contain names only.
         /// </summary> 
-        /// <param name="entity">An entity instance.</param>
         /// <returns>A list of database parameters.</returns>
         protected virtual IEnumerable<NamedDbParameter> CreateSelectColumnNames()
         {
@@ -335,7 +334,7 @@ namespace SimpleDb.Sql
 
             return columnList;
         }
-
+        
         /// <summary>
         /// A select all to a list stored procedure name.
         /// </summary>
@@ -384,18 +383,15 @@ namespace SimpleDb.Sql
         /// <returns>A parametrized SELECT query.</returns>
         protected virtual string GenerateSelectQuery(IEnumerable<NamedDbParameter> columnNames, IEnumerable<NamedDbParameter> parameters)
         {
-            // Get all columns by default.
-            var columnsListString = "*";
-            
+            var sb = new StringBuilder("SELECT ");
+
             // If we have a non empty list of columns.
             var count = columnNames.Count();
             if (count > 0)
             {
-                var columNamesStringBuilder = new StringBuilder();
-
                 foreach (var column in columnNames)
                 {
-                    columNamesStringBuilder.Append(column.Name);
+                    sb.Append(column.Name);
 
                     count--;
                     if (count < 1)
@@ -403,24 +399,30 @@ namespace SimpleDb.Sql
                         break;
                     }
 
-                    columNamesStringBuilder.Append(",");
+                    sb.Append(",");
                 }
-
-                columnsListString = columNamesStringBuilder.ToString();
             }
+            else
+            {
+                // Get all columns.
+                sb.Append("*");
+            }
+
+            sb.Append(" FROM ");
+            sb.Append(TypeInstance.DataTableName);
 
             // Generate the WHERE clausule using parameters.
             // WHERE param1 = @param1 AND param2 = @param2 ...
             if (parameters != null && parameters.Any())
             {
-                var whereClausuleStringBuilder = new StringBuilder(" WHERE ");
+                sb.Append(" WHERE ");
 
                 count = parameters.Count();
                 foreach (var parameter in parameters)
                 {
-                    whereClausuleStringBuilder.Append(parameter.Name);
-                    whereClausuleStringBuilder.Append("=");
-                    whereClausuleStringBuilder.Append(parameter.DbParameter.ParameterName);
+                    sb.Append(parameter.Name);
+                    sb.Append("=");
+                    sb.Append(parameter.DbParameter.ParameterName);
 
                     count--;
                     if (count < 1)
@@ -428,17 +430,11 @@ namespace SimpleDb.Sql
                         break;
                     }
 
-                    whereClausuleStringBuilder.Append(" AND ");
+                    sb.Append(" AND ");
                 }
-
-                return string.Format("SELECT {0} FROM {1} WHERE {2}", columnsListString, TypeInstance.DataTableName, whereClausuleStringBuilder.ToString());
             }
-            else
-            {
-                return string.Format("SELECT {0} FROM {1}", columnsListString, TypeInstance.DataTableName);
-            }
-
             
+            return sb.ToString();
         }
 
         /// <summary>

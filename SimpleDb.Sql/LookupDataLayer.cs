@@ -59,12 +59,7 @@ namespace SimpleDb.Sql
         public virtual TId GetIdByName(string name, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
-
-            if (UseQueries)
-            {
-                throw new NotImplementedException();
-            }
-
+            
             OperationAllowed(DatabaseOperation.Select);
 
             var paramList = new List<NamedDbParameter>();
@@ -79,10 +74,29 @@ namespace SimpleDb.Sql
                 DbParameter = Database.Provider.CreateDbParameter(translatedName, name, false)
             });
 
-            return Database.ExecuteScalarFunction<TId>(
-                NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
-                paramList,
-                transaction);
+            if (UseQueries)
+            {
+                var res = new List<T>();
+
+                var consumer = new DataConsumer<T>(NamesProvider, IdDatabaseColumns, res);
+
+                Database.ExecuteReaderQuery(
+                    GenerateSelectQuery(CreateSelectIdColumnNames(), paramList),  // TODO: SELECT column names can be precomputed.
+                    paramList,
+                    consumer.CreateInstance,
+                    transaction);
+
+                return (res.Count > 0)
+                    ? res.First().Id
+                    : default(TId);
+            }
+            else
+            {
+                return Database.ExecuteScalarFunction<TId>(
+                    NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
+                    paramList,
+                    transaction);
+            }
         }
 
 

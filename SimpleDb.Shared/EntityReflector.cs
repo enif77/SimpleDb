@@ -73,6 +73,23 @@ namespace SimpleDb.Shared
         }
 
         /// <summary>
+        /// Returns a collection containing a list of properties with the DbColumn attribute or with attributes inherited from the DbColumn attribute.
+        /// Retudned columns have IsId == true.
+        /// </summary>
+        /// <param name="entity">An entity instance.</param>
+        public static IEnumerable<PropertyInfo> GetIdDatabaseColumns(object entity)
+        {
+            var idColumns = new List<PropertyInfo>();
+
+            foreach (var column in GetDatabaseColumns(entity))
+            {
+                if (GetDbColumnAttribute(column).IsId) idColumns.Add(column);
+            }
+
+            return idColumns;
+        }
+
+        /// <summary>
         /// Returns all properties with a given tag.
         /// </summary>
         /// <param name="tag">A tag.</param>

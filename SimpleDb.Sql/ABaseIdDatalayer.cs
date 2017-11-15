@@ -25,11 +25,10 @@ namespace SimpleDb.Sql
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Data.Common;
     using System.Linq;
 
     using SimpleDb.Shared;
-    using System.Text;
+    using System.Reflection;
 
 
     /// <summary>
@@ -48,7 +47,18 @@ namespace SimpleDb.Sql
         protected ABaseIdDatalayer(Database database)
             : base(database)
         {
+            IdDatabaseColumns = EntityReflector.GetIdDatabaseColumns(TypeInstance);
         }
+
+        #endregion
+
+
+        #region properties
+
+        /// <summary>
+        /// The list of database columns this entity has.
+        /// </summary>
+        protected IEnumerable<PropertyInfo> IdDatabaseColumns { get; }
 
         #endregion
 
@@ -270,6 +280,36 @@ namespace SimpleDb.Sql
             }
 
             return paramList;
+        }
+
+        /// <summary>
+        /// Creates Id column parameters for the SELECT database operation. 
+        /// These parameters contain names only.
+        /// </summary> 
+        /// <returns>A list of database parameters.</returns>
+        protected virtual IEnumerable<NamedDbParameter> CreateSelectIdColumnNames()
+        {
+            var columnList = new List<NamedDbParameter>();
+
+            foreach (var column in DatabaseColumns)
+            {
+                // Get the instance of this column attribute.
+                var attribute = EntityReflector.GetDbColumnAttribute(column);
+
+                // Add Id attributes only.
+                if (attribute.IsId)
+                {
+                    // Add column to the list of columns.
+                    var baseName = attribute.Name ?? column.Name;
+                    columnList.Add(new NamedDbParameter()
+                    {
+                        BaseName = baseName,
+                        Name = NamesProvider.TranslateColumnName(baseName)
+                    });
+                }
+            }
+
+            return columnList;
         }
 
         #endregion

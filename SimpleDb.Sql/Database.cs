@@ -538,13 +538,13 @@ namespace SimpleDb.Sql
         /// <param name="storedProcedure">A name of a stored procedure.</param>
         /// <param name="parameters">Array of parameters.</param>
         /// <param name="transaction">IDbTransaction instance.</param>
-        /// <param name="errorCodeParameter">Out parameter representing error code.</param>
-        /// <returns>Instance of created IDbCommand.</returns>
-        private IDbCommand CreateCommand(IDbConnection connection, string storedProcedure, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction, out DbParameter errorCodeParameter)
+        /// <param name="returnParameter">Out parameter to store an output from a stored procedure or function.</param>
+        /// <returns>Instance of created IDbCommand.</returns> 
+        private IDbCommand CreateCommand(IDbConnection connection, string storedProcedure, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction, out DbParameter returnParameter)
         {
             var command = CreateStoredProcedureCommand(storedProcedure, parameters, connection, transaction);
 
-            command.Parameters.Add(errorCodeParameter = Provider.CreateReturnIntDbParameter(ReturnParameterName));
+            command.Parameters.Add(returnParameter = Provider.CreateReturnIntDbParameter(ReturnParameterName));
 
             return command;
         }
