@@ -76,7 +76,7 @@ namespace SimpleDb.SqLite
         /// <inheritdoc />
         public DbParameter CreateReturnIntDbParameter(string name, bool translateName = true)
         {
-            return new SQLiteParameter(NamesProvider.GetParameterName(name, translateName), SqlDbType.Int)
+            return new SQLiteParameter(NamesProvider.GetParameterName(name, translateName), DbType.Int32)
             {
                 Direction = ParameterDirection.ReturnValue
             };
