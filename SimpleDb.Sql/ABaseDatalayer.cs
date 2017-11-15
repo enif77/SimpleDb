@@ -169,8 +169,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="parameters">A list of parameters for the SELECT stored procedure. Usually empty.</param>
         /// <param name="dataConsumer">An optional user data consumer instance.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>IEnumerable of all object instances.</returns>
-        public virtual IEnumerable<T> GetAll(DbParameter[] parameters = null, IDataConsumer<T> dataConsumer = null)
+        public virtual IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, IDataConsumer<T> dataConsumer = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
@@ -182,7 +183,7 @@ namespace SimpleDb.Sql
                 SelectStoredProcedureName,
                 parameters,
                 consumer.CreateInstance,
-                null);
+                transaction);
 
             return res;
         }
@@ -233,7 +234,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="entity">An entity instance.</param>
         /// <returns>A list of database parameters.</returns>
-        protected DbParameter[] CreateInsertParameters(AEntity entity)
+        protected IEnumerable<NamedDbParameter> CreateInsertParameters(AEntity entity)
         {
             return CreateInsertOrUpdateParameters(entity, true);
         }
@@ -243,7 +244,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="entity">An entity instance.</param>
         /// <returns>A list of database parameters.</returns>
-        protected DbParameter[] CreateUpdateParameters(AEntity entity)
+        protected IEnumerable<NamedDbParameter> CreateUpdateParameters(AEntity entity)
         {
             return CreateInsertOrUpdateParameters(entity, false);
         }
@@ -254,9 +255,9 @@ namespace SimpleDb.Sql
         /// <param name="entity">An entity instance.</param>
         /// <param name="insert">If true, we are inserting, so the Id columns are not generated into the list of database parameters.</param>
         /// <returns>A list of database parameters.</returns>
-        protected virtual DbParameter[] CreateInsertOrUpdateParameters(AEntity entity, bool insert)
+        protected virtual IEnumerable<NamedDbParameter> CreateInsertOrUpdateParameters(AEntity entity, bool insert)
         {
-            var paramList = new List<DbParameter>();
+            var paramList = new List<NamedDbParameter>();
 
             foreach (var column in entity.DatabaseColumns)
             {
@@ -270,10 +271,17 @@ namespace SimpleDb.Sql
                 }
 
                 // Add parameter to the list of parameters.
-                paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(entity)));
+                var baseName = attribute.Name ?? column.Name;
+                var translatedName = NamesProvider.TranslateColumnName(baseName);
+                paramList.Add(new NamedDbParameter()
+                {
+                    BaseName = baseName,
+                    Name = translatedName,
+                    DbParameter = Database.Provider.CreateDbParameter(translatedName, column.GetValue(entity), false)
+                });
             }
 
-            return paramList.ToArray();
+            return paramList;
         }
 
         /// <summary>

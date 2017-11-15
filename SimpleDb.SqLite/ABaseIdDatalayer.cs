@@ -25,7 +25,6 @@ namespace SimpleDb.SqLite
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Data.Common;
     using System.Linq;
 
     using SimpleDb.Shared;
@@ -57,7 +56,7 @@ namespace SimpleDb.SqLite
         #region public methods ABaseDataLayer
 
         /// <inheritdoc />
-        public override IEnumerable<T> GetAll(DbParameter[] parameters = null, IDataConsumer<T> dataConsumer = null)
+        public override IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, IDataConsumer<T> dataConsumer = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
@@ -68,9 +67,10 @@ namespace SimpleDb.SqLite
             // TODO: Replace "*" with the list of DbColumns.
             // TODO: Generate the WHERE clausule using parameters.
             Database.ExecuteReaderQuery(
-                "SELECT * FROM " + TypeInstance.DataTableName, 
-                null,
-                consumer.CreateInstance);
+                "SELECT * FROM " + TypeInstance.DataTableName,
+                parameters,
+                consumer.CreateInstance,
+                transaction);
 
             return res;
         }
@@ -108,15 +108,17 @@ namespace SimpleDb.SqLite
 
             var idParameters = CreateIdParameters(id);
 
+            var idParameter = idParameters.First();
+
             // SELECT * FROM Table WHERE Id = @Id
 
             var sb = new StringBuilder("SELECT * FROM ");
 
             sb.Append(TypeInstance.DataTableName);
             sb.Append(" WHERE ");
-            sb.Append(idParameters[0].ParameterName.Substring(1));  // TODO: Get a clean column name.
+            sb.Append(idParameter.Name);
             sb.Append(" = ");
-            sb.Append(idParameters[0].Value);
+            sb.Append(idParameter.DbParameter.ParameterName);
 
             Database.ExecuteReaderQuery(
                 sb.ToString(),

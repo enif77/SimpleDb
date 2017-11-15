@@ -25,12 +25,12 @@ using MySql.Data.MySqlClient;
 namespace SimpleDb.MySql
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
 
-    using SimpleDb.Shared;
     using SimpleDb.Sql;
-
+    
 
     /// <summary>
     /// Database provider for a MSSQL database.
@@ -68,22 +68,22 @@ namespace SimpleDb.MySql
         }
 
         /// <inheritdoc />
-        public DbParameter CreateDbParameter(string name, object value)
+        public DbParameter CreateDbParameter(string name, object value, bool translateName = true)
         {
-            return new MySqlParameter(NamesProvider.GetParameterName(name), value ?? DBNull.Value);
+            return new MySqlParameter(NamesProvider.GetParameterName(name, translateName), value ?? DBNull.Value);
         }
 
         /// <inheritdoc />
-        public DbParameter CreateReturnIntDbParameter(string name)
+        public DbParameter CreateReturnIntDbParameter(string name, bool translateName = true)
         {
-            return new MySqlParameter(NamesProvider.GetParameterName(name), MySqlDbType.Int32)
+            return new MySqlParameter(NamesProvider.GetParameterName(name, translateName), MySqlDbType.Int32)
             {
                 Direction = ParameterDirection.ReturnValue
             };
         }
 
         /// <inheritdoc />
-        public IDbCommand CreateDbCommand(CommandType commandType, int commandTimeout, string sql, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
+        public IDbCommand CreateDbCommand(CommandType commandType, int commandTimeout, string sql, IEnumerable<NamedDbParameter> parameters, IDbConnection connection, IDbTransaction transaction)
         {
             var command = new MySqlCommand(sql, connection as MySqlConnection)
             {
@@ -92,9 +92,12 @@ namespace SimpleDb.MySql
                 CommandTimeout = Math.Max(commandTimeout, connection.ConnectionTimeout)
             };
 
-            if (parameters != null && parameters.Length > 0)
+            if (parameters != null)
             {
-                command.Parameters.AddRange(parameters);
+                foreach (var parameter in parameters)
+                {
+                    command.Parameters.Add(parameter.DbParameter);
+                }
             }
 
             return command;

@@ -176,9 +176,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="entity">An entity instance from which we want to get Id parameters.</param>
         /// <returns>A list of database parameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(AEntity entity)
+        protected virtual IEnumerable<NamedDbParameter> CreateIdParameters(AEntity entity)
         {
-            var paramList = new List<DbParameter>();
+            var paramList = new List<NamedDbParameter>();
 
             foreach (var column in DatabaseColumns)
             {
@@ -189,11 +189,18 @@ namespace SimpleDb.Sql
                 if (attribute.IsId)
                 {
                     // Add parameter to the list of parameters.
-                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, column.GetValue(entity)));
+                    var baseName = attribute.Name ?? column.Name;
+                    var translatedName = NamesProvider.TranslateColumnName(baseName);
+                    paramList.Add(new NamedDbParameter()
+                    {
+                        BaseName = baseName,
+                        Name = translatedName,
+                        DbParameter = Database.Provider.CreateDbParameter(translatedName, column.GetValue(entity), false)
+                    });
                 }
             }
 
-            return paramList.ToArray();
+            return paramList;
         }
 
         /// <summary>
@@ -201,9 +208,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="id">An entity Id.</param>
         /// <returns>A list of database parameters.</returns>
-        protected virtual DbParameter[] CreateIdParameters(TId id)
+        protected virtual IEnumerable<NamedDbParameter> CreateIdParameters(TId id)
         {
-            var paramList = new List<DbParameter>();
+            var paramList = new List<NamedDbParameter>();
 
             foreach (var column in DatabaseColumns)
             {
@@ -213,14 +220,22 @@ namespace SimpleDb.Sql
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
                 if (attribute.IsId)
                 {
-                    paramList.Add(Database.Provider.CreateDbParameter(attribute.Name ?? column.Name, id));
+                    // Add parameter to the list of parameters.
+                    var baseName = attribute.Name ?? column.Name;
+                    var translatedName = NamesProvider.TranslateColumnName(baseName);
+                    paramList.Add(new NamedDbParameter()
+                    {
+                        BaseName = baseName,
+                        Name = translatedName,
+                        DbParameter = Database.Provider.CreateDbParameter(translatedName, id, false)
+                    });
 
                     // Use the first found property only.
                     break;
                 }
             }
 
-            return paramList.ToArray();
+            return paramList;
         }
 
         #endregion

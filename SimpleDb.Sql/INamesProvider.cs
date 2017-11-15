@@ -19,8 +19,8 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
  
  */
-
-namespace SimpleDb.Shared
+ 
+namespace SimpleDb.Sql
 {
     /// <summary>
     /// Provides data table, column and other names translation.
@@ -87,8 +87,9 @@ namespace SimpleDb.Shared
         /// Creates a parameter name from a column name.
         /// </summary>
         /// <param name="columnName">An untranslated column name.</param>
+        /// <param name="translateName">If true (the default), the parameter name is not translated yet and names provider should translate it.</param>
         /// <returns>A parameter name.</returns>
-        string GetParameterName(string columnName);
+        string GetParameterName(string columnName, bool translateName = true);
 
         /// <summary>
         /// Translates a table name to the format required by the database.

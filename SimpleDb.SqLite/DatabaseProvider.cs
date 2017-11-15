@@ -23,14 +23,14 @@ freely, subject to the following restrictions:
 namespace SimpleDb.SqLite
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
 
     using System.Data.SQLite;
 
-    using SimpleDb.Shared;
     using SimpleDb.Sql;
-    
+
 
     /// <summary>
     /// Database provider for a SqLite database.
@@ -68,22 +68,22 @@ namespace SimpleDb.SqLite
         }
 
         /// <inheritdoc />
-        public DbParameter CreateDbParameter(string name, object value)
+        public DbParameter CreateDbParameter(string name, object value, bool translateName = true)
         {
-            return new SQLiteParameter(NamesProvider.GetParameterName(name), value ?? DBNull.Value);
+            return new SQLiteParameter(NamesProvider.GetParameterName(name, translateName), value ?? DBNull.Value);
         }
 
         /// <inheritdoc />
-        public DbParameter CreateReturnIntDbParameter(string name)
+        public DbParameter CreateReturnIntDbParameter(string name, bool translateName = true)
         {
-            return new SQLiteParameter(NamesProvider.GetParameterName(name), SqlDbType.Int)
+            return new SQLiteParameter(NamesProvider.GetParameterName(name, translateName), SqlDbType.Int)
             {
                 Direction = ParameterDirection.ReturnValue
             };
         }
 
         /// <inheritdoc />
-        public IDbCommand CreateDbCommand(CommandType commandType, int commandTimeout, string sql, DbParameter[] parameters, IDbConnection connection, IDbTransaction transaction)
+        public IDbCommand CreateDbCommand(CommandType commandType, int commandTimeout, string sql, IEnumerable<NamedDbParameter> parameters, IDbConnection connection, IDbTransaction transaction)
         {
             var command = new SQLiteCommand(sql, connection as SQLiteConnection)
             {
@@ -92,9 +92,12 @@ namespace SimpleDb.SqLite
                 CommandTimeout = Math.Max(commandTimeout, connection.ConnectionTimeout)
             };
 
-            if (parameters != null && parameters.Length > 0)
+            if (parameters != null)
             {
-                command.Parameters.AddRange(parameters);
+                foreach (var parameter in parameters)
+                {
+                    command.Parameters.Add(parameter.DbParameter);
+                }
             }
 
             return command;

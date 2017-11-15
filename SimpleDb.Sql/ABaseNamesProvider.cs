@@ -90,9 +90,9 @@ namespace SimpleDb.Sql
         }
 
         /// <inheritdoc />
-        public virtual string GetParameterName(string columnName)
+        public virtual string GetParameterName(string columnName, bool translateName = true)
         {
-            return "@" + TranslateColumnName(columnName);
+            return "@" + (translateName ? TranslateColumnName(columnName) : columnName);
         }
 
         #endregion

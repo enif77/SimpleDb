@@ -93,9 +93,9 @@ namespace SimpleDb.MySql
         }
 
         /// <inheritdoc />
-        public override string GetParameterName(string columnName)
+        public override string GetParameterName(string columnName, bool translateName = true)
         {
-            return "p_" + TranslateColumnName(columnName);
+            return "p_" + (translateName ? TranslateColumnName(columnName) : columnName);
         }
 
         #endregion

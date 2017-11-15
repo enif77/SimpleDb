@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 namespace SimpleDb.SqLite
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     using System.Data;
     using System.Data.Common;
@@ -52,7 +53,7 @@ namespace SimpleDb.SqLite
         #region public methods
 
         /// <inheritdoc />
-        public override IEnumerable<T> GetAll(DbParameter[] parameters = null, IDataConsumer<T> dataConsumer = null)
+        public override IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, IDataConsumer<T> dataConsumer = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
@@ -62,7 +63,7 @@ namespace SimpleDb.SqLite
 
             // TODO: Replace "*" with the list of DbColumns.
             // TODO: Generate the WHERE clausule using parameters.
-            Database.ExecuteReaderQuery("SELECT * FROM " + TypeInstance.DataTableName, parameters, dataConsumer.CreateInstance);
+            Database.ExecuteReaderQuery("SELECT * FROM " + TypeInstance.DataTableName, parameters, dataConsumer.CreateInstance, transaction);
 
             return res;
         }
@@ -83,14 +84,14 @@ namespace SimpleDb.SqLite
 
             sb.Append(" (");
 
-            var count = parameters.Length;
+            var count = parameters.Count();
+            var pos = count;
             foreach (var parameter in parameters)
             {
-                // TODO: Get a clean column name.
-                sb.Append(parameter.ParameterName.Substring(1));
+                sb.Append(parameter.Name);
 
-                count--;
-                if (count < 1)
+                pos--;
+                if (pos < 1)
                 {
                     break;
                 }
@@ -100,13 +101,13 @@ namespace SimpleDb.SqLite
 
             sb.Append(") VALUES (");
 
-            count = parameters.Length;
+            pos = count;
             foreach (var parameter in parameters)
             {
-                sb.Append(parameter.ParameterName);
+                sb.Append(parameter.DbParameter.ParameterName);
 
-                count--;
-                if (count < 1)
+                pos--;
+                if (pos < 1)
                 {
                     break;
                 }
@@ -129,3 +130,34 @@ namespace SimpleDb.SqLite
         #endregion
     }
 }
+
+/*
+ 
+https://stackoverflow.com/questions/2662999/system-data-sqlite-parameterized-queries-with-multiple-values
+
+-------------------
+
+pendingDeletions = new SQLiteCommand(@"DELETE FROM [centres] WHERE [name] = $name", conn);
+foreach (string name in selected)
+{
+    pendingDeletions.Parameters.AddWithValue("$name", centre.Name);
+    pendingDeletions.ExecuteNonQuery();
+}   
+
+------------------- 
+
+SqlConnection tConn = new SqlConnection("ConnectionString");
+
+SqlCommand tCommand = new SqlCommand();
+
+tCommand.Connection = tConn;
+tCommand.CommandText = "UPDATE players SET name = @name, score = @score, active = @active WHERE jerseyNum = @jerseyNum";
+
+tCommand.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar).Value = "Smith, Steve");
+tCommand.Parameters.Add(new SqlParameter("@score", System.Data.SqlDbType.Int).Value = "42");
+tCommand.Parameters.Add(new SqlParameter("@active", System.Data.SqlDbType.Bit).Value = true);
+tCommand.Parameters.Add(new SqlParameter("@jerseyNum", System.Data.SqlDbType.Int).Value = "99");
+
+tCommand.ExecuteNonQuery();
+    
+*/

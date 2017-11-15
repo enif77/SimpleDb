@@ -23,10 +23,12 @@ freely, subject to the following restrictions:
 namespace SimpleDb.Sql
 {
     using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
 
     using SimpleDb.Shared;
-
+    
 
     public class LookupDataLayer<T, TId> : ABaseIdDatalayer<T, TId> where T : AIdEntity<TId>, ILookup<TId>, new()
     {
@@ -52,20 +54,30 @@ namespace SimpleDb.Sql
         /// Returns an ID of a lookup item by its name.
         /// </summary>
         /// <param name="name">A name of a lookup for which an Id is requested.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>An Id of a lookup item or 0.</returns>
-        public virtual TId GetIdByName(string name)
+        public virtual TId GetIdByName(string name, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
 
             OperationAllowed(DatabaseOperation.Select);
 
+            var paramList = new List<NamedDbParameter>();
+
+            // Add parameter to the list of parameters.
+            var baseName = NamePropertyDbColumnName;
+            var translatedName = NamesProvider.TranslateColumnName(baseName);
+            paramList.Add(new NamedDbParameter()
+            {
+                BaseName = baseName,
+                Name = translatedName,
+                DbParameter = Database.Provider.CreateDbParameter(translatedName, name, false)
+            });
+
             return Database.ExecuteScalarFunction<TId>(
                 NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
-                new[]
-                {
-                    Database.Provider.CreateDbParameter(NamePropertyDbColumnName, name)
-                },
-                null);
+                paramList,
+                transaction);
         }
 
 

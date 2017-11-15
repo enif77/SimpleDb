@@ -25,7 +25,7 @@ namespace SimpleDb.Sql
     using System.Data;
     using System.Data.Common;
 
-    using SimpleDb.Shared;
+    using System.Collections.Generic;
 
 
     /// <summary>
@@ -56,17 +56,19 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Returns a database parameter instance.
         /// </summary>
-        /// <param name="name">An untranslated parameter name.</param>
+        /// <param name="name">An parameter name.</param>
         /// <param name="value">A value or null.</param>
+        /// <param name="translateName">If true (the default), the parameter name is not translated yet and database provider should translate it.</param>
         /// <returns>A database parameter instance.</returns>
-        DbParameter CreateDbParameter(string name, object value);
+        DbParameter CreateDbParameter(string name, object value, bool translateName = true);
 
         /// <summary>
         /// Returns a named integer database return parameter instance.
         /// </summary>
         /// <param name="name">An untranslated parameter name.</param>
+        /// <param name="translateName">If true (the default), the parameter name is not translated yet and database provider should translate it.</param>
         /// <returns>A named integer database return parameter instance.</returns>
-        DbParameter CreateReturnIntDbParameter(string name);
+        DbParameter CreateReturnIntDbParameter(string name, bool translateName = true);
 
         /// <summary>
         /// Returns a database command instance.
@@ -82,7 +84,7 @@ namespace SimpleDb.Sql
             CommandType commandType,
             int commandTimeout,
             string sql,
-            DbParameter[] parameters,
+            IEnumerable<NamedDbParameter> parameters,
             IDbConnection connection,
             IDbTransaction transaction);
     }
