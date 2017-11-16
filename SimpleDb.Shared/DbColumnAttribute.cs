@@ -47,14 +47,14 @@ namespace SimpleDb.Shared
         /// True, if this column allows the null value.
         /// </summary>
         public bool IsNullable { get; set; }
-        
+
         /// <summary>
-        /// True, if this column allows a DbNull value.
+        /// True, if this column is an Id.
         /// </summary>
         public bool IsId { get; set; }
 
         /// <summary>
-        /// True, if this column is Id and/or read only.
+        /// True, if this column is read only. Id colums are read only allways.
         /// </summary>
         public bool IsReadOnly { get; set; }
 

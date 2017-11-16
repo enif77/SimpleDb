@@ -56,7 +56,7 @@ namespace SimpleDb.Sql
         #region properties
 
         /// <summary>
-        /// The list of database columns this entity has.
+        /// The list of Id database columns this entity has.
         /// </summary>
         protected IEnumerable<PropertyInfo> IdDatabaseColumns { get; }
 
@@ -90,11 +90,10 @@ namespace SimpleDb.Sql
             var res = new List<T>();
 
             var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
+            var idParameters = CreateIdParameters(id);
 
             if (UseQueries)
             {
-                var idParameters = CreateIdParameters(id);
-
                 Database.ExecuteReaderQuery(
                     GenerateSelectQuery(CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
                     idParameters,
@@ -105,7 +104,7 @@ namespace SimpleDb.Sql
             {
                 Database.ExecuteReader(
                     SelectDetailsStoredProcedureName,
-                    CreateIdParameters(id),
+                    idParameters,
                     consumer.CreateInstance,
                     transaction);
             }
@@ -122,22 +121,46 @@ namespace SimpleDb.Sql
         new public virtual TId Save(T entity, IDbTransaction transaction = null)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            if (UseQueries)
-            {
-                throw new NotImplementedException();
-            }
             
             if (entity.IsNew)
             {
                 OperationAllowed(DatabaseOperation.Insert);
 
-                return entity.Id = (TId)Database.ExecuteScalarObject(InsertStoredProcedureName, CreateInsertParameters(entity), transaction);
+                var insertParameters = CreateInsertParameters(entity);
+
+                if (UseQueries)
+                {
+                    return entity.Id = (TId)Database.ExecuteScalarObjectQuery(
+                        GenerateInsertQuery(insertParameters),
+                        insertParameters,
+                        transaction);
+                }
+                else
+                {
+                    return entity.Id = (TId)Database.ExecuteScalarObject(
+                        InsertStoredProcedureName,
+                        insertParameters,
+                        transaction);
+                }
             }
 
             OperationAllowed(DatabaseOperation.Update);
 
-            return (TId)Database.ExecuteScalarObject(UpdateStoredProcedureName, CreateUpdateParameters(entity), transaction);
+            var updateParameters = CreateUpdateParameters(entity);
+
+            if (UseQueries)
+            {
+                return entity.Id = (TId)Database.ExecuteScalarObjectQuery(
+                        GenerateUpdateQuery(updateParameters),
+                        updateParameters,
+                        transaction);
+            }
+            else
+            {
+                Database.ExecuteNonQuery(UpdateStoredProcedureName, updateParameters, transaction);
+
+                return entity.Id;
+            }
         }
 
         /// <summary>
@@ -151,12 +174,19 @@ namespace SimpleDb.Sql
 
             OperationAllowed(DatabaseOperation.Delete);
 
+            var idParameters = CreateIdParameters(entity);
+
             if (UseQueries)
             {
-                throw new NotImplementedException();
+                Database.ExecuteNonReaderQuery(
+                    GenerateDeleteQuery(idParameters),
+                    idParameters,
+                    transaction);
             }
-
-            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(entity), transaction);
+            else
+            {
+                Database.ExecuteNonQuery(DeleteStoredProcedureName, idParameters, transaction);
+            }
         }
 
         /// <summary>
@@ -168,12 +198,19 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Delete);
 
+            var idParameters = CreateIdParameters(id);
+
             if (UseQueries)
             {
-                throw new NotImplementedException();
+                Database.ExecuteNonReaderQuery(
+                    GenerateDeleteQuery(idParameters),
+                    idParameters,
+                    transaction);
             }
-
-            Database.ExecuteNonQuery(DeleteStoredProcedureName, CreateIdParameters(id), transaction);
+            else
+            {
+                Database.ExecuteNonQuery(DeleteStoredProcedureName, idParameters, transaction);
+            }
         }
 
         /// <summary>
@@ -196,18 +233,25 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Select);
 
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
+            var idParameters = CreateIdParameters(entity);
+
             if (UseQueries)
             {
-                throw new NotImplementedException();
+                Database.ExecuteReaderQuery(
+                    GenerateSelectQuery(CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
+                    idParameters,
+                    consumer.RecreateInstance,
+                    transaction);
             }
-
-            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
-
-            Database.ExecuteReader(
-                SelectDetailsStoredProcedureName,
-                CreateIdParameters(entity),
-                consumer.RecreateInstance,
-                transaction);
+            else
+            {
+                Database.ExecuteReader(
+                    SelectDetailsStoredProcedureName,
+                    idParameters,
+                    consumer.RecreateInstance,
+                    transaction);
+            }
         }
 
         #endregion
@@ -239,6 +283,7 @@ namespace SimpleDb.Sql
                     {
                         BaseName = baseName,
                         Name = translatedName,
+                        IsId = attribute.IsId,
                         DbParameter = Database.Provider.CreateDbParameter(translatedName, column.GetValue(entity), false)
                     });
                 }
@@ -271,6 +316,7 @@ namespace SimpleDb.Sql
                     {
                         BaseName = baseName,
                         Name = translatedName,
+                        IsId = attribute.IsId,
                         DbParameter = Database.Provider.CreateDbParameter(translatedName, id, false)
                     });
 
@@ -304,7 +350,8 @@ namespace SimpleDb.Sql
                     columnList.Add(new NamedDbParameter()
                     {
                         BaseName = baseName,
-                        Name = NamesProvider.TranslateColumnName(baseName)
+                        Name = NamesProvider.TranslateColumnName(baseName),
+                        IsId = attribute.IsId
                     });
                 }
             }

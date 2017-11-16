@@ -39,6 +39,11 @@ namespace SimpleDb.Sql
         /// The translated parameter name.
         /// </summary>
         public string Name { get; set; }
+         
+        /// <summary>
+        /// True, if this parameter is an Id.
+        /// </summary>
+        public bool IsId { get; set; }
 
         /// <summary>
         /// The DbParameter instance.

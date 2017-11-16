@@ -275,6 +275,52 @@ namespace SimpleDb.Sql
             }
         }
 
+        /// <summary>
+        /// Executes scalar stored procedure which returns integer value
+        /// </summary>
+        /// <param name="query">A SQL query.</param>
+        /// <param name="parameters">Array of SQL parameters</param>
+        /// <param name="transaction">SQL transaction object</param>
+        /// <returns>Scalar value returned from stored procedure</returns>
+        public int ExecuteScalarQuery(string query, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
+        {
+            var result = ExecuteScalarObjectQuery(query, parameters, transaction);
+
+            if (result == null || string.IsNullOrEmpty(result.ToString()))
+            {
+                return 0;
+            }
+
+            return int.Parse(result.ToString());
+        }
+
+        /// <summary>
+        /// Executes scalar stored procedure which returns a value.
+        /// </summary>
+        /// <param name="query">A SQL query.</param>
+        /// <param name="parameters">Array of SQL parameters.</param>
+        /// <param name="transaction">SQL transaction object.</param>
+        /// <returns>Scalar value returned from stored procedure.</returns>
+        public object ExecuteScalarObjectQuery(string query, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
+        {
+            if (string.IsNullOrEmpty(query)) throw new ArgumentException("A query expected.", nameof(query));
+
+            if (transaction == null)
+            {
+                using (var connection = CreateConnection())
+                {
+                    using (var command = CreateTextCommand(query, parameters, connection.Connection, null))
+                    {
+                        return command.ExecuteScalar();
+                    }
+                }
+            }
+
+            using (var command = CreateTextCommand(query, parameters, transaction.Connection, transaction))
+            {
+                return command.ExecuteScalar();
+            }
+        }
 
         ///// <summary>
         ///// Executes SQL reader to database.

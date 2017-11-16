@@ -195,10 +195,10 @@ namespace SimpleDb.Sql
             else
             {
                 Database.ExecuteReader(
-                SelectStoredProcedureName,
-                parameters,
-                consumer.CreateInstance,
-                transaction);
+                    SelectStoredProcedureName,
+                    parameters,
+                    consumer.CreateInstance,
+                    transaction);
             }
             
             return res;
@@ -223,7 +223,7 @@ namespace SimpleDb.Sql
             }
             else
             {
-                Database.ExecuteScalarObject(InsertStoredProcedureName, parameters, transaction);
+                Database.ExecuteNonQuery(InsertStoredProcedureName, parameters, transaction);
             }
         }
 
@@ -302,6 +302,7 @@ namespace SimpleDb.Sql
                 {
                     BaseName = baseName,
                     Name = translatedName,
+                    IsId = attribute.IsId,
                     DbParameter = Database.Provider.CreateDbParameter(translatedName, column.GetValue(entity), false)
                 });
             }
@@ -415,23 +416,7 @@ namespace SimpleDb.Sql
             // WHERE param1 = @param1 AND param2 = @param2 ...
             if (parameters != null && parameters.Any())
             {
-                sb.Append(" WHERE ");
-
-                count = parameters.Count();
-                foreach (var parameter in parameters)
-                {
-                    sb.Append(parameter.Name);
-                    sb.Append("=");
-                    sb.Append(parameter.DbParameter.ParameterName);
-
-                    count--;
-                    if (count < 1)
-                    {
-                        break;
-                    }
-
-                    sb.Append(" AND ");
-                }
+                GenerateWhereClausule(parameters, sb);
             }
             
             return sb.ToString();
@@ -463,8 +448,96 @@ namespace SimpleDb.Sql
                 valuesStringBuilder.Append(",");
             }
 
-            // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description)
-            return string.Format("INSERT INTO {0} ({1}) VALUES ({2})", TypeInstance.DataTableName, columsStringBuilder.ToString(), valuesStringBuilder.ToString());
+            // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description); SELECT SCOPE_IDENTITY() Id;
+            return string.Format("INSERT INTO {0} ({1}) VALUES ({2}); SELECT SCOPE_IDENTITY() Id", TypeInstance.DataTableName, columsStringBuilder.ToString(), valuesStringBuilder.ToString());
+        }
+
+        /// <summary>
+        /// Generates a parametrized UPDATE query.
+        /// </summary>
+        /// <param name="updateParameters">A list of UPDATE parameters.</param>
+        /// <returns>A parametrized UPDATE query.</returns>
+        protected virtual string GenerateUpdateQuery(IEnumerable<NamedDbParameter> updateParameters)
+        {
+            // UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition; 
+            var sb = new StringBuilder("UPDATE ");
+
+            sb.Append(TypeInstance.DataTableName);
+            sb.Append(" SET ");
+
+            var count = updateParameters.Count();
+            foreach (var parameter in updateParameters)
+            {
+                if (parameter.IsId)
+                {
+                    // Id parameters are read only.
+                    continue;
+                }
+
+                sb.Append(parameter.Name);
+                sb.Append("=");
+                sb.Append(parameter.DbParameter.ParameterName);
+
+                count--;
+                if (count < 1)
+                {
+                    break;
+                }
+
+                sb.Append(",");
+            }
+            
+            GenerateWhereClausule(updateParameters.Where(p => p.IsId), sb);
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Generates a DELETE query.
+        /// </summary>
+        /// <param name="idParameters">An optional list of parameters used to generate the WHERE clausule.</param>
+        /// <returns>A DELETE query.</returns>
+        protected virtual string GenerateDeleteQuery(IEnumerable<NamedDbParameter> parameters)
+        {
+            // DELETE FROM table WHERE ...
+            var sb = new StringBuilder("DELETE FROM ");
+
+            sb.Append(TypeInstance.DataTableName);
+
+            // Generate the WHERE clausule using parameters.
+            // WHERE param1 = @param1 AND param2 = @param2 ...
+            if (parameters != null && parameters.Any())
+            {
+                GenerateWhereClausule(parameters, sb);
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Generates a WHERE clausule from a nonempty list of parameters.
+        /// </summary>
+        /// <param name="parameters">A list of parameters.</param>
+        /// <param name="sb">An output StringBuilder instance.</param> 
+        protected virtual void GenerateWhereClausule(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
+        {
+            sb.Append(" WHERE ");
+
+            var count = parameters.Count();
+            foreach (var parameter in parameters)
+            {
+                sb.Append(parameter.Name);
+                sb.Append("=");
+                sb.Append(parameter.DbParameter.ParameterName);
+
+                count--;
+                if (count < 1)
+                {
+                    break;
+                }
+
+                sb.Append(" AND ");
+            }
         }
 
         /// <summary>
