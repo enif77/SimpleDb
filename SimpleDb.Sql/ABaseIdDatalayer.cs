@@ -85,31 +85,7 @@ namespace SimpleDb.Sql
         /// <returns>Instance of an entity or null.</returns>
         public virtual T Get(TId id, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
-            OperationAllowed(DatabaseOperation.Select);
-
-            var res = new List<T>();
-
-            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
-            var idParameters = CreateIdParameters(id);
-
-            if (UseQueries)
-            {
-                Database.ExecuteReaderQuery(
-                    GenerateSelectQuery(CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
-                    idParameters,
-                    consumer.CreateInstance,
-                    transaction);
-            }
-            else
-            {
-                Database.ExecuteReader(
-                    SelectDetailsStoredProcedureName,
-                    idParameters,
-                    consumer.CreateInstance,
-                    transaction);
-            }
-            
-            return res.FirstOrDefault();
+            return GetAll(CreateIdParameters(id), dataConsumer, transaction).FirstOrDefault();
         }
 
         /// <summary>
@@ -171,22 +147,8 @@ namespace SimpleDb.Sql
         public virtual void Delete(T entity, IDbTransaction transaction = null)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            OperationAllowed(DatabaseOperation.Delete);
-
-            var idParameters = CreateIdParameters(entity);
-
-            if (UseQueries)
-            {
-                Database.ExecuteNonReaderQuery(
-                    GenerateDeleteQuery(idParameters),
-                    idParameters,
-                    transaction);
-            }
-            else
-            {
-                Database.ExecuteNonQuery(DeleteStoredProcedureName, idParameters, transaction);
-            }
+            
+            Delete(CreateIdParameters(entity), transaction);
         }
 
         /// <summary>
@@ -198,19 +160,7 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Delete);
 
-            var idParameters = CreateIdParameters(id);
-
-            if (UseQueries)
-            {
-                Database.ExecuteNonReaderQuery(
-                    GenerateDeleteQuery(idParameters),
-                    idParameters,
-                    transaction);
-            }
-            else
-            {
-                Database.ExecuteNonQuery(DeleteStoredProcedureName, idParameters, transaction);
-            }
+            Delete(CreateIdParameters(id), transaction);
         }
 
         /// <summary>

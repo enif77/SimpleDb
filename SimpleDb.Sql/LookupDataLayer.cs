@@ -59,9 +59,40 @@ namespace SimpleDb.Sql
         public virtual TId GetIdByName(string name, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
-            
-            OperationAllowed(DatabaseOperation.Select);
 
+            if (UseQueries)
+            {
+                var res = GetAll(GetNameParameterForName(name), new DataConsumer<T>(NamesProvider, IdDatabaseColumns, new List<T>()), transaction);
+
+                return (res.Any())
+                    ? res.First().Id
+                    : default(TId);
+            }
+            else
+            {
+                OperationAllowed(DatabaseOperation.Select);
+
+                return Database.ExecuteScalarFunction<TId>(
+                    NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
+                    GetNameParameterForName(name),
+                    transaction);
+            }
+        }
+
+
+        /// <summary>
+        /// Returns a database column name of the Name column.
+        /// </summary>
+        protected string NamePropertyDbColumnName { get; }
+
+
+        /// <summary>
+        /// Returns a database parameter for a given name.
+        /// </summary>
+        /// <param name="name">A name.</param>
+        /// <returns>A database parameter for a given name.</returns>
+        protected IEnumerable<NamedDbParameter> GetNameParameterForName(string name)
+        {
             var paramList = new List<NamedDbParameter>();
 
             // Add parameter to the list of parameters.
@@ -74,35 +105,7 @@ namespace SimpleDb.Sql
                 DbParameter = Database.Provider.CreateDbParameter(translatedName, name, false)
             });
 
-            if (UseQueries)
-            {
-                var res = new List<T>();
-
-                var consumer = new DataConsumer<T>(NamesProvider, IdDatabaseColumns, res);
-
-                Database.ExecuteReaderQuery(
-                    GenerateSelectQuery(CreateSelectIdColumnNames(), paramList),  // TODO: SELECT column names can be precomputed.
-                    paramList,
-                    consumer.CreateInstance,
-                    transaction);
-
-                return (res.Count > 0)
-                    ? res.First().Id
-                    : default(TId);
-            }
-            else
-            {
-                return Database.ExecuteScalarFunction<TId>(
-                    NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
-                    paramList,
-                    transaction);
-            }
+            return paramList;
         }
-
-
-        /// <summary>
-        /// Returns a database column name of the Name column.
-        /// </summary>
-        protected string NamePropertyDbColumnName { get; }
     }
 }

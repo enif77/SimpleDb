@@ -41,9 +41,9 @@ namespace SimpleDbTests
             try
             {
                 //FilesTests();
-                //MsSqlTests();
+                MsSqlTests();
                 //MySqlTests();
-                SqLiteTests();
+                //SqLiteTests();
             }
             finally 
             {

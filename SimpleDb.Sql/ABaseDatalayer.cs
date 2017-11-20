@@ -172,7 +172,8 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Returns all instances of a T.
         /// </summary>
-        /// <param name="parameters">A list of parameters for the SELECT stored procedure. Usually empty.</param>
+        /// <param name="parameters">A list of parameters for the SELECT operation. 
+        /// If set and UseQueries is false, the stored procedure should have all parameters, which were supplied here.</param>
         /// <param name="dataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>IEnumerable of all object instances.</returns>
@@ -180,9 +181,7 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Select);
 
-            var res = new List<T>();
-
-            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, res);
+            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T>());
 
             if (UseQueries)
             {
@@ -201,7 +200,7 @@ namespace SimpleDb.Sql
                     transaction);
             }
             
-            return res;
+            return consumer.Instances;
         }
 
         /// <summary>
@@ -248,7 +247,30 @@ namespace SimpleDb.Sql
                 }
             }
         }
-                
+
+        /// <summary>
+        /// Deletes all entities from a database that match given parameters.
+        /// </summary>
+        /// <param name="parameters">A list of parameters for the WHERE calusule of the DELETE operation.
+        /// If set and UseQueries is false, the stored procedure should have all parameters, which were supplied here.</param>
+        /// <param name="transaction">An optional SQL transaction.</param>
+        public virtual void Delete(IEnumerable<NamedDbParameter> parameters = null, IDbTransaction transaction = null)
+        {
+            OperationAllowed(DatabaseOperation.Delete);
+
+            if (UseQueries)
+            {
+                Database.ExecuteNonReaderQuery(
+                    GenerateDeleteQuery(parameters),
+                    parameters,
+                    transaction);
+            }
+            else
+            {
+                Database.ExecuteNonQuery(DeleteStoredProcedureName, parameters, transaction);
+            }
+        }
+
         #endregion
 
 
