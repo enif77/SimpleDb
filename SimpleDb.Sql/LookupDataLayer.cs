@@ -62,7 +62,7 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                var res = GetAll(GetNameParameterForName(name), new DataConsumer<T>(NamesProvider, IdDatabaseColumns, new List<T>()), transaction);
+                var res = GetAll(GetDbParameterForName(name), new DataConsumer<T>(NamesProvider, IdDatabaseColumns, new List<T>()), transaction);
 
                 return (res.Any())
                     ? res.First().Id
@@ -74,7 +74,7 @@ namespace SimpleDb.Sql
 
                 return Database.ExecuteScalarFunction<TId>(
                     NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
-                    GetNameParameterForName(name),
+                    GetDbParameterForName(name),
                     transaction);
             }
         }
@@ -91,7 +91,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="name">A name.</param>
         /// <returns>A database parameter for a given name.</returns>
-        protected IEnumerable<NamedDbParameter> GetNameParameterForName(string name)
+        protected IEnumerable<NamedDbParameter> GetDbParameterForName(string name)
         {
             var paramList = new List<NamedDbParameter>();
 
