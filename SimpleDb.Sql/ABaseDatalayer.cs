@@ -184,7 +184,8 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                Database.ExecuteReaderQuery(
+                Database.ExecuteReader(
+                    true,
                     QueryGenerator.GenerateSelectQuery(TypeInstance.DataTableName, CreateSelectColumnNames(), parameters),  // TODO: SELECT column names can be precomputed.
                     parameters,
                     consumer.CreateInstance,
@@ -193,6 +194,7 @@ namespace SimpleDb.Sql
             else
             {
                 Database.ExecuteReader(
+                    false,
                     SelectStoredProcedureName,
                     parameters,
                     consumer.CreateInstance,
@@ -217,11 +219,11 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                Database.ExecuteNonReaderQuery(QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, parameters), parameters, transaction);
+                Database.ExecuteNonQuery(true, QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, parameters), parameters, transaction);
             }
             else
             {
-                Database.ExecuteNonQuery(InsertStoredProcedureName, parameters, transaction);
+                Database.ExecuteNonQuery(false, InsertStoredProcedureName, parameters, transaction);
             }
         }
 
@@ -259,14 +261,15 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                Database.ExecuteNonReaderQuery(
+                Database.ExecuteNonQuery(
+                    true,
                     QueryGenerator.GenerateDeleteQuery(TypeInstance.DataTableName, parameters),
                     parameters,
                     transaction);
             }
             else
             {
-                Database.ExecuteNonQuery(DeleteStoredProcedureName, parameters, transaction);
+                Database.ExecuteNonQuery(false, DeleteStoredProcedureName, parameters, transaction);
             }
         }
 

@@ -106,14 +106,16 @@ namespace SimpleDb.Sql
 
                 if (UseQueries)
                 {
-                    return entity.Id = (TId)Database.ExecuteScalarObjectQuery(
+                    return entity.Id = Database.ExecuteScalar<TId>(
+                        true,
                         QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, insertParameters),
                         insertParameters,
                         transaction);
                 }
                 else
                 {
-                    return entity.Id = (TId)Database.ExecuteScalarObject(
+                    return entity.Id = Database.ExecuteScalar<TId>(
+                        false,
                         InsertStoredProcedureName,
                         insertParameters,
                         transaction);
@@ -126,14 +128,15 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                return entity.Id = (TId)Database.ExecuteScalarObjectQuery(
-                        QueryGenerator.GenerateUpdateQuery(TypeInstance.DataTableName, updateParameters),
-                        updateParameters,
-                        transaction);
+                return entity.Id = Database.ExecuteScalar<TId>(
+                    true,
+                    QueryGenerator.GenerateUpdateQuery(TypeInstance.DataTableName, updateParameters),
+                    updateParameters,
+                    transaction);
             }
             else
             {
-                Database.ExecuteNonQuery(UpdateStoredProcedureName, updateParameters, transaction);
+                Database.ExecuteNonQuery(false, UpdateStoredProcedureName, updateParameters, transaction);
 
                 return entity.Id;
             }
@@ -188,7 +191,8 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                Database.ExecuteReaderQuery(
+                Database.ExecuteReader(
+                    true,
                     QueryGenerator.GenerateSelectQuery(TypeInstance.DataTableName, CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
                     idParameters,
                     consumer.RecreateInstance,
@@ -197,6 +201,7 @@ namespace SimpleDb.Sql
             else
             {
                 Database.ExecuteReader(
+                    false,
                     SelectDetailsStoredProcedureName,
                     idParameters,
                     consumer.RecreateInstance,

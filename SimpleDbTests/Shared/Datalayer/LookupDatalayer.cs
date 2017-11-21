@@ -46,7 +46,7 @@ namespace SimpleDbTests.Shared.Datalayer
         {
             OperationAllowed(DatabaseOperation.Delete);
 
-            return Database.ExecuteNonQuery(((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
+            return Database.ExecuteNonQuery(false, ((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
         }
     }
 }

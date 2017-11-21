@@ -45,7 +45,7 @@ namespace SimpleDbTests
                 //MySqlTests();
                 //SqLiteTests();
             }
-            finally 
+            finally
             {
                 Console.WriteLine();
                 Console.WriteLine("DONE");
