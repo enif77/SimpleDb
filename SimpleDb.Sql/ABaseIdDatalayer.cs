@@ -107,7 +107,7 @@ namespace SimpleDb.Sql
                 if (UseQueries)
                 {
                     return entity.Id = (TId)Database.ExecuteScalarObjectQuery(
-                        GenerateInsertQuery(insertParameters),
+                        QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, insertParameters),
                         insertParameters,
                         transaction);
                 }
@@ -127,7 +127,7 @@ namespace SimpleDb.Sql
             if (UseQueries)
             {
                 return entity.Id = (TId)Database.ExecuteScalarObjectQuery(
-                        GenerateUpdateQuery(updateParameters),
+                        QueryGenerator.GenerateUpdateQuery(TypeInstance.DataTableName, updateParameters),
                         updateParameters,
                         transaction);
             }
@@ -189,7 +189,7 @@ namespace SimpleDb.Sql
             if (UseQueries)
             {
                 Database.ExecuteReaderQuery(
-                    GenerateSelectQuery(CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
+                    QueryGenerator.GenerateSelectQuery(TypeInstance.DataTableName, CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
                     idParameters,
                     consumer.RecreateInstance,
                     transaction);
