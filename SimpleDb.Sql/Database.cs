@@ -217,6 +217,7 @@ namespace SimpleDb.Sql
 
         /// <summary>
         /// Executes a query or a stored procedure and returns a value of the first column of the first row in the result set returned by the query.
+        /// Can be used for DB functions too.
         /// </summary>
         /// <typeparam name="T">The type of the returned value.</typeparam>
         /// <param name="isQuery">If true, the provided sql parameter value is a SQL query.</param>
@@ -251,18 +252,15 @@ namespace SimpleDb.Sql
         }
 
         /// <summary>
-        /// Executes scalar function with parameters.
+        /// Executes scalar function with parameters, that returns an INT value by the RETURN statement.
         /// </summary>
-        /// <typeparam name="T">The type of the returned value.</typeparam>
         /// <param name="function">Function name.</param>
         /// <param name="parameters">Array of parameters.</param>
         /// <param name="transaction">SQL transaction object.</param>
         /// <returns>Result of the function.</returns>
-        public T ExecuteScalarFunction<T>(string function, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
+        public int ExecuteScalarFunction(string function, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(function)) throw new ArgumentException("A function name expected.", nameof(function));
-
-            // TODO: Support different renturn types.
 
             var returnParameter = Provider.CreateReturnIntDbParameter(ReturnParameterName);
             if (transaction == null)
@@ -288,8 +286,8 @@ namespace SimpleDb.Sql
             }
 
             return (returnParameter.Value == null || Convert.IsDBNull(returnParameter.Value))
-                ? default(T)
-                : (T)returnParameter.Value;
+                ? default(int)
+                : Convert.ToInt32(returnParameter.Value);
         }
 
         /// <summary>

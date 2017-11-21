@@ -81,6 +81,18 @@ END
 GO
 
 
+CREATE PROC [dbo].[spLookup_GetIdByName]
+(
+    @Name	nvarchar(3)
+)
+AS
+BEGIN
+    SELECT [Id] FROM Lookup WHERE Name = @Name
+END
+
+GO
+
+
 CREATE FUNCTION [dbo].[fnLookup_GetIdByName]
 (
     @Name	nvarchar(3)

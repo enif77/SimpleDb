@@ -72,7 +72,8 @@ namespace SimpleDb.Sql
             {
                 OperationAllowed(DatabaseOperation.Select);
 
-                return Database.ExecuteScalarFunction<TId>(
+                return Database.ExecuteScalar<TId>(
+                    false,
                     NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
                     GetDbParameterForName(name),
                     transaction);
