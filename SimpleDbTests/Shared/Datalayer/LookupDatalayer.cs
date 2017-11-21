@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
 
 namespace SimpleDbTests.Shared.Datalayer
 {
+    using System.Data;
     using System.Data.SqlClient;
 
     using SimpleDb.Sql;
@@ -46,7 +47,7 @@ namespace SimpleDbTests.Shared.Datalayer
         {
             OperationAllowed(DatabaseOperation.Delete);
 
-            return Database.ExecuteNonQuery(false, ((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
+            return Database.ExecuteNonQuery(CommandType.StoredProcedure, ((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
         }
     }
 }

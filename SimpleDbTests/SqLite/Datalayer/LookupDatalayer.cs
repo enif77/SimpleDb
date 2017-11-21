@@ -22,11 +22,13 @@ freely, subject to the following restrictions:
 
 namespace SimpleDbTests.SqLite.Datalayer
 {
+    using System.Data;
     using System.Data.SqlClient;
 
     using SimpleDb.Sql;
 
     using SimpleDbTests.SqLite.DataObjects;
+
 
     public class LookupDataLayer : LookupDataLayer<Lookup, long>
     {
@@ -47,7 +49,7 @@ namespace SimpleDbTests.SqLite.Datalayer
         {
             OperationAllowed(DatabaseOperation.Delete);
 
-            return Database.ExecuteNonQuery(false, ((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
+            return Database.ExecuteNonQuery(CommandType.StoredProcedure, ((Shared.INamesProvider)NamesProvider).GetDeleteAllStoredProcedureName(StoredProcedureBaseName), null, transaction);
         }
     }
 }

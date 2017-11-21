@@ -158,11 +158,12 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Executes non-query SQL stored procedure and returns number of affected rows.
         /// </summary>
-        /// <param name="storedProcedure">Name of stored procedure in database</param>
+        /// <param name="commandType">A command type.</param>
+        /// <param name="sql">Name of stored procedure in database</param>
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <returns>Number of affected rows</returns>
-        public int ExecuteNonQuery(bool isQuery, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
+        public int ExecuteNonQuery(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(sql)) throw new ArgumentException("A SQL query or a stored procedure name expected.", nameof(sql));
 
@@ -170,14 +171,14 @@ namespace SimpleDb.Sql
             {
                 using (var connection = CreateConnection())
                 {
-                    using (var command = CreateCommand(isQuery, sql, parameters, connection.Connection, null))
+                    using (var command = CreateCommand(commandType, sql, parameters, connection.Connection, null))
                     {
                         return command.ExecuteNonQuery();
                     }
                 }
             }
 
-            using (var command = CreateCommand(isQuery, sql, parameters, transaction.Connection, transaction))
+            using (var command = CreateCommand(commandType, sql, parameters, transaction.Connection, transaction))
             {
                 return command.ExecuteNonQuery();
             }
@@ -186,12 +187,12 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Reads data from a database.
         /// </summary>
-        /// <param name="isQuery">If true, the provided sql parameter value is a SQL query.</param>
+        /// <param name="commandType">A command type.</param>
         /// <param name="sql">A SQL command or a stored procedure name.</param>
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <param name="dataConsumer">A data consumer.</param>
-        public void ExecuteReader(bool isQuery, string sql, IEnumerable<NamedDbParameter> parameters, DataConsumer dataConsumer, IDbTransaction transaction)
+        public void ExecuteReader(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, DataConsumer dataConsumer, IDbTransaction transaction)
         {
             if (string.IsNullOrEmpty(sql)) throw new ArgumentException("A SQL query or a stored procedure name expected.", nameof(sql));
             if (dataConsumer == null) throw new ArgumentNullException(nameof(dataConsumer));
@@ -200,7 +201,7 @@ namespace SimpleDb.Sql
             {
                 using (var connection = CreateConnection())
                 {
-                    using (var command = CreateCommand(isQuery, sql, parameters, connection.Connection, null))
+                    using (var command = CreateCommand(commandType, sql, parameters, connection.Connection, null))
                     {
                         ReadData(command, dataConsumer);
                     }
@@ -208,7 +209,7 @@ namespace SimpleDb.Sql
             }
             else
             {
-                using (var command = CreateCommand(isQuery, sql, parameters, transaction.Connection, transaction))
+                using (var command = CreateCommand(commandType, sql, parameters, transaction.Connection, transaction))
                 {
                     ReadData(command, dataConsumer);
                 }
@@ -220,12 +221,12 @@ namespace SimpleDb.Sql
         /// Can be used for DB functions too.
         /// </summary>
         /// <typeparam name="T">The type of the returned value.</typeparam>
-        /// <param name="isQuery">If true, the provided sql parameter value is a SQL query.</param>
+        /// <param name="commandType">A command type.</param>
         /// <param name="sql">A SQL command or a stored procedure name.</param>
         /// <param name="parameters">Array of SQL parameters.</param>
         /// <param name="transaction">SQL transaction object.</param>
         /// <returns>Scalar value returned from stored procedure.</returns>
-        public T ExecuteScalar<T>(bool isQuery, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
+        public T ExecuteScalar<T>(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(sql)) throw new ArgumentException("A SQL query or a stored procedure name expected.", nameof(sql));
              
@@ -234,7 +235,7 @@ namespace SimpleDb.Sql
             {
                 using (var connection = CreateConnection())
                 {
-                    using (var command = CreateCommand(isQuery, sql, parameters, connection.Connection, null))
+                    using (var command = CreateCommand(commandType, sql, parameters, connection.Connection, null))
                     {
                         result = command.ExecuteScalar();
                     }
@@ -242,7 +243,7 @@ namespace SimpleDb.Sql
             }
             else
             {
-                using (var command = CreateCommand(isQuery, sql, parameters, transaction.Connection, transaction))
+                using (var command = CreateCommand(commandType, sql, parameters, transaction.Connection, transaction))
                 {
                     result = command.ExecuteScalar();
                 }
@@ -267,7 +268,7 @@ namespace SimpleDb.Sql
             {
                 using (var connection = CreateConnection())
                 {
-                    using (var command = CreateCommand(false, function, parameters, connection.Connection, null))
+                    using (var command = CreateCommand(CommandType.StoredProcedure, function, parameters, connection.Connection, null))
                     {
                         command.Parameters.Add(returnParameter);
 
@@ -277,7 +278,7 @@ namespace SimpleDb.Sql
             }
             else
             {
-                using (var command = CreateCommand(false, function, parameters, transaction.Connection, transaction))
+                using (var command = CreateCommand(CommandType.StoredProcedure, function, parameters, transaction.Connection, transaction))
                 {
                     command.Parameters.Add(returnParameter);
 
@@ -413,15 +414,15 @@ namespace SimpleDb.Sql
         /// <summary>
         /// Creates a SQL command.
         /// </summary>
-        /// <param name="isQuery">If true, the provided sql parameter value is a SQL query.</param>
+        /// <param name="commandType">A command type.</param>
         /// <param name="sql">A SQL command or a stored procedure name.</param>
         /// <param name="parameters">An array of SQL parameters.</param>
         /// <param name="connection">An open database connection.</param>
         /// <param name="transaction">A transaction or null.</param>
         /// <returns>A SqlCommand instance.</returns>
-        private IDbCommand CreateCommand(bool isQuery, string sql, IEnumerable<NamedDbParameter> parameters, IDbConnection connection, IDbTransaction transaction)
+        private IDbCommand CreateCommand(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbConnection connection, IDbTransaction transaction)
         {
-            return Provider.CreateDbCommand(isQuery ? CommandType.Text : CommandType.StoredProcedure, CommandTimeout, sql, parameters, connection, transaction);
+            return Provider.CreateDbCommand(commandType, CommandTimeout, sql, parameters, connection, transaction);
         }
        
         /// <summary>

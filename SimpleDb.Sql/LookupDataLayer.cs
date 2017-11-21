@@ -73,7 +73,7 @@ namespace SimpleDb.Sql
                 OperationAllowed(DatabaseOperation.Select);
 
                 return Database.ExecuteScalar<TId>(
-                    false,
+                    CommandType.StoredProcedure,
                     NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
                     GetDbParameterForName(name),
                     transaction);

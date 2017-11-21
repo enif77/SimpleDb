@@ -185,7 +185,7 @@ namespace SimpleDb.Sql
             if (UseQueries)
             {
                 Database.ExecuteReader(
-                    true,
+                    CommandType.Text,
                     QueryGenerator.GenerateSelectQuery(TypeInstance.DataTableName, CreateSelectColumnNames(), parameters),  // TODO: SELECT column names can be precomputed.
                     parameters,
                     consumer.CreateInstance,
@@ -194,7 +194,7 @@ namespace SimpleDb.Sql
             else
             {
                 Database.ExecuteReader(
-                    false,
+                    CommandType.StoredProcedure,
                     SelectStoredProcedureName,
                     parameters,
                     consumer.CreateInstance,
@@ -219,11 +219,11 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                Database.ExecuteNonQuery(true, QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, parameters), parameters, transaction);
+                Database.ExecuteNonQuery(CommandType.Text, QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, parameters), parameters, transaction);
             }
             else
             {
-                Database.ExecuteNonQuery(false, InsertStoredProcedureName, parameters, transaction);
+                Database.ExecuteNonQuery(CommandType.StoredProcedure, InsertStoredProcedureName, parameters, transaction);
             }
         }
 
@@ -262,14 +262,14 @@ namespace SimpleDb.Sql
             if (UseQueries)
             {
                 Database.ExecuteNonQuery(
-                    true,
+                    CommandType.Text,
                     QueryGenerator.GenerateDeleteQuery(TypeInstance.DataTableName, parameters),
                     parameters,
                     transaction);
             }
             else
             {
-                Database.ExecuteNonQuery(false, DeleteStoredProcedureName, parameters, transaction);
+                Database.ExecuteNonQuery(CommandType.StoredProcedure, DeleteStoredProcedureName, parameters, transaction);
             }
         }
 
@@ -427,35 +427,3 @@ namespace SimpleDb.Sql
         #endregion
     }
 }
-
-
-/*
- 
-https://stackoverflow.com/questions/2662999/system-data-sqlite-parameterized-queries-with-multiple-values
-
--------------------
-
-pendingDeletions = new SQLiteCommand(@"DELETE FROM [centres] WHERE [name] = $name", conn);
-foreach (string name in selected)
-{
-    pendingDeletions.Parameters.AddWithValue("$name", centre.Name);
-    pendingDeletions.ExecuteNonQuery();
-}   
-
-------------------- 
-
-SqlConnection tConn = new SqlConnection("ConnectionString");
-
-SqlCommand tCommand = new SqlCommand();
-
-tCommand.Connection = tConn;
-tCommand.CommandText = "UPDATE players SET name = @name, score = @score, active = @active WHERE jerseyNum = @jerseyNum";
-
-tCommand.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar).Value = "Smith, Steve");
-tCommand.Parameters.Add(new SqlParameter("@score", System.Data.SqlDbType.Int).Value = "42");
-tCommand.Parameters.Add(new SqlParameter("@active", System.Data.SqlDbType.Bit).Value = true);
-tCommand.Parameters.Add(new SqlParameter("@jerseyNum", System.Data.SqlDbType.Int).Value = "99");
-
-tCommand.ExecuteNonQuery();
-    
-*/

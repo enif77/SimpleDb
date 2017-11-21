@@ -107,7 +107,7 @@ namespace SimpleDb.Sql
                 if (UseQueries)
                 {
                     return entity.Id = Database.ExecuteScalar<TId>(
-                        true,
+                        CommandType.Text,
                         QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, insertParameters),
                         insertParameters,
                         transaction);
@@ -115,7 +115,7 @@ namespace SimpleDb.Sql
                 else
                 {
                     return entity.Id = Database.ExecuteScalar<TId>(
-                        false,
+                        CommandType.StoredProcedure,
                         InsertStoredProcedureName,
                         insertParameters,
                         transaction);
@@ -129,14 +129,14 @@ namespace SimpleDb.Sql
             if (UseQueries)
             {
                 return entity.Id = Database.ExecuteScalar<TId>(
-                    true,
+                    CommandType.Text,
                     QueryGenerator.GenerateUpdateQuery(TypeInstance.DataTableName, updateParameters),
                     updateParameters,
                     transaction);
             }
             else
             {
-                Database.ExecuteNonQuery(false, UpdateStoredProcedureName, updateParameters, transaction);
+                Database.ExecuteNonQuery(CommandType.StoredProcedure, UpdateStoredProcedureName, updateParameters, transaction);
 
                 return entity.Id;
             }
@@ -192,7 +192,7 @@ namespace SimpleDb.Sql
             if (UseQueries)
             {
                 Database.ExecuteReader(
-                    true,
+                    CommandType.Text,
                     QueryGenerator.GenerateSelectQuery(TypeInstance.DataTableName, CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
                     idParameters,
                     consumer.RecreateInstance,
@@ -201,7 +201,7 @@ namespace SimpleDb.Sql
             else
             {
                 Database.ExecuteReader(
-                    false,
+                    CommandType.StoredProcedure,
                     SelectDetailsStoredProcedureName,
                     idParameters,
                     consumer.RecreateInstance,
