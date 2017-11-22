@@ -98,12 +98,11 @@ namespace SimpleDb.Sql
 
             // Add parameter to the list of parameters.
             var baseName = NamePropertyDbColumnName;
-            var translatedName = NamesProvider.TranslateColumnName(baseName);
             paramList.Add(new NamedDbParameter()
             {
                 BaseName = baseName,
-                Name = translatedName,
-                DbParameter = Database.Provider.CreateDbParameter(translatedName, name, false)
+                Name = NamesProvider.GetColumnName(baseName),
+                DbParameter = Database.Provider.CreateDbParameter(baseName, name)
             });
 
             return paramList;

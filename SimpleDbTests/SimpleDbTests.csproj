@@ -82,7 +82,9 @@
     <Compile Include="SqLite\DataObjects\Lookup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Dependencies\Injektor\README.md" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +99,10 @@
     <ProjectReference Include="..\SimpleDb.MySql\SimpleDb.MySql.csproj">
       <Project>{79eed3e2-411a-4506-9384-68153ce84c10}</Project>
       <Name>SimpleDb.MySql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.PgSql\SimpleDb.PgSql.csproj">
+      <Project>{aca5f995-b3f0-404a-831a-c507fa27a09c}</Project>
+      <Name>SimpleDb.PgSql</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>

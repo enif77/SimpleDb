@@ -41,8 +41,9 @@ namespace SimpleDbTests
             try
             {
                 //FilesTests();
-                MsSqlTests();
-                //MySqlTests();
+                //MsSqlTests();
+                MySqlTests();
+                //PgSqlTests();
                 //SqLiteTests();
             }
             finally
@@ -95,7 +96,7 @@ namespace SimpleDbTests
                     new SimpleDb.MsSql.DatabaseProvider(new SimpleDbTests.MsSql.NamesProvider())));
 
             MsSqlLookupDataLayerTest();
-            MsSqlLookupColumnNamesDatalayerTest();
+            //MsSqlLookupColumnNamesDatalayerTest();
         }
 
 
@@ -103,7 +104,7 @@ namespace SimpleDbTests
         {
             var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
 
-            dal.UseQueries = true;
+            //dal.UseQueries = true;
 
             foreach (var lookup in dal.GetAll())
             {
@@ -120,7 +121,7 @@ namespace SimpleDbTests
         {
             var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
 
-            dal.UseQueries = true;
+            //dal.UseQueries = true;
 
             foreach (var lookup in dal.GetAll())
             {
@@ -152,6 +153,9 @@ namespace SimpleDbTests
         private static void MySqlLookupDataLayerTest()
         {
             var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
+
+            //dal.UseQueries = true;
+
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
@@ -171,6 +175,53 @@ namespace SimpleDbTests
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
         }
+
+        #endregion
+
+
+        #region PgSQL
+
+        private static void PgSqlTests()
+        {
+            Console.WriteLine("========================================");
+            Console.WriteLine("PgSQL");
+            Console.WriteLine("========================================");
+
+            Shared.Datalayer.Initializer.InitializeLayers(
+                new SimpleDb.Sql.Database(
+                    ConfigurationManager.ConnectionStrings["SIMPLEDB_PGSQL"].ConnectionString,
+                    new SimpleDb.PgSql.DatabaseProvider()));
+
+            PgSqlLookupDataLayerTest();
+            //PgSqlLookupColumnNamesDatalayerTest();
+        }
+
+
+        private static void PgSqlLookupDataLayerTest()
+        {
+            var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
+
+            dal.UseQueries = true;
+
+            foreach (var lookup in dal.GetAll())
+            {
+                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+            }
+
+            var name = "V1";
+            var id = dal.GetIdByName(name);
+            Console.WriteLine("The '{0}' Id is: {1}", name, id);
+        }
+
+
+        //private static void PgSqlLookupColumnNamesDatalayerTest()
+        //{
+        //    var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
+        //    foreach (var lookup in dal.GetAll())
+        //    {
+        //        Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+        //    }
+        //}
 
         #endregion
 

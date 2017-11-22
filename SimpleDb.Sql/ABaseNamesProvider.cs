@@ -22,23 +22,23 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Sql
 {
-    using SimpleDb.Shared;
-
-
+    /// <summary>
+    /// Base class for names providers.
+    /// </summary>
     public abstract class ABaseNamesProvider : INamesProvider
     {
         #region INamesProvider
 
         /// <inheritdoc />
-        public virtual string TranslateTableName(string tableName)
+        public virtual string GetTableName(string tableName)
         {
-            return tableName;
+            return string.Format("\"{0}\"", TranslateTableName(tableName));
         }
 
         /// <inheritdoc />
-        public virtual string TranslateColumnName(string columnName)
+        public virtual string GetColumnName(string columnName)
         {
-            return columnName;
+            return string.Format("\"{0}\"", TranslateTableName(columnName));
         }
 
         /// <inheritdoc />
@@ -93,6 +93,18 @@ namespace SimpleDb.Sql
         public virtual string GetParameterName(string columnName, bool translateName = true)
         {
             return "@" + (translateName ? TranslateColumnName(columnName) : columnName);
+        }
+
+        /// <inheritdoc />
+        public virtual string TranslateTableName(string tableName)
+        {
+            return tableName;
+        }
+
+        /// <inheritdoc />
+        public virtual string TranslateColumnName(string columnName)
+        {
+            return columnName;
         }
 
         #endregion

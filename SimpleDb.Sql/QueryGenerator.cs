@@ -27,6 +27,10 @@ namespace SimpleDb.Sql
     using System.Text;
 
 
+    /// <summary>
+    /// Helper class for generating SQL queries.
+    /// Expects all names in target database format.
+    /// </summary>
     public static class QueryGenerator
     {
         /// <summary>
@@ -170,7 +174,7 @@ namespace SimpleDb.Sql
 
             return sb.ToString();
         }
-
+       
         /// <summary>
         /// Generates a WHERE clausule from a nonempty list of parameters.
         /// </summary>

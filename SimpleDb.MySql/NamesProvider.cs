@@ -33,15 +33,15 @@ namespace SimpleDb.MySql
         #region INamesProvider
 
         /// <inheritdoc />
-        public override string TranslateTableName(string tableName)
+        public override string GetTableName(string tableName)
         {
-            return tableName.ToLowerInvariant();
+            return TranslateTableName(tableName);
         }
 
         /// <inheritdoc />
-        public override string TranslateColumnName(string columnName)
+        public override string GetColumnName(string columnName)
         {
-            return columnName.ToLowerInvariant();
+            return TranslateTableName(columnName);
         }
 
         /// <inheritdoc />
@@ -93,9 +93,15 @@ namespace SimpleDb.MySql
         }
 
         /// <inheritdoc />
-        public override string GetParameterName(string columnName, bool translateName = true)
+        public override string TranslateTableName(string tableName)
         {
-            return "p_" + (translateName ? TranslateColumnName(columnName) : columnName);
+            return tableName.ToLowerInvariant();
+        }
+
+        /// <inheritdoc />
+        public override string TranslateColumnName(string columnName)
+        {
+            return columnName.ToLowerInvariant();
         }
 
         #endregion

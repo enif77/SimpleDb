@@ -108,7 +108,7 @@ namespace SimpleDb.Sql
                 {
                     return entity.Id = Database.ExecuteScalar<TId>(
                         CommandType.Text,
-                        QueryGenerator.GenerateInsertQuery(TypeInstance.DataTableName, insertParameters),
+                        QueryGenerator.GenerateInsertQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), insertParameters),
                         insertParameters,
                         transaction);
                 }
@@ -130,7 +130,7 @@ namespace SimpleDb.Sql
             {
                 return entity.Id = Database.ExecuteScalar<TId>(
                     CommandType.Text,
-                    QueryGenerator.GenerateUpdateQuery(TypeInstance.DataTableName, updateParameters),
+                    QueryGenerator.GenerateUpdateQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), updateParameters),
                     updateParameters,
                     transaction);
             }
@@ -193,7 +193,7 @@ namespace SimpleDb.Sql
             {
                 Database.ExecuteReader(
                     CommandType.Text,
-                    QueryGenerator.GenerateSelectQuery(TypeInstance.DataTableName, CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
+                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
                     idParameters,
                     consumer.RecreateInstance,
                     transaction);
@@ -233,13 +233,12 @@ namespace SimpleDb.Sql
                 {
                     // Add parameter to the list of parameters.
                     var baseName = attribute.Name ?? column.Name;
-                    var translatedName = NamesProvider.TranslateColumnName(baseName);
                     paramList.Add(new NamedDbParameter()
                     {
                         BaseName = baseName,
-                        Name = translatedName,
+                        Name = NamesProvider.GetColumnName(baseName),
                         IsId = attribute.IsId,
-                        DbParameter = Database.Provider.CreateDbParameter(translatedName, column.GetValue(entity), false)
+                        DbParameter = Database.Provider.CreateDbParameter(baseName, column.GetValue(entity))
                     });
                 }
             }
@@ -266,13 +265,12 @@ namespace SimpleDb.Sql
                 {
                     // Add parameter to the list of parameters.
                     var baseName = attribute.Name ?? column.Name;
-                    var translatedName = NamesProvider.TranslateColumnName(baseName);
                     paramList.Add(new NamedDbParameter()
                     {
                         BaseName = baseName,
-                        Name = translatedName,
+                        Name = NamesProvider.GetColumnName(baseName),
                         IsId = attribute.IsId,
-                        DbParameter = Database.Provider.CreateDbParameter(translatedName, id, false)
+                        DbParameter = Database.Provider.CreateDbParameter(baseName, id)
                     });
 
                     // Use the first found property only.
@@ -305,7 +303,7 @@ namespace SimpleDb.Sql
                     columnList.Add(new NamedDbParameter()
                     {
                         BaseName = baseName,
-                        Name = NamesProvider.TranslateColumnName(baseName),
+                        Name = NamesProvider.GetColumnName(baseName),
                         IsId = attribute.IsId
                     });
                 }

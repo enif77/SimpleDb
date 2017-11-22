@@ -28,6 +28,20 @@ namespace SimpleDb.Sql
     public interface INamesProvider
     {
         /// <summary>
+        /// Returns a table name in the format required by the database.
+        /// </summary>
+        /// <param name="tableName">A table name.</param>
+        /// <returns>A translated table name.</returns>
+        string GetTableName(string tableName);
+
+        /// <summary>
+        /// Returns a column name in the format required by the database.
+        /// </summary>
+        /// <param name="columnName">A column name.</param>
+        /// <returns>A translated column name.</returns>
+        string GetColumnName(string columnName);
+
+        /// <summary>
         /// Creates a stored procedure base name from a base name.
         /// </summary>
         /// <param name="baseName">A base for a stored procedure name. Ex.: An untranslated table name.</param>
@@ -49,7 +63,7 @@ namespace SimpleDb.Sql
         string GetSelectStoredProcedureName(string storedProcedureBaseName);
 
         /// <summary>
-        /// Returns A stored procedure name for an SELECT by ID operation.
+        /// Returns a stored procedure name for an SELECT by ID operation.
         /// </summary>
         /// <param name="storedProcedureBaseName">A stored procedure base name returned from the GetStoredProcedureBaseName() method.</param>
         /// <returns>A name of a stored procedure.</returns>

@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.MySql", "SimpleDb.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.SqLite", "SimpleDb.SqLite\SimpleDb.SqLite.csproj", "{20C4A535-6EA8-4409-B788-9100018F7415}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.PgSql", "SimpleDb.PgSql\SimpleDb.PgSql.csproj", "{ACA5F995-B3F0-404A-831A-C507FA27A09C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{20C4A535-6EA8-4409-B788-9100018F7415}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20C4A535-6EA8-4409-B788-9100018F7415}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20C4A535-6EA8-4409-B788-9100018F7415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA5F995-B3F0-404A-831A-C507FA27A09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA5F995-B3F0-404A-831A-C507FA27A09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA5F995-B3F0-404A-831A-C507FA27A09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA5F995-B3F0-404A-831A-C507FA27A09C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
