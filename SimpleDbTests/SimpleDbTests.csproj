@@ -88,6 +88,10 @@
     <None Include="Dependencies\Injektor\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleDb.Extensions.Lookups\SimpleDb.Extensions.Lookups.csproj">
+      <Project>{157dbd82-5ea3-4e7c-a10c-bdc39f62b93e}</Project>
+      <Name>SimpleDb.Extensions.Lookups</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Files\SimpleDb.Files.csproj">
       <Project>{02415c98-b92e-4852-b224-a73b9902f4a3}</Project>
       <Name>SimpleDb.Files</Name>

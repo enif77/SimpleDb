@@ -24,6 +24,7 @@ namespace SimpleDbTests.Shared.Datalayer
 {
     using SimpleDb.Sql;
 
+    using SimpleDb.Extensions.Lookups;
     using SimpleDbTests.Shared.DataObjects;
 
 

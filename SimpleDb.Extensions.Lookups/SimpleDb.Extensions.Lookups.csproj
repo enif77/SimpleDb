@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{02415C98-B92E-4852-B224-A73B9902F4A3}</ProjectGuid>
+    <ProjectGuid>{157DBD82-5EA3-4E7C-A10C-BDC39F62B93E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleDb.Files</RootNamespace>
-    <AssemblyName>SimpleDb.Files</AssemblyName>
+    <RootNamespace>SimpleDb.Extensions.Lookups</RootNamespace>
+    <AssemblyName>SimpleDb.Extensions.Lookups</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,24 +40,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ABaseDatalayer.cs" />
-    <Compile Include="Database.cs" />
-    <Compile Include="DataConsumer.cs" />
-    <Compile Include="DataEntity.cs" />
-    <Compile Include="FileDataReader.cs" />
-    <Compile Include="FileHelper.cs" />
-    <Compile Include="IDataConsumer.cs" />
+    <Compile Include="ALookupEntity.cs" />
+    <Compile Include="EmptyValue.cs" />
+    <Compile Include="ILookup.cs" />
     <Compile Include="LookupDataLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleDb.Extensions.Lookups\SimpleDb.Extensions.Lookups.csproj">
-      <Project>{157dbd82-5ea3-4e7c-a10c-bdc39f62b93e}</Project>
-      <Name>SimpleDb.Extensions.Lookups</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
       <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
       <Name>SimpleDb.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.Sql\SimpleDb.Sql.csproj">
+      <Project>{22684e08-ec5b-482e-90e3-d3a7c4fccf3a}</Project>
+      <Name>SimpleDb.Sql</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

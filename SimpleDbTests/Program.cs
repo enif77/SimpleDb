@@ -26,6 +26,7 @@ namespace SimpleDbTests
     using System.Configuration;
 
     using Injektor;
+    using SimpleDb.Extensions.Lookups;
     using SimpleDb.Files;
     using SimpleDb.Sql;
 

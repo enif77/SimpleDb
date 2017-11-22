@@ -24,7 +24,9 @@ namespace SimpleDbTests.Shared.DataObjects
 {
     using System;
 
+    using SimpleDb.Extensions.Lookups;
     using SimpleDb.Shared;
+
 
     /// <summary>
     /// This lookup demonstrates, how to rename a column from a default name.

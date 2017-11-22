@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Sql
+namespace SimpleDb.Extensions.Lookups
 {
     using System;
     using System.Collections.Generic;
@@ -28,8 +28,14 @@ namespace SimpleDb.Sql
     using System.Linq;
 
     using SimpleDb.Shared;
-    
+    using SimpleDb.Sql;
 
+
+    /// <summary>
+    /// A base for all lookup data layers.
+    /// </summary>
+    /// <typeparam name="T">A type of a lookup.</typeparam>
+    /// <typeparam name="TId">A type of the Id column.</typeparam>
     public class LookupDataLayer<T, TId> : ABaseIdDatalayer<T, TId> where T : AIdEntity<TId>, ILookup<TId>, new()
     {
         /// <summary>      

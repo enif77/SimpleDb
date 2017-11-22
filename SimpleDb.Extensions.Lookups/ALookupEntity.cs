@@ -20,8 +20,9 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDb.Extensions.Lookups
 {
+    using SimpleDb.Shared;
     using System;
 
 

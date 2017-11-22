@@ -24,7 +24,9 @@ namespace SimpleDbTests.Shared.DataObjects
 {
     using System;
 
+    using SimpleDb.Extensions.Lookups;
     using SimpleDb.Shared;
+
 
     /// <summary>
     /// A simple lookup with default colums and column names.

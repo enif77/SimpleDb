@@ -25,6 +25,7 @@ namespace SimpleDbTests.SqLite.Datalayer
     using System.Data;
     using System.Data.SqlClient;
 
+    using SimpleDb.Extensions.Lookups;
     using SimpleDb.Sql;
 
     using SimpleDbTests.SqLite.DataObjects;

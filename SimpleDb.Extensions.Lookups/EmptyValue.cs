@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDb.Extensions.Lookups
 {
     using System;
     using System.Collections.Concurrent;

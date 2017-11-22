@@ -50,7 +50,6 @@
     <Compile Include="DataConsumer.cs" />
     <Compile Include="IDatabaseProvider.cs" />
     <Compile Include="IDataConsumer.cs" />
-    <Compile Include="LookupDataLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryGenerator.cs" />
   </ItemGroup>
