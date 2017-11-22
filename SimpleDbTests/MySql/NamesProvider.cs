@@ -22,10 +22,13 @@ freely, subject to the following restrictions:
 
 namespace SimpleDbTests.MySql
 {
+    using SimpleDb.Sql;
+
+
     /// <summary>
     /// Names provider for the MsSQL database implementation.
     /// </summary>
-    public class NamesProvider : SimpleDb.MySql.NamesProvider, Shared.INamesProvider
+    public class NamesProvider : BaseNamesProvider, Shared.INamesProvider
     {
         /// <inheritdoc />
         public override string TranslateTableName(string tableName)

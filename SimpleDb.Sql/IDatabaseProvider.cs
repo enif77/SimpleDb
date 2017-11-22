@@ -63,6 +63,15 @@ namespace SimpleDb.Sql
         DbParameter CreateDbParameter(string name, object value, bool translateName = true);
 
         /// <summary>
+        /// Returns a database parameter instance for a stored procedure.
+        /// </summary>
+        /// <param name="name">An parameter name.</param>
+        /// <param name="value">A value or null.</param>
+        /// <param name="translateName">If true (the default), the parameter name is not translated yet and database provider should translate it.</param>
+        /// <returns>A database parameter instance.</returns>
+        DbParameter CreateStoredProcedureDbParameter(string name, object value, bool translateName = true);
+         
+        /// <summary>
         /// Returns a named integer database return parameter instance.
         /// </summary>
         /// <param name="name">An untranslated parameter name.</param>

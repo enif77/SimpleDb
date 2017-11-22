@@ -43,7 +43,7 @@ namespace SimpleDb.SqLite
         /// <param name="namesProvider">An INamesProvider instance or null.</param>
         public DatabaseProvider(INamesProvider namesProvider = null)
         {
-            NamesProvider = namesProvider ?? new NamesProvider();
+            NamesProvider = namesProvider ?? new BaseNamesProvider();
         }
 
 
@@ -71,6 +71,12 @@ namespace SimpleDb.SqLite
         public DbParameter CreateDbParameter(string name, object value, bool translateName = true)
         {
             return new SQLiteParameter(NamesProvider.GetParameterName(name, translateName), value ?? DBNull.Value);
+        }
+
+        /// <inheritdoc />
+        public DbParameter CreateStoredProcedureDbParameter(string name, object value, bool translateName = true)
+        {
+            return new SQLiteParameter(NamesProvider.GetStoredProcedureParameterName(name, translateName), value ?? DBNull.Value);
         }
 
         /// <inheritdoc />

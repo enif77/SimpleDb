@@ -31,7 +31,7 @@ namespace SimpleDbTests.Shared.Datalayer
     using SimpleDbTests.Shared.DataObjects;
 
 
-    public class LookupDataLayer : LookupDataLayer<Lookup, int>
+    public class LookupDataLayer : LookupDataLayer<Lookup>
     {
         public LookupDataLayer(Database database)
             : base(database)

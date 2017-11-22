@@ -229,7 +229,7 @@ namespace SimpleDb.Sql
         public T ExecuteScalar<T>(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(sql)) throw new ArgumentException("A SQL query or a stored procedure name expected.", nameof(sql));
-             
+
             object result;
             if (transaction == null)
             {

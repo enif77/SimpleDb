@@ -74,6 +74,12 @@ namespace SimpleDb.MySql
         }
 
         /// <inheritdoc />
+        public DbParameter CreateStoredProcedureDbParameter(string name, object value, bool translateName = true)
+        {
+            return new MySqlParameter(NamesProvider.GetStoredProcedureParameterName(name, translateName), value ?? DBNull.Value);
+        }
+
+        /// <inheritdoc />
         public DbParameter CreateReturnIntDbParameter(string name, bool translateName = true)
         {
             return new MySqlParameter(NamesProvider.GetParameterName(name, translateName), MySqlDbType.Int32)

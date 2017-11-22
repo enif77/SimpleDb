@@ -186,7 +186,7 @@ namespace SimpleDb.Sql
             {
                 Database.ExecuteReader(
                     CommandType.Text,
-                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), parameters),  // TODO: SELECT column names can be precomputed.
+                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), parameters),
                     parameters,
                     consumer.CreateInstance,
                     transaction);
@@ -326,7 +326,9 @@ namespace SimpleDb.Sql
                     BaseName = baseName,
                     Name = NamesProvider.GetColumnName(baseName),
                     IsId = attribute.IsId,
-                    DbParameter = Database.Provider.CreateDbParameter(baseName, column.GetValue(entity))
+                    DbParameter = UseQueries
+                        ? Database.Provider.CreateDbParameter(baseName, column.GetValue(entity))
+                        : Database.Provider.CreateStoredProcedureDbParameter(baseName, column.GetValue(entity))
                 });
             }
 

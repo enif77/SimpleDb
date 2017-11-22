@@ -106,6 +106,14 @@ namespace SimpleDb.Sql
         string GetParameterName(string columnName, bool translateName = true);
 
         /// <summary>
+        /// Creates a stored procedure parameter name from a column name.
+        /// </summary>
+        /// <param name="columnName">An untranslated column name.</param>
+        /// <param name="translateName">If true (the default), the parameter name is not translated yet and names provider should translate it.</param>
+        /// <returns>A parameter name.</returns>
+        string GetStoredProcedureParameterName(string columnName, bool translateName = true);
+
+        /// <summary>
         /// Translates a table name to the format required by the database.
         /// </summary>
         /// <param name="tableName">A table name.</param>

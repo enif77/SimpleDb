@@ -238,7 +238,9 @@ namespace SimpleDb.Sql
                         BaseName = baseName,
                         Name = NamesProvider.GetColumnName(baseName),
                         IsId = attribute.IsId,
-                        DbParameter = Database.Provider.CreateDbParameter(baseName, column.GetValue(entity))
+                        DbParameter = UseQueries
+                            ? Database.Provider.CreateDbParameter(baseName, column.GetValue(entity))
+                            : Database.Provider.CreateStoredProcedureDbParameter(baseName, column.GetValue(entity))
                     });
                 }
             }
@@ -270,7 +272,9 @@ namespace SimpleDb.Sql
                         BaseName = baseName,
                         Name = NamesProvider.GetColumnName(baseName),
                         IsId = attribute.IsId,
-                        DbParameter = Database.Provider.CreateDbParameter(baseName, id)
+                        DbParameter = UseQueries
+                            ? Database.Provider.CreateDbParameter(baseName, id)
+                            : Database.Provider.CreateStoredProcedureDbParameter(baseName, id)
                     });
 
                     // Use the first found property only.

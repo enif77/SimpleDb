@@ -35,8 +35,7 @@ namespace SimpleDb.Extensions.Lookups
     /// A base for all lookup data layers.
     /// </summary>
     /// <typeparam name="T">A type of a lookup.</typeparam>
-    /// <typeparam name="TId">A type of the Id column.</typeparam>
-    public class LookupDataLayer<T, TId> : ABaseIdDatalayer<T, TId> where T : AIdEntity<TId>, ILookup<TId>, new()
+    public class LookupDataLayer<T> : ABaseIdDatalayer<T, int> where T : AIdEntity<int>, ILookup<int>, new()
     {
         /// <summary>      
         /// Constructor.
@@ -46,10 +45,10 @@ namespace SimpleDb.Extensions.Lookups
             : base(database)
         {
             // We need a property tagged as a Name database table column.
-            var columnWithNameTag = EntityReflector.GetColumnsWithTag(ALookupEntity<T, TId>.NameColumnTagName, TypeInstance).FirstOrDefault();
+            var columnWithNameTag = EntityReflector.GetColumnsWithTag(ALookupEntity<T, int>.NameColumnTagName, TypeInstance).FirstOrDefault();
             if (columnWithNameTag == null)
             {
-                throw new InvalidOperationException("A column with the " + ALookupEntity<T, TId>.NameColumnTagName + " tag expected.");
+                throw new InvalidOperationException("A column with the " + ALookupEntity<T, int>.NameColumnTagName + " tag expected.");
             }
 
             // Such a property should be a DbColumn and can have a DbColumn.Name set.
@@ -62,7 +61,7 @@ namespace SimpleDb.Extensions.Lookups
         /// <param name="name">A name of a lookup for which an Id is requested.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>An Id of a lookup item or 0.</returns>
-        public virtual TId GetIdByName(string name, IDbTransaction transaction = null)
+        public virtual int GetIdByName(string name, IDbTransaction transaction = null)
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentException("A name expected.", nameof(name));
 
@@ -72,14 +71,13 @@ namespace SimpleDb.Extensions.Lookups
 
                 return (res.Any())
                     ? res.First().Id
-                    : default(TId);
+                    : default(int);
             }
             else
             {
                 OperationAllowed(DatabaseOperation.Select);
 
-                return Database.ExecuteScalar<TId>(
-                    CommandType.StoredProcedure,
+                return Database.ExecuteScalarFunction(
                     NamesProvider.GetGetIdByNameFunctionName(FunctionBaseName),
                     GetDbParameterForName(name),
                     transaction);
@@ -108,7 +106,9 @@ namespace SimpleDb.Extensions.Lookups
             {
                 BaseName = baseName,
                 Name = NamesProvider.GetColumnName(baseName),
-                DbParameter = Database.Provider.CreateDbParameter(baseName, name)
+                DbParameter = UseQueries
+                    ? Database.Provider.CreateDbParameter(baseName, name)
+                    : Database.Provider.CreateStoredProcedureDbParameter(baseName, name)
             });
 
             return paramList;

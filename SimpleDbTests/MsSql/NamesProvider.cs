@@ -22,10 +22,13 @@ freely, subject to the following restrictions:
 
 namespace SimpleDbTests.MsSql
 {
+    using SimpleDb.Sql;
+
+
     /// <summary>
     /// Names provider for the MsSQL database implementation.
     /// </summary>
-    public class NamesProvider : SimpleDb.MsSql.NamesProvider, Shared.INamesProvider
+    public class NamesProvider : BaseNamesProvider, Shared.INamesProvider
     {
         public string GetDeleteAllStoredProcedureName(string storedProcedureBaseName)
         {

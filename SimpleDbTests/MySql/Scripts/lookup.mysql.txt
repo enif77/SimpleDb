@@ -88,7 +88,7 @@ END
 GO
 
 CREATE FUNCTION `fn_lookup_get_id_by_name`(
-    `p_name` VARCHAR(3)
+    `name` VARCHAR(3)
 
 )
 RETURNS int(11)
@@ -100,7 +100,7 @@ COMMENT ''
 BEGIN
 DECLARE found_id INT;
 SET found_id = 0;
-SELECT id INTO found_id FROM lookup WHERE name = p_name;
+SELECT id INTO found_id FROM lookup WHERE name = @name;
 RETURN found_id;
 END
 

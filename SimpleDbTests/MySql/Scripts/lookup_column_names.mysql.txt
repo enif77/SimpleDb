@@ -104,7 +104,7 @@ GO
 
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` FUNCTION `fn_lookup_column_names_get_id_by_name`(
-    `p_name_renamed` VARCHAR(3)
+    `name_renamed` VARCHAR(3)
 
 ) RETURNS int(11)
     READS SQL DATA
@@ -113,7 +113,7 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `fn_lookup_column_names_get_id_by_nam
 BEGIN
 DECLARE found_id INT;
 SET found_id = 0;
-SELECT id INTO found_id FROM lookup_column_names WHERE name_renamed = p_name_renamed;
+SELECT id INTO found_id FROM lookup_column_names WHERE name_renamed = @name_renamed;
 RETURN found_id;
 END$$
 DELIMITER ;

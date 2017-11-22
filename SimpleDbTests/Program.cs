@@ -42,8 +42,8 @@ namespace SimpleDbTests
             try
             {
                 //FilesTests();
-                //MsSqlTests();
-                MySqlTests();
+                MsSqlTests();
+                //MySqlTests();
                 //PgSqlTests();
                 //SqLiteTests();
             }
@@ -97,7 +97,7 @@ namespace SimpleDbTests
                     new SimpleDb.MsSql.DatabaseProvider(new SimpleDbTests.MsSql.NamesProvider())));
 
             MsSqlLookupDataLayerTest();
-            //MsSqlLookupColumnNamesDatalayerTest();
+            MsSqlLookupColumnNamesDatalayerTest();
         }
 
 
@@ -112,7 +112,7 @@ namespace SimpleDbTests
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
 
-            var name = "V1";
+            var name = "V2";
             var id = dal.GetIdByName(name);
             Console.WriteLine("The '{0}' Id is: {1}", name, id);
         }
@@ -122,7 +122,7 @@ namespace SimpleDbTests
         {
             var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
 
-            //dal.UseQueries = true;
+            dal.UseQueries = true;
 
             foreach (var lookup in dal.GetAll())
             {
@@ -155,14 +155,14 @@ namespace SimpleDbTests
         {
             var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
 
-            //dal.UseQueries = true;
+            dal.UseQueries = true;
 
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
 
-            var name = "V1";
+            var name = "V2";
             var id = dal.GetIdByName(name);
             Console.WriteLine("The '{0}' Id is: {1}", name, id);
         }
@@ -209,7 +209,7 @@ namespace SimpleDbTests
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
 
-            var name = "V1";
+            var name = "V2";
             var id = dal.GetIdByName(name);
             Console.WriteLine("The '{0}' Id is: {1}", name, id);
         }
@@ -238,7 +238,7 @@ namespace SimpleDbTests
             SqLite.Datalayer.Initializer.InitializeLayers(
                 new SimpleDb.Sql.Database(
                     ConfigurationManager.ConnectionStrings["SIMPLEDB_SQLITE"].ConnectionString,
-                    new SimpleDb.SqLite.DatabaseProvider(new SimpleDb.SqLite.NamesProvider())));
+                    new SimpleDb.SqLite.DatabaseProvider()));
 
             SqLiteLookupDataLayerTest();
             //SqLiteLookupColumnNamesDatalayerTest();
@@ -248,17 +248,14 @@ namespace SimpleDbTests
         private static void SqLiteLookupDataLayerTest()
         {
             var dal = Registry.Get<SqLite.Datalayer.LookupDataLayer>();
-
-            dal.UseQueries = true;
-
             foreach (var lookup in dal.GetAll())
             {
                 Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
             }
 
-            //var name = "V1";
-            //var id = dal.GetIdByName(name);
-            //Console.WriteLine("The '{0}' Id is: {1}", name, id);
+            var name = "V2";
+            var id = dal.GetIdByName(name);
+            Console.WriteLine("The '{0}' Id is: {1}", name, id);
         }
 
 

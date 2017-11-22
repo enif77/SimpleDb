@@ -28,7 +28,7 @@ namespace SimpleDb.MySql
     /// <summary>
     /// Default names provider for the MySQL database implementation.
     /// </summary>
-    public class NamesProvider : ABaseNamesProvider
+    public class NamesProvider : BaseNamesProvider
     {
         #region INamesProvider
 
@@ -90,6 +90,18 @@ namespace SimpleDb.MySql
         public override string GetGetIdByNameFunctionName(string functionBaseName)
         {
             return functionBaseName + "_get_id_by_name";
+        }
+
+        ///// <inheritdoc />
+        //public override string GetParameterName(string columnName, bool translateName = true)
+        //{
+        //    return "p_" + (translateName ? TranslateColumnName(columnName) : columnName);
+        //}
+
+        /// <inheritdoc />
+        public override string GetStoredProcedureParameterName(string columnName, bool translateName = true)
+        {
+            return "p_" + (translateName ? TranslateColumnName(columnName) : columnName);
         }
 
         /// <inheritdoc />

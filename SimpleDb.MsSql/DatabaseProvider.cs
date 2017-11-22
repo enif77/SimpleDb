@@ -42,7 +42,7 @@ namespace SimpleDb.MsSql
         /// <param name="namesProvider">An INamesProvider instance or null.</param>
         public DatabaseProvider(INamesProvider namesProvider = null)
         {
-            NamesProvider = namesProvider ?? new NamesProvider();
+            NamesProvider = namesProvider ?? new BaseNamesProvider();
         }
 
 
@@ -70,6 +70,12 @@ namespace SimpleDb.MsSql
         public DbParameter CreateDbParameter(string name, object value, bool translateName = true)
         {
             return new SqlParameter(NamesProvider.GetParameterName(name, translateName), value ?? DBNull.Value);
+        }
+
+        /// <inheritdoc />
+        public DbParameter CreateStoredProcedureDbParameter(string name, object value, bool translateName = true)
+        {
+            return new SqlParameter(NamesProvider.GetStoredProcedureParameterName(name, translateName), value ?? DBNull.Value);
         }
 
         /// <inheritdoc />

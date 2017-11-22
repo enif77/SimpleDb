@@ -143,6 +143,7 @@
     <Content Include="MsSql\Scripts\Lookup.sql" />
     <Content Include="MySql\Scripts\lookup_column_names.mysql.txt" />
     <Content Include="MySql\Scripts\lookup.mysql.txt" />
+    <Content Include="PgSql\Scripts\Lookup.sql.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">

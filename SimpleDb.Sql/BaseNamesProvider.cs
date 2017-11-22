@@ -25,7 +25,7 @@ namespace SimpleDb.Sql
     /// <summary>
     /// Base class for names providers.
     /// </summary>
-    public abstract class ABaseNamesProvider : INamesProvider
+    public class BaseNamesProvider : INamesProvider
     {
         #region INamesProvider
 
@@ -93,6 +93,12 @@ namespace SimpleDb.Sql
         public virtual string GetParameterName(string columnName, bool translateName = true)
         {
             return "@" + (translateName ? TranslateColumnName(columnName) : columnName);
+        }
+
+        /// <inheritdoc />
+        public virtual string GetStoredProcedureParameterName(string columnName, bool translateName = true)
+        {
+            return GetParameterName(columnName, translateName);
         }
 
         /// <inheritdoc />

@@ -1,0 +1,13 @@
+﻿CREATE OR REPLACE FUNCTION public."fnLookup_GetIdByName"(_Name text)
+    RETURNS integer
+       
+AS $vId$
+DECLARE	vId integer;
+BEGIN
+SELECT "Id" INTO vId FROM "Lookup" WHERE "Name" = _Name;
+RETURN	vId;
+END;
+$vId$ LANGUAGE 'plpgsql';
+
+ALTER FUNCTION public."fnLookup_GetIdByName"(text)
+    OWNER TO simpledb_admin;
