@@ -32,19 +32,56 @@ namespace SimpleDb.Shared.Validators
     public static class StaticEntityValidator
     {
         /// <summary>
+        /// Checks, if a DbColumnAttribute was set to a property with a supported type.
+        /// </summary>
+        /// <param name="attribute">An DbColumn instance of a property.</param>
+        /// <param name="column">A PropertyInfo instance of a property.</param>
+        public static void CheckSupportedType(DbColumnAttribute attribute, PropertyInfo column)
+        {
+            if (attribute is DbStringColumnAttribute)
+            {
+                if (column.PropertyType != typeof(string))
+                {
+                    throw new ValidationException(string.Format("The {0} property is not a string type.", column.Name));
+                }
+            }
+
+            // TODO: Add type validations for other DbColumnAttribute types.
+        }
+
+        /// <summary>
         /// Checks, if a nullable DbColumn is used on a nullable property type.
         /// </summary>
         /// <param name="attribute">An DbColumn instance of a property.</param>
         /// <param name="column">A PropertyInfo instance of a property.</param>
-        public static void CheckNullableType(DbColumnAttribute attribute, PropertyInfo column)
+        public static void CheckNullableColumn(DbColumnAttribute attribute, PropertyInfo column)
         {
-            if (attribute.IsNullable && column.PropertyType.IsValueType)  // A value type.
+            if (attribute.IsNullable && IsNullableType(column.PropertyType) == false)
             {
-                if (Nullable.GetUnderlyingType(column.PropertyType) == null)  // A value type that is NOT a Nullable<T>.)
-                {
-                    throw new ValidationException(string.Format("The {0} property is not a nullable type.", column.Name));
-                }
+                throw new ValidationException(string.Format("The {0} property is not a nullable type.", column.Name));
             }
+        }
+
+        /// <summary>
+        /// Checks, if a null can be set to a certain property.
+        /// </summary>
+        /// <param name="attribute">A DbColumn extracted from a property.</param>
+        /// <param name="column">A PropertyInfo describing a checked column.</param>
+        public static bool CanBeNull(DbColumnAttribute attribute, PropertyInfo column)
+        {
+            return attribute.IsNullable && IsNullableType(column.PropertyType);
+        }
+
+        /// <summary>
+        /// Checks, if the type of a column is nullable.
+        /// </summary>
+        /// <param name="type">A type.</param>
+        /// <returns>True, if a type can accept the null value.</returns>
+        public static bool IsNullableType(Type type)
+        {
+            return
+                type.IsValueType == false ||   // A ref. type.
+                (type.IsValueType && Nullable.GetUnderlyingType(type) != null);   // Nullable<T>
         }
     }
 }

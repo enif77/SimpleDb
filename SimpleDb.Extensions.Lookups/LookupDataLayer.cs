@@ -32,7 +32,7 @@ namespace SimpleDb.Extensions.Lookups
 
 
     /// <summary>
-    /// A base for all lookup data layers.
+    /// A base for all lookup data layers with Id of type int.
     /// </summary>
     /// <typeparam name="T">A type of a lookup.</typeparam>
     public class LookupDataLayer<T> : ABaseIdDatalayer<T, int> where T : AIdEntity<int>, ILookup<int>, new()

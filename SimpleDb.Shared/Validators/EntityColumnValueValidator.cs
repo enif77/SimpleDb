@@ -31,18 +31,19 @@ namespace SimpleDb.Shared.Validators
     /// </summary>
     public static class EntityColumnValueValidator
     {
+        #region public
+
         /// <summary>
         /// Checks, if a null can be set to a certain property.
+        /// Expects, that the CheckNullableColumn() check was succesfull.
         /// </summary>
-        /// <param name="attribute">A DbColumn extracted from a property.</param>
-        /// <param name="column">A PropertyInfo describing a checked column.</param>
-        /// <param name="columnValue">A value of the checked column.</param>
+        /// <param name="attribute">A DbColumnAttribute instance extracted from a property.</param>
+        /// <param name="column">A PropertyInfo instance of a property.</param>
+        /// <param name="columnValue">A value of the checked property.</param>
         public static void CheckNullValue(DbColumnAttribute attribute, PropertyInfo column, object columnValue)
         {
-            if (attribute.IsNullable == false &&
-                    (column.PropertyType.IsValueType == false ||   // A ref. type.
-                    (column.PropertyType.IsValueType && Nullable.GetUnderlyingType(column.PropertyType) != null)) &&   // Nullable<T>
-                    columnValue == null)
+            // This expects, that the CheckNullableColumn() check was succesfull.
+            if (attribute.IsNullable == false && columnValue == null)
             {
                 throw new ValidationException(String.Format("The {0} property value can not be null.", column.Name));
             }
@@ -50,57 +51,22 @@ namespace SimpleDb.Shared.Validators
 
         /// <summary>
         /// Checks a value of a property agains know type-based constraints.
+        /// Expects, that the CheckNullValue() check was successfull.
         /// </summary>
-        /// <param name="attribute">An DbColumn instance od a property.</param>
+        /// <param name="attribute">A DbColumnAttribute instance extracted from a property.</param>
         /// <param name="column">A PropertyInfo instance of a property.</param>
-        /// <param name="columnValue">A value of the checked column.</param>
+        /// <param name="columnValue">A value of the checked property.</param>
         public static void CheckTypeValues(DbColumnAttribute attribute, PropertyInfo column, object columnValue)
         {
-            // Read only colums can contain any value, when they are inserted/saved.
-            if (attribute.IsReadOnly)
-            {
-                return;
-            }
+            //// Read only colums can contain any value, when they are inserted/saved.
+            //if (attribute.IsReadOnly)
+            //{
+            //    return;
+            //}
 
             if (column.PropertyType == typeof(string))
             {
-                // Get the property value.
-                var value = columnValue as string;
-                if (value == null)
-                {
-                    if (attribute.IsNullable == false)
-                    {
-                        // Strings are a value type, so we have to check for the null here too.
-                        throw new ValidationException(String.Format("The {0} property value can not be null.", column.Name));
-                    }
-
-                    // The value is null and because this column is nullable, 
-                    // we do not have to do anything with the Nonempty column option here.
-                }
-                else
-                {
-                    // String lengths are limited.
-                    var stringColumnAttribute = attribute as DbStringColumnAttribute;
-                    if (stringColumnAttribute != null)
-                    {
-                        if (stringColumnAttribute.IsNonempty && String.IsNullOrWhiteSpace(value))
-                        {
-                            // Nonempty strings should contain something.
-                            throw new ValidationException(String.Format("The {0} property value can not be empty.", column.Name));
-                        }
-
-                        if (value.Length > stringColumnAttribute.MaxLength)
-                        {
-                            // The maximum length of a string column can be limited.
-                            throw new ValidationException(
-                                String.Format("The {0} property value '{1}' is too long. ({2}/{3})",
-                                    column.Name,
-                                    value,
-                                    value.Length,
-                                    stringColumnAttribute.MaxLength));
-                        }
-                    }
-                }
+                CheckStringValue(attribute, column, columnValue);
             }
             else if (column.PropertyType == typeof(DateTime))
             {
@@ -112,6 +78,50 @@ namespace SimpleDb.Shared.Validators
                 if (value != null)
                 {
                     CheckDateTimeMinValue(value.Value, column.Name);
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region private
+
+        /// <summary>
+        /// Checks a property with the string type.
+        /// </summary>
+        /// <param name="attribute">A DbColumnAttribute instance extracted from a property.</param>
+        /// <param name="column">A PropertyInfo instance of a property.</param>
+        /// <param name="columnValue">A value of the checked property.</param>
+        private static void CheckStringValue(DbColumnAttribute attribute, PropertyInfo column, object columnValue)
+        {
+            // Get the property value.
+            var value = columnValue as string;
+            if (value == null)
+            {
+                // Nulls are checked elsewhere.
+                return;
+            }
+                        
+            // String lengths can be limited using the string DB column attribute.
+            var stringColumnAttribute = attribute as DbStringColumnAttribute;
+            if (stringColumnAttribute != null)
+            {
+                if (stringColumnAttribute.IsNonempty && string.IsNullOrWhiteSpace(value))
+                {
+                    // Nonempty strings should contain something.
+                    throw new ValidationException(String.Format("The {0} property value can not be empty.", column.Name));
+                }
+
+                if (value.Length > stringColumnAttribute.MaxLength)
+                {
+                    // The maximum length of a string column can be limited.
+                    throw new ValidationException(
+                        String.Format("The {0} property value '{1}' is too long. ({2}/{3})",
+                            column.Name,
+                            value,
+                            value.Length,
+                            stringColumnAttribute.MaxLength));
                 }
             }
         }
@@ -128,5 +138,7 @@ namespace SimpleDb.Shared.Validators
 
             throw new ValidationException(String.Format("The {0} property value {1} is less than 1.1.1753.", columnName, value));
         }
+
+        #endregion
     }
 }

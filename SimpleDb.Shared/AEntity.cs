@@ -72,7 +72,7 @@ namespace SimpleDb.Shared
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
 
                 // Check for non nullable type, when the a.IsNullable is true.
-                StaticEntityValidator.CheckNullableType(attribute, column);
+                StaticEntityValidator.CheckNullableColumn(attribute, column);
 
                 var columnValue = column.GetValue(this);
 
