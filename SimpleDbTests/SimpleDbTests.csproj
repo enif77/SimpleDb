@@ -68,6 +68,7 @@
     <Compile Include="Files\Datalayer\LookupColumnNamesDatalayer.cs" />
     <Compile Include="Files\Datalayer\LookupDatalayer.cs" />
     <Compile Include="MsSql\NamesProvider.cs" />
+    <Compile Include="MsSql\Tests\QueriesTest.cs" />
     <Compile Include="MySql\NamesProvider.cs" />
     <Compile Include="Shared\Datalayer\Initializer.cs" />
     <Compile Include="Shared\Datalayer\LookupColumnNamesDatalayer.cs" />

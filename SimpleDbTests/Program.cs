@@ -87,48 +87,26 @@ namespace SimpleDbTests
         
         private static void MsSqlTests()
         {
-            Console.WriteLine("========================================");
-            Console.WriteLine("MSSQL");
-            Console.WriteLine("========================================");
+            var test = new MsSql.Tests.QueriesTest();
 
-            Shared.Datalayer.Initializer.InitializeLayers(
-                new SimpleDb.Sql.Database(
-                    ConfigurationManager.ConnectionStrings["SIMPLEDB_MSSQL"].ConnectionString,
-                    new SimpleDb.MsSql.DatabaseProvider(new SimpleDbTests.MsSql.NamesProvider())));
-
-            MsSqlLookupDataLayerTest();
-            MsSqlLookupColumnNamesDatalayerTest();
+            test.Initialize();
+            test.ShowTestSettings();
+            test.GetAllTest();
+            test.GetIdByNameTest();
         }
+        
 
+        //private static void MsSqlLookupColumnNamesDatalayerTest()
+        //{
+        //    var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
 
-        private static void MsSqlLookupDataLayerTest()
-        {
-            var dal = Registry.Get<Shared.Datalayer.LookupDataLayer>();
+        //    dal.UseQueries = true;
 
-            //dal.UseQueries = true;
-
-            foreach (var lookup in dal.GetAll())
-            {
-                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
-            }
-
-            var name = "V2";
-            var id = dal.GetIdByName(name);
-            Console.WriteLine("The '{0}' Id is: {1}", name, id);
-        }
-
-
-        private static void MsSqlLookupColumnNamesDatalayerTest()
-        {
-            var dal = Registry.Get<Shared.Datalayer.LookupColumnNamesDataLayer>();
-
-            dal.UseQueries = true;
-
-            foreach (var lookup in dal.GetAll())
-            {
-                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
-            }
-        }
+        //    foreach (var lookup in dal.GetAll())
+        //    {
+        //        Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+        //    }
+        //}
 
         #endregion
 
