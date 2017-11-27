@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDb.Extensions.Validations
 {
     /// <summary>
     /// An interface, that allows an entity to be validated.

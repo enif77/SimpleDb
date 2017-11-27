@@ -20,10 +20,12 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared.Validators
+namespace SimpleDb.Extensions.Validations.Validators
 {
     using System;
     using System.Reflection;
+
+    using SimpleDb.Shared;
 
 
     /// <summary>

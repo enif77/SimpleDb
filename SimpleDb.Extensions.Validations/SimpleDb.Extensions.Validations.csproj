@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F8D2A998-1B50-4886-AD6E-485374DBEB56}</ProjectGuid>
+    <ProjectGuid>{FF3904D0-0B16-4643-A4A4-795719E5AD0E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleDb.Shared</RootNamespace>
-    <AssemblyName>SimpleDb.Shared</AssemblyName>
+    <RootNamespace>SimpleDb.Extensions.Validations</RootNamespace>
+    <AssemblyName>SimpleDb.Extensions.Validations</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,18 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AEntity.cs" />
-    <Compile Include="AIdEntity.cs" />
-    <Compile Include="DatabaseException.cs" />
-    <Compile Include="DbStringColumnAttribute.cs" />
-    <Compile Include="DbColumnAttribute.cs" />
-    <Compile Include="DbTableAttribute.cs" />
-    <Compile Include="EntityReflector.cs" />
-    <Compile Include="IAuditedEntity.cs" />
-    <Compile Include="IIdEntity.cs" />
-    <Compile Include="IUpdatable.cs" />
+    <Compile Include="BaseEntityValidator.cs" />
+    <Compile Include="IEntityValidator.cs" />
+    <Compile Include="IValidatable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidationException.cs" />
+    <Compile Include="Validators\EntityColumnValueValidator.cs" />
+    <Compile Include="Validators\StaticEntityValidator.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
+      <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
+      <Name>SimpleDb.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -20,38 +20,21 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Shared
+namespace SimpleDb.Extensions.Validations
 {
-    using System.Collections.Generic;
-    using System.Reflection;
+    using SimpleDb.Shared;
 
 
     /// <summary>
-    /// A base class for all entities.
+    /// Interface defining an entity validator.
     /// </summary>
-    public abstract class AEntity
+    public interface IEntityValidator
     {
-        #region properties
-        
         /// <summary>
-        /// Returns a name of a database table, that is represented by this entity.
+        /// Validates an entity. 
+        /// Throws ValidationException, if this instance is not valid.
         /// </summary>
-        public string DataTableName
-        {
-            get { return EntityReflector.GetDatabaseTableName(this); }
-        }
-
-        /// <summary>
-        /// Returns a collection containing a list of properties with the DbColumn attribute or with attributes inherited from the DbColumn attribute.
-        /// </summary>
-        public IEnumerable<PropertyInfo> DatabaseColumns
-        {
-            get
-            {
-                return EntityReflector.GetDatabaseColumns(this);
-            }
-        }
-
-        #endregion
+        /// <param name="entity">An entity to be validated.</param>
+        void Validate(AEntity entity);
     }
 }
