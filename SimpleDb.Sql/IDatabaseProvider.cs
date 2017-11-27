@@ -34,9 +34,14 @@ namespace SimpleDb.Sql
     public interface IDatabaseProvider
     {
         /// <summary>
-        /// A INamesProvider instance used for data table and column names translations and generations.
+        /// An INamesProvider instance used for data table and column names translations and generations.
         /// </summary>
         INamesProvider NamesProvider { get; }
+
+        /// <summary>
+        /// An IQueryGenerator instance used for generating SQL queries.
+        /// </summary>
+        IQueryGenerator QueryGenerator { get; }
 
 
         /// <summary>

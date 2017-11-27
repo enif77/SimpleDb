@@ -46,12 +46,13 @@
     <Compile Include="Database.cs" />
     <Compile Include="DatabaseConnection.cs" />
     <Compile Include="INamesProvider.cs" />
+    <Compile Include="IQueryGenerator.cs" />
     <Compile Include="NamedDbParameter.cs" />
     <Compile Include="DataConsumer.cs" />
     <Compile Include="IDatabaseProvider.cs" />
     <Compile Include="IDataConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryGenerator.cs" />
+    <Compile Include="BaseQueryGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">

@@ -103,6 +103,11 @@ namespace SimpleDb.Sql
         public INamesProvider NamesProvider { get { return Database.Provider.NamesProvider; } }
 
         /// <summary>
+        /// An QueryGenerator instance used by this DALs database.
+        /// </summary>
+        public IQueryGenerator QueryGenerator { get { return Database.Provider.QueryGenerator; } }
+
+        /// <summary>
         /// If true, all database operations are done by SQL queries and not by stored procedures.
         /// </summary>
         public bool UseQueries { get; set; }

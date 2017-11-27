@@ -40,9 +40,11 @@ namespace SimpleDb.MsSql
         /// Constructor.
         /// </summary>
         /// <param name="namesProvider">An INamesProvider instance or null.</param>
-        public DatabaseProvider(INamesProvider namesProvider = null)
+        /// <param name="queryGenerator">An IQueryGenerator instance or null.</param>
+        public DatabaseProvider(INamesProvider namesProvider = null, IQueryGenerator queryGenerator = null)
         {
             NamesProvider = namesProvider ?? new BaseNamesProvider();
+            QueryGenerator = queryGenerator ?? new BaseQueryGenerator();
         }
 
 
@@ -51,6 +53,8 @@ namespace SimpleDb.MsSql
         /// <inheritdoc />
         public INamesProvider NamesProvider { get; }
 
+        /// <inheritdoc />
+        public IQueryGenerator QueryGenerator { get; }
 
         /// <inheritdoc />
         public string GetDatabaseName(string connectionString)

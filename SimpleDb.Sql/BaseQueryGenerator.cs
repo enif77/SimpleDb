@@ -31,7 +31,7 @@ namespace SimpleDb.Sql
     /// Helper class for generating SQL queries.
     /// Expects all names in target database format.
     /// </summary>
-    public static class QueryGenerator
+    public class BaseQueryGenerator : IQueryGenerator
     {
         /// <summary>
         /// Generates a parametrized SELECT query.
@@ -40,7 +40,7 @@ namespace SimpleDb.Sql
         /// <param name="columnNames">An optional list of columns we wanna to get.</param>
         /// <param name="parameters">An optional list of WHERE parameters.</param>
         /// <returns>A parametrized SELECT query.</returns>
-        public static string GenerateSelectQuery(string dataTableName, IEnumerable<NamedDbParameter> columnNames, IEnumerable<NamedDbParameter> parameters)
+        public virtual string GenerateSelectQuery(string dataTableName, IEnumerable<NamedDbParameter> columnNames, IEnumerable<NamedDbParameter> parameters)
         {
             var sb = new StringBuilder("SELECT ");
 
@@ -86,7 +86,7 @@ namespace SimpleDb.Sql
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="insertParameters">A list of INSERT parameters.</param>
         /// <returns>A parametrized INSERT query.</returns>
-        public static string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
+        public virtual string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
         {
             var columsStringBuilder = new StringBuilder();
             var valuesStringBuilder = new StringBuilder();
@@ -117,7 +117,7 @@ namespace SimpleDb.Sql
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="updateParameters">A list of UPDATE parameters.</param>
         /// <returns>A parametrized UPDATE query.</returns>
-        public static string GenerateUpdateQuery(string dataTableName, IEnumerable<NamedDbParameter> updateParameters)
+        public virtual string GenerateUpdateQuery(string dataTableName, IEnumerable<NamedDbParameter> updateParameters)
         {
             // UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition; 
             var sb = new StringBuilder("UPDATE ");
@@ -158,7 +158,7 @@ namespace SimpleDb.Sql
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="idParameters">An optional list of parameters used to generate the WHERE clausule.</param>
         /// <returns>A DELETE query.</returns>
-        public static string GenerateDeleteQuery(string dataTableName, IEnumerable<NamedDbParameter> parameters)
+        public virtual string GenerateDeleteQuery(string dataTableName, IEnumerable<NamedDbParameter> parameters)
         {
             // DELETE FROM table WHERE ...
             var sb = new StringBuilder("DELETE FROM ");
@@ -180,7 +180,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="parameters">A list of parameters.</param>
         /// <param name="sb">An output StringBuilder instance.</param> 
-        public static void GenerateWhereClausule(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
+        public virtual void GenerateWhereClausule(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
         {
             sb.Append(" WHERE ");
 
