@@ -22,8 +22,10 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Extensions.Validations
 {
-    using SimpleDb.Shared;
+    using System.Collections.Generic;
 
+    using SimpleDb.Shared;
+    
 
     /// <summary>
     /// Interface defining an entity validator.
@@ -36,5 +38,12 @@ namespace SimpleDb.Extensions.Validations
         /// </summary>
         /// <param name="entity">An entity to be validated.</param>
         void Validate(AEntity entity);
+
+        /// <summary>
+        /// Validates all entities. 
+        /// Throws ValidationException, if an instance is not valid.
+        /// </summary>
+        /// <param name="entities">A list of entities to be validated.</param>
+        void ValidateAll(IEnumerable<AEntity> entities);
     }
 }

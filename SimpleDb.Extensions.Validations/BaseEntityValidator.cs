@@ -22,20 +22,18 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Extensions.Validations
 {
+    using System.Collections.Generic;
+
     using SimpleDb.Extensions.Validations.Validators;
     using SimpleDb.Shared;
-
+    
 
     /// <summary>
     /// An entity validator.
     /// </summary>
     public class BaseEntityValidator : IEntityValidator
     {
-        /// <summary>
-        /// Validates an entity. 
-        /// Throws ValidationException, if this instance is not valid.
-        /// </summary>
-        /// <param name="entity">An entity to be validated.</param>
+        /// <inheritdoc />
         public virtual void Validate(AEntity entity)
         {
             // Check all properties defined as database table columns.
@@ -54,6 +52,15 @@ namespace SimpleDb.Extensions.Validations
 
                 // Check know value limits of supported data types.
                 EntityColumnValueValidator.CheckTypeValues(attribute, column, columnValue);
+            }
+        }
+
+        /// <inheritdoc />
+        public void ValidateAll(IEnumerable<AEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                Validate(entity);
             }
         }
     }
