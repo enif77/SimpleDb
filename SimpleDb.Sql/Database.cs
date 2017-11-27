@@ -429,7 +429,7 @@ namespace SimpleDb.Sql
         /// Reads data from a SQL command.
         /// </summary>
         /// <param name="command">A IDbCommand instance.</param>
-        /// <param name="dataConsumer">A DataConsumer instance.</param>
+        /// <param name="dataConsumer">A BaseDataConsumer instance.</param>
         private void ReadData(IDbCommand command, DataConsumer dataConsumer)
         {
             using (var reader = command.ExecuteReader())

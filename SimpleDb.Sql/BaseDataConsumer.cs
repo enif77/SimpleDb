@@ -26,23 +26,23 @@ namespace SimpleDb.Sql
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Reflection;
 
     using SimpleDb.Shared;
-    using System.Reflection;
 
 
     /// <summary>
-    /// Consumes data from a SqlDataReader and construts T instances from them.
+    /// Consumes data from a IDataReader and construts instances of type T from it.
     /// </summary>
-    /// <typeparam name="T">A constructed instnaces data type.</typeparam>
-    public class DataConsumer<T> : IDataConsumer<T> where T : AEntity, new()
+    /// <typeparam name="T">The data type of constructed instances.</typeparam>
+    public class BaseDataConsumer<T> : IDataConsumer<T> where T : AEntity, new()
     {
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="provider">A INamesProvider instance.</param>
         /// <param name="instances">A collection, where created instances are stored.</param>
-        public DataConsumer(INamesProvider provider, IEnumerable<PropertyInfo> databaseColumns, ICollection<T> instances)
+        public BaseDataConsumer(INamesProvider provider, IEnumerable<PropertyInfo> databaseColumns, ICollection<T> instances)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             DatabaseColumns = databaseColumns ?? throw new ArgumentNullException(nameof(databaseColumns));

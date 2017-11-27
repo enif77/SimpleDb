@@ -186,7 +186,7 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = dataConsumer ?? new DataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
+            var consumer = dataConsumer ?? new BaseDataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
             var idParameters = CreateIdParameters(entity);
 
             if (UseQueries)

@@ -65,7 +65,7 @@ namespace SimpleDbTests.SqLite.Datalayer
 
             if (UseQueries)
             {
-                var res = GetAll(GetDbParameterForName(name), new DataConsumer<Lookup>(NamesProvider, IdDatabaseColumns, new List<Lookup>()), transaction);
+                var res = GetAll(GetDbParameterForName(name), new BaseDataConsumer<Lookup>(NamesProvider, IdDatabaseColumns, new List<Lookup>()), transaction);
 
                 return (res.Any())
                     ? res.First().Id

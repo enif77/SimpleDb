@@ -48,7 +48,7 @@
     <Compile Include="INamesProvider.cs" />
     <Compile Include="IQueryGenerator.cs" />
     <Compile Include="NamedDbParameter.cs" />
-    <Compile Include="DataConsumer.cs" />
+    <Compile Include="BaseDataConsumer.cs" />
     <Compile Include="IDatabaseProvider.cs" />
     <Compile Include="IDataConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -67,7 +67,7 @@ namespace SimpleDb.Extensions.Lookups
 
             if (UseQueries)
             {
-                var res = GetAll(GetDbParameterForName(name), new DataConsumer<T>(NamesProvider, IdDatabaseColumns, new List<T>()), transaction);
+                var res = GetAll(GetDbParameterForName(name), new BaseDataConsumer<T>(NamesProvider, IdDatabaseColumns, new List<T>()), transaction);
 
                 return (res.Any())
                     ? res.First().Id
