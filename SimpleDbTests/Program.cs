@@ -90,9 +90,7 @@ namespace SimpleDbTests
             var test = new MsSql.Tests.QueriesTest();
 
             test.Initialize();
-            test.ShowTestSettings();
-            test.GetAllTest();
-            test.GetIdByNameTest();
+            test.RunAllTests();
         }
         
 

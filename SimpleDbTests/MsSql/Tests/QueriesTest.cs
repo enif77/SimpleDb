@@ -27,61 +27,116 @@ namespace SimpleDbTests.MsSql.Tests
 
     using SimpleDb.Sql;
     using SimpleDbTests.Shared.Datalayer;
+    using SimpleDbTests.Shared.DataObjects;
+    using System.Linq;
+    
 
-
-    public class QueriesTest
+    public class QueriesTest : ATest
     {
         private Database _database;
         private LookupDataLayer _lookupDataLayer;
-        private bool _initialized = false;
+        
 
-
-        public void Initialize()
+        protected override void InitializeImplementation()
         {
-            if (_initialized) throw new InvalidOperationException("Already initialized.");
-
             _database = new Database(
                 ConfigurationManager.ConnectionStrings["SIMPLEDB_MSSQL"].ConnectionString,
                 new SimpleDb.MsSql.DatabaseProvider(new SimpleDbTests.MsSql.NamesProvider()));
 
             _lookupDataLayer = new LookupDataLayer(_database);
             _lookupDataLayer.UseQueries = true;
+        }
+        
 
-            _initialized = true;
+        public override void RunAllTests()
+        {
+            ShowTestSettings();
+
+            RunTest(DeleteAllWithQueryFromLookup_Test);
+
+            RunTest(InsertDefaultEntityToLookup_Test);
+            RunTest(InsertEntitiesToLookup_Test);
+
+            RunTest(GetAllFromLookup_Test);
+            RunTest(GetIdByNameFromLookup_Test);
+
+            Console.WriteLine(Stats);
         }
 
+        #region tests
 
-        public void ShowTestSettings()
+        /// <summary>
+        /// Deletes all from the Lookup table and reseed the auto-increase Id column counter.
+        /// </summary>
+        public void DeleteAllWithQueryFromLookup_Test()
         {
-            Console.WriteLine("========================================");
-            Console.WriteLine("Test: Queries Test");
-            Console.WriteLine("Database: MSSQL");
-            Console.WriteLine("Initialized: {0}", _initialized ? "yes" : "no");
-            Console.WriteLine("Connection string: {0}", _initialized ? _database.ConnectionString : string.Empty);
-            Console.WriteLine("========================================");
-
+            _lookupDataLayer.Database.ExecuteNonQuery(System.Data.CommandType.Text, "TRUNCATE TABLE Lookup; DBCC CHECKIDENT(Lookup, RESEED, 0) WITH NO_INFOMSGS", null);
         }
 
-
-        public void GetAllTest()
+        /// <summary>
+        /// Inserts the default entity to the lookup table. 
+        /// </summary>
+        public void InsertDefaultEntityToLookup_Test()
         {
-            CheckInitialized();
-
-            foreach (var lookup in _lookupDataLayer.GetAll())
+            var entity = new Lookup()
             {
-                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+                Name = "-",
+                Description = string.Empty
+            };
+
+            _lookupDataLayer.Save(entity);
+
+            Console.WriteLine("Default entity saved: {0}", FormatEntity(entity));
+
+            AssertEqual(0, entity.Id);
+        }
+
+        /// <summary>
+        /// Inserts all Vx entities to the lookup table. 
+        /// </summary>
+        public void InsertEntitiesToLookup_Test()
+        {
+            for (var i = 1; i <= 10; i++)
+            {
+                var entity = new Lookup()
+                {
+                    Name = "V" + i,
+                    Description = "Entity NO. " + i
+                };
+
+                _lookupDataLayer.Save(entity);
+
+                Console.WriteLine("Entity saved: {0}", FormatEntity(entity));
+
+                AssertEqual(i, entity.Id);
             }
         }
 
-
-        public void GetIdByNameTest()
+        /// <summary>
+        /// Gets all entities from the Lookup table.
+        /// </summary>
+        public void GetAllFromLookup_Test()
         {
-            CheckInitialized();
+            var entities = _lookupDataLayer.GetAll();
+            foreach (var entity in entities)
+            {
+                Console.WriteLine(FormatEntity(entity));
+            }
 
+            AssertEqual(10, entities.Count());
+        }
+
+        /// <summary>
+        /// Gets an Id of an entity identified by its name from the Lookup table.
+        /// </summary>
+        public void GetIdByNameFromLookup_Test()
+        {
             var name = "V2";
             var id = _lookupDataLayer.GetIdByName(name);
 
             Console.WriteLine("The '{0}' Id is: {1}", name, id);
+
+            AssertEqual(2, id);
         }
 
 
@@ -100,12 +155,26 @@ namespace SimpleDbTests.MsSql.Tests
             // results...
         }
 
+        #endregion
+
 
         #region private
 
-        private void CheckInitialized()
+        protected void ShowTestSettings()
         {
-            if (_initialized == false) throw new InvalidOperationException("Not initialized.");
+            Console.WriteLine("========================================");
+            Console.WriteLine("Test: Queries Test");
+            Console.WriteLine("Database: MSSQL");
+            Console.WriteLine("Initialized: {0}", Initialized ? "yes" : "no");
+            Console.WriteLine("Connection string: {0}", Initialized ? _database.ConnectionString : string.Empty);
+            Console.WriteLine("========================================");
+            Console.WriteLine();
+        }
+               
+        
+        private string FormatEntity(Lookup entity)
+        {
+            return string.Format("Id: {0}, Name: '{1}', Description: '{2}'", entity.Id, entity.Name, entity.Description);
         }
 
         #endregion
