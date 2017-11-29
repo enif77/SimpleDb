@@ -142,37 +142,7 @@ namespace SimpleDb.Sql
 
 
         #region public methods
-
-        /// <summary>
-        /// Returns a security function code for a database operation.
-        /// </summary>
-        /// <param name="operation">A database opertation.</param>
-        /// <returns>A security function code.</returns>
-        protected virtual string GetSecurityFunctionCode(DatabaseOperation operation)
-        {
-            return operation.ToString();
-        }
-
-        /// <summary>
-        /// Checks, if an operation is allowed for a certain user.
-        /// </summary>
-        /// <param name="operation">A DatabaseOperation code.</param>
-        protected void OperationAllowed(DatabaseOperation operation)
-        {
-            if (BypassSecurity) return;
-
-            OperationAllowedImplementation(operation);
-        }
-
-        /// <summary>
-        /// Checks, if an operation is allowed for a certain user - implementation.
-        /// </summary>
-        /// <param name="operation">A DatabaseOperation code.</param>
-        protected virtual void OperationAllowedImplementation(DatabaseOperation operation)
-        {
-            // Here can be a user created code, that does checks against the database.
-        }
-
+        
         /// <summary>
         /// Returns all instances of a T.
         /// </summary>
@@ -282,6 +252,36 @@ namespace SimpleDb.Sql
 
 
         #region non-public methods
+
+        /// <summary>
+        /// Returns a security function code for a database operation.
+        /// </summary>
+        /// <param name="operation">A database opertation.</param>
+        /// <returns>A security function code.</returns>
+        protected virtual string GetSecurityFunctionCode(DatabaseOperation operation)
+        {
+            return operation.ToString();
+        }
+
+        /// <summary>
+        /// Checks, if an operation is allowed for a certain user.
+        /// </summary>
+        /// <param name="operation">A DatabaseOperation code.</param>
+        protected void OperationAllowed(DatabaseOperation operation)
+        {
+            if (BypassSecurity) return;
+
+            OperationAllowedImplementation(operation);
+        }
+
+        /// <summary>
+        /// Checks, if an operation is allowed for a certain user - implementation.
+        /// </summary>
+        /// <param name="operation">A DatabaseOperation code.</param>
+        protected virtual void OperationAllowedImplementation(DatabaseOperation operation)
+        {
+            // Here can be a user created code, that does checks against the database.
+        }
 
         /// <summary>
         /// Creates parameters for the INSERT database operation. 
