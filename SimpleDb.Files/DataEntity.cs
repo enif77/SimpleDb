@@ -24,14 +24,14 @@ namespace SimpleDb.Files
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Globalization;
     using System.IO;
-
-    using SimpleDb.Shared;
     
 
-    public class DataEntity : IDataRecord
+    /// <summary>
+    /// Represents data, that can be stored in a file.
+    /// </summary>
+    public class DataEntity
     {
         /// <summary>
         /// The maximum column name length.
@@ -53,7 +53,6 @@ namespace SimpleDb.Files
         /// The parsed values dictionary.
         /// </summary>
         public Dictionary<string, string> Values { get; }
-        public Dictionary<int, string> ValuesByPosition { get; }
 
 
         /// <summary>
@@ -62,138 +61,7 @@ namespace SimpleDb.Files
         public DataEntity()
         {
             Values = new Dictionary<string, string>();
-            ValuesByPosition = new Dictionary<int, string>();
         }
-
-
-        #region IDataRecord
-
-        public object this[int i]
-        {
-            get { return ValuesByPosition[i]; }
-        }
-
-
-        public object this[string name]
-        {
-            get { return Values[name]; }
-        }
-
-
-        public int FieldCount => throw new NotImplementedException();
-
-
-        public bool GetBoolean(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public byte GetByte(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        public char GetChar(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IDataReader GetData(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetDataTypeName(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DateTime GetDateTime(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal GetDecimal(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public double GetDouble(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Type GetFieldType(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public float GetFloat(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Guid GetGuid(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public short GetInt16(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetInt32(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetInt64(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetName(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetOrdinal(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetString(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetValue(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int GetValues(object[] values)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsDBNull(int i)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
 
         /// <summary>
@@ -209,10 +77,9 @@ namespace SimpleDb.Files
 
             if (Values.ContainsKey(key))
             {
-                throw new ApplicationException(String.Format("The duplicate key '{0}' can not be inserted.", key));
+                throw new InvalidOperationException(string.Format("The duplicate key '{0}' can not be inserted.", key));
             }
 
-            // TODO: How to detect a duplicity instertion of a null?
             if (value == null) return;
 
             Values.Add(key, value);
@@ -253,7 +120,7 @@ namespace SimpleDb.Files
         /// </summary>
         /// <param name="key">A key.</param>
         /// <returns>A value or null.</returns>
-        public object GetValue(string key)
+        public string GetValue(string key)
         {
             IsValidKey(key);
 
