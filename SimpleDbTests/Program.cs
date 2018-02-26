@@ -42,10 +42,10 @@ namespace SimpleDbTests
             try
             {
                 //FilesTests();
-                MsSqlTests();
+                //MsSqlTests();
                 //MySqlTests();
                 //PgSqlTests();
-                //SqLiteTests();
+                SqLiteTests();
             }
             finally
             {

@@ -36,6 +36,10 @@ namespace SimpleDbTests.SqLite.Datalayer
 
     public class LookupDataLayer : ABaseIdDatalayer<Lookup, long>
     {
+        /// <summary>      
+        /// Constructor.
+        /// </summary>
+        /// <param name="database">An initialized Database instance.</param>
         public LookupDataLayer(Database database)
             : base(database)
         {
