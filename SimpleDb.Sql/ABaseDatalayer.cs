@@ -332,8 +332,8 @@ namespace SimpleDb.Sql
                     Name = NamesProvider.GetColumnName(baseName),
                     IsId = attribute.IsId,
                     DbParameter = UseQueries
-                        ? Database.Provider.CreateDbParameter(baseName, column.GetValue(entity))
-                        : Database.Provider.CreateStoredProcedureDbParameter(baseName, column.GetValue(entity))
+                        ? Database.Provider.CreateDbParameter(baseName, column.GetValue(entity) ?? DBNull.Value)
+                        : Database.Provider.CreateStoredProcedureDbParameter(baseName, column.GetValue(entity) ?? DBNull.Value)
                 });
             }
 
