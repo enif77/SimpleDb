@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2018 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -45,7 +45,7 @@ namespace SimpleDb.SqLite
         public DatabaseProvider(INamesProvider namesProvider = null, IQueryGenerator queryGenerator = null)
         {
             NamesProvider = namesProvider ?? new BaseNamesProvider();
-            QueryGenerator = queryGenerator ?? new BaseQueryGenerator();
+            QueryGenerator = queryGenerator ?? new QueryGenerator();
 
         }
 
