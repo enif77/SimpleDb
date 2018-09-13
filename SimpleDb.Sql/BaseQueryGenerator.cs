@@ -130,6 +130,8 @@ namespace SimpleDb.Sql
             {
                 if (parameter.IsId)
                 {
+                    count--;
+
                     // Id parameters are read only.
                     continue;
                 }
