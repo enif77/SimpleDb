@@ -128,11 +128,13 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                return entity.Id = Database.ExecuteScalar<TId>(
+                Database.ExecuteScalar<TId>(
                     CommandType.Text,
                     QueryGenerator.GenerateUpdateQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), updateParameters),
                     updateParameters,
                     transaction);
+
+                return entity.Id;
             }
             else
             {

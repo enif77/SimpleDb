@@ -125,17 +125,10 @@ namespace SimpleDb.Sql
             sb.Append(dataTableName);
             sb.Append(" SET ");
 
-            var count = updateParameters.Count();
-            foreach (var parameter in updateParameters)
+            var filteredParameters = updateParameters.Where(p => p.IsId == false);
+            var count = filteredParameters.Count();
+            foreach (var parameter in filteredParameters)
             {
-                if (parameter.IsId)
-                {
-                    count--;
-
-                    // Id parameters are read only.
-                    continue;
-                }
-
                 sb.Append(parameter.Name);
                 sb.Append("=");
                 sb.Append(parameter.DbParameter.ParameterName);
