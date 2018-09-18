@@ -262,7 +262,7 @@ namespace SimpleDb.Sql
             foreach (var column in DatabaseColumns)
             {
                 // Ignore column with a different type.
-                if (column.GetType() != typeof(TId)) continue;
+                if (column.PropertyType.FullName != typeof(TId).FullName) continue;
 
                 var attribute = EntityReflector.GetDbColumnAttribute(column);
                 if (attribute.IsId)
