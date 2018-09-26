@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // sadu atributů. Změnou hodnot těchto atributů se upraví informace
 // přidružené k sestavení.
 [assembly: AssemblyTitle("SimpleDb.Sql")]
-[assembly: AssemblyDescription("Library for handling file-based and (MS)SQL based databases.")]
+[assembly: AssemblyDescription("Library for handling databases.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Premysl Fara")]
 [assembly: AssemblyProduct("SimpleDb.Sql")]
 [assembly: AssemblyCopyright("Copyright © 2016 - 2017 Premysl Fara")]
 [assembly: AssemblyTrademark("")]
