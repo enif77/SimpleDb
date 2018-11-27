@@ -10,10 +10,10 @@
     <projectUrl>https://github.com/enif77/SimpleDb</projectUrl>
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>SimplqDb.SQLite</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>(C) Premysl Fara, 2018</copyright>
-    <tags>SQL DB</tags>
+    <tags>SQL DB SQLite</tags>
     <dependencies>
       <dependency id="SimpleDb.Sql" version="1.0.0" />
       <dependency id="SimpleDb.Shared" version="1.0.0" />

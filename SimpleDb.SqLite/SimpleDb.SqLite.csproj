@@ -65,7 +65,7 @@
     <None Include="nuget-pack.bat" />
     <None Include="nuget-spec.bat" />
     <None Include="packages.config" />
-    <None Include="SimpleDb.Sql.nuspec" />
+    <None Include="SimpleDb.SqLite.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.108.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.108.0\build\net46\System.Data.SQLite.Core.targets')" />

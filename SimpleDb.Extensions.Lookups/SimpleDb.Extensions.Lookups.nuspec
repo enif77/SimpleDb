@@ -10,11 +10,12 @@
     <projectUrl>https://github.com/enif77/SimpleDb</projectUrl>
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>SimpleDb.Sql</description>
+    <description>SimplqDb.Extensions.Lookups</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>(C) Premysl Fara, 2018</copyright>
     <tags>SQL DB</tags>
     <dependencies>
+      <dependency id="SimpleDb.Sql" version="1.0.0" />
       <dependency id="SimpleDb.Shared" version="1.0.0" />
     </dependencies>
   </metadata>
