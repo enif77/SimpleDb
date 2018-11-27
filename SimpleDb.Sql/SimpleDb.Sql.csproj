@@ -60,5 +60,12 @@
       <Name>SimpleDb.Shared</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="nuget-add.bat" />
+    <None Include="nuget-init.bat" />
+    <None Include="nuget-pack.bat" />
+    <None Include="nuget-spec.bat" />
+    <None Include="SimpleDb.Sql.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

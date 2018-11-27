@@ -53,6 +53,12 @@
     <Compile Include="IUpdatable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="nuget-add.bat" />
+    <None Include="nuget-init.bat" />
+    <None Include="nuget-pack.bat" />
+    <None Include="nuget-spec.bat" />
+    <None Include="SimpleDb.Shared.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
