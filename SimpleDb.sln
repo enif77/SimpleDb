@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Extensions.Lookups
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Extensions.Validations", "SimpleDb.Extensions.Validations\SimpleDb.Extensions.Validations.csproj", "{FF3904D0-0B16-4643-A4A4-795719E5AD0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Firebird", "SimpleDb.Firebird\SimpleDb.Firebird.csproj", "{EF019356-2F0D-4B72-B55F-2CC793023F30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{FF3904D0-0B16-4643-A4A4-795719E5AD0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF3904D0-0B16-4643-A4A4-795719E5AD0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF3904D0-0B16-4643-A4A4-795719E5AD0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
