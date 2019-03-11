@@ -68,6 +68,9 @@
     <Compile Include="Files\Datalayer\Initializer.cs" />
     <Compile Include="Files\Datalayer\LookupColumnNamesDatalayer.cs" />
     <Compile Include="Files\Datalayer\LookupDatalayer.cs" />
+    <Compile Include="Firebird\Datalayer\Initializer.cs" />
+    <Compile Include="Firebird\Datalayer\LookupDatalayer.cs" />
+    <Compile Include="Firebird\DataObjects\Lookup.cs" />
     <Compile Include="MsSql\NamesProvider.cs" />
     <Compile Include="AssertionException.cs" />
     <Compile Include="MsSql\Tests\QueriesTest.cs" />
@@ -98,6 +101,10 @@
     <ProjectReference Include="..\SimpleDb.Files\SimpleDb.Files.csproj">
       <Project>{02415c98-b92e-4852-b224-a73b9902f4a3}</Project>
       <Name>SimpleDb.Files</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SimpleDb.Firebird\SimpleDb.Firebird.csproj">
+      <Project>{ef019356-2f0d-4b72-b55f-2cc793023f30}</Project>
+      <Name>SimpleDb.Firebird</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleDb.MsSql\SimpleDb.MsSql.csproj">
       <Project>{0dd21056-8e5d-45e2-8b71-3c9e6157b8e1}</Project>
