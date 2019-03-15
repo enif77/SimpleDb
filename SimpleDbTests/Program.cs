@@ -33,7 +33,11 @@ namespace SimpleDbTests
     using SimpleDbTests.Files.Datalayer;
     using SimpleDb.MsSql;
     using SimpleDb.MySql;
-
+    using SimpleDb.Sql.Expressions;
+    using SimpleDb.Sql.Expressions.Operators;
+    using SimpleDb.Sql.Expressions.Operands;
+    using System.Text;
+    using System.Collections.Generic;
 
     static class Program
     {
@@ -41,12 +45,13 @@ namespace SimpleDbTests
         {
             try
             {
+                ExpressionsTests();
                 //FilesTests();
                 //MsSqlTests();
                 //MySqlTests();
                 //PgSqlTests();
                 //SqLiteTests();
-                FirebirdTests();
+                //FirebirdTests();
             }
             finally
             {
@@ -55,6 +60,60 @@ namespace SimpleDbTests
                 Console.ReadLine();
             }
         }
+
+
+        #region Expressions
+
+        private static void ExpressionsTests()
+        {
+            //var exp = new Expression(
+            //    new AndOperator(),
+            //    new ExpressionOperand(
+            //        new Expression(
+            //            new EqualOperator(),
+            //            new NameOperand("a"),
+            //            new NameOperand("b"))
+            //    ),
+            //    new ExpressionOperand(
+            //        new Expression(
+            //            new NotEqualOperator(),
+            //            new NameOperand("c"),
+            //            new NameOperand("d"))
+            //    )
+            //);
+
+            var exp = new Expression(
+                new AndOperator(),
+                new Expression(
+                    new OrOperator(),
+                    new List<IOperand>()
+                    {
+                        new Expression(new LessThanOperator(),
+                            new NameOperand("a"),
+                            new NameOperand("b")),
+
+                        new Expression(new GreaterThanOperator(),
+                            new NameOperand("c"),
+                            new NameOperand("d")),
+
+                        new Expression(new EqualOperator(),
+                            new NameOperand("e"),
+                            new NameOperand("f")),
+                    }, true),
+                new Expression(
+                    new NotEqualOperator(),
+                    new NameOperand("e"),
+                    new ValueOperand<int>(5))
+            );
+
+            var sb = new StringBuilder();
+
+            exp.Generate(sb);
+
+            Console.WriteLine(sb.ToString());
+        }
+
+        #endregion
 
 
         #region FILES

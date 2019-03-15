@@ -27,25 +27,23 @@ namespace SimpleDb.Sql.Expressions.Operands
 
 
     /// <summary>
-    /// A WHERE clause operand representing an expression.
+    /// A WHERE clause operand representing a value.
     /// </summary>
-    public class ExpressionOperand : ABaseOperand
+    public class ValueOperand<T> : ABaseOperand
     {
         /// <summary>
-        /// An expression this operand represents.
+        /// A value this operand represents.
         /// </summary>
-        public Expression Expression { get; }
+        public T Value { get; }
 
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="expression">An expression.</param>
-        public ExpressionOperand(Expression expression)
+        /// <param name="v">A value.</param>
+        public ValueOperand(T v)
         {
-            if (expression == null) throw new ArgumentNullException(nameof(expression));
-
-            Expression = expression;
+            Value = v;
         }
 
 
@@ -55,9 +53,9 @@ namespace SimpleDb.Sql.Expressions.Operands
         /// <param name="to">An output StringBuilder instance.</param>
         public override void Generate(StringBuilder to)
         {
-            if (to == null) throw new ArgumentException(nameof(to));
+            if (to == null) throw new ArgumentException();
 
-            Expression.Generate(to);
+            to.Append(Value);
         }
     }
 }

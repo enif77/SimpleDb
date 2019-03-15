@@ -34,9 +34,14 @@ namespace SimpleDb.Sql.Expressions
     /// <summary>
     /// Represents a WHERE clause expression.
     /// </summary>
-    public class Expression : IExpressionBuilder
+    public class Expression : IOperand
     {
         #region properties
+
+        /// <summary>
+        /// If true, encapsules this expression with parenthesis.
+        /// </summary>
+        public bool WithPriority { get; private set; }
 
         /// <summary>
         /// An operator used in this expression.
@@ -58,7 +63,7 @@ namespace SimpleDb.Sql.Expressions
                 _operands = value;
             }
         }
-        
+
         #endregion
 
 
@@ -67,19 +72,57 @@ namespace SimpleDb.Sql.Expressions
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="operand">The operand.</param>
+        public Expression(IOperand operand, bool withPriority = false)
+        {
+            if (operand == null) throw new ArgumentNullException(nameof(operand));
+
+            SetupAndValidate(
+                new NopOperator(), 
+                new List<IOperand>()
+                    {
+                        operand
+                    },
+                withPriority);
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="op">An oerator.</param>
+        /// <param name="operand">The operand.</param>
+        public Expression(IOperator op, IOperand operand, bool withPriority = false)
+        {
+            if (operand == null) throw new ArgumentNullException(nameof(operand));
+
+            SetupAndValidate(
+                op,
+                new List<IOperand>()
+                    {
+                        operand
+                    },
+                withPriority);
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         /// <param name="op">An oerator.</param>
         /// <param name="firstOperand">The first operand.</param>
         /// <param name="secondOperand">The second operand.</param>
-        public Expression(IOperator op, IOperand firstOperand, IOperand secondOperand)
+        public Expression(IOperator op, IOperand firstOperand, IOperand secondOperand, bool withPriority = false)
         {
             if (firstOperand == null) throw new ArgumentNullException(nameof(firstOperand));
             if (secondOperand == null) throw new ArgumentNullException(nameof(secondOperand));
 
-            SetupAndValidate(op, new List<IOperand>()
-            {
-                firstOperand,
-                secondOperand
-            });
+            SetupAndValidate(
+                op, 
+                new List<IOperand>()
+                    {
+                        firstOperand,
+                        secondOperand
+                    },
+                withPriority);
         }
 
         /// <summary>
@@ -87,9 +130,9 @@ namespace SimpleDb.Sql.Expressions
         /// </summary>
         /// <param name="op">An operator.</param>
         /// <param name="operands">Operands. At least op.MinimimalExpectedOperandsCount of operands.</param>
-        public Expression(IOperator op, IReadOnlyList<IOperand> operands)
+        public Expression(IOperator op, IReadOnlyList<IOperand> operands, bool withPriority = false)
         {
-            SetupAndValidate(op, operands);
+            SetupAndValidate(op, operands, withPriority);
         }
 
         #endregion
@@ -111,7 +154,7 @@ namespace SimpleDb.Sql.Expressions
                 GenerateSeparator(to);
                 Operator.Generate(to);
             }
-            else if (Operator.MinimimalExpectedOperandsCount < 2)
+            else if (Operator.MinimimalExpectedOperandsCount == 1)
             {
                 // NOT a
                 GenerateSeparator(to);
@@ -122,6 +165,9 @@ namespace SimpleDb.Sql.Expressions
             else
             {
                 // a AND b AND c
+
+                if (WithPriority) to.Append("(");
+
                 var count = ((List<IOperand>)Operands).Count;
                 foreach (var operand in Operands)
                 {
@@ -135,6 +181,8 @@ namespace SimpleDb.Sql.Expressions
                         Operator.Generate(to);
                     }
                 }
+
+                if (WithPriority) to.Append(")");
             }
         }
 
@@ -143,8 +191,27 @@ namespace SimpleDb.Sql.Expressions
 
         #region factory methods
 
+        ///// <summary>
+        ///// Creates a new expression "expression AND expression".
+        ///// Example: Name = :Name
+        ///// </summary>
+        ///// <param name="firstOperandExpression">An expression.</param>
+        ///// <param name="secondOperandExpression">An expression.</param>
+        ///// <returns>A new expression.</returns>
+        //public static Expression CreateExpression(IOperator op, Expression firstOperandExpression, Expression secondOperandExpression)
+        //{
+        //    if (op == null) throw new ArgumentNullException(nameof(op));
+        //    if (firstOperandExpression == null) throw new ArgumentNullException(nameof(firstOperandExpression));
+        //    if (secondOperandExpression == null) throw new ArgumentNullException(nameof(secondOperandExpression));
+
+        //    return new Expression(
+        //        op,
+        //        firstOperandExpression,
+        //        secondOperandExpression);
+        //}
+
         /// <summary>
-        /// Creates a new parametrized expression "parameter.Name operand parameter.ParameterName".
+        /// Creates a new parametrized expression "parameter.Name operator parameter.ParameterName".
         /// Example: Name = :Name
         /// </summary>
         /// <param name="op">An operator.</param>
@@ -174,7 +241,7 @@ namespace SimpleDb.Sql.Expressions
         /// </summary>
         /// <param name="op"></param>
         /// <param name="operands"></param>
-        private void SetupAndValidate(IOperator op, IReadOnlyList<IOperand> operands)
+        private void SetupAndValidate(IOperator op, IReadOnlyList<IOperand> operands, bool withPriority)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
             if (operands == null) throw new ArgumentNullException(nameof(operands));
@@ -186,6 +253,7 @@ namespace SimpleDb.Sql.Expressions
 
             Operator = op;
             Operands = new List<IOperand>(operands);
+            WithPriority = withPriority;
         }
 
         /// <summary>

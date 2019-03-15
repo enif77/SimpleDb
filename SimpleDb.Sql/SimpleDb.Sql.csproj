@@ -49,10 +49,12 @@
     <Compile Include="Expressions\Expression.cs" />
     <Compile Include="Expressions\IExpressionBuilder.cs" />
     <Compile Include="Expressions\Operands\ABaseOperand.cs" />
-    <Compile Include="Expressions\Operands\ExpressionOperand.cs" />
     <Compile Include="Expressions\Operands\IOperand.cs" />
+    <Compile Include="Expressions\Operands\ValueOperand.cs" />
     <Compile Include="Expressions\Operands\NameOperand.cs" />
     <Compile Include="Expressions\Operators\ABaseOperator.cs" />
+    <Compile Include="Expressions\Operators\NotOperator.cs" />
+    <Compile Include="Expressions\Operators\NopOperator.cs" />
     <Compile Include="Expressions\Operators\AndOperator.cs" />
     <Compile Include="Expressions\Operators\IOperator.cs" />
     <Compile Include="Expressions\Operators\LessThanOrEqualOperator.cs" />
