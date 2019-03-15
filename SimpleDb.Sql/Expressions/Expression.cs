@@ -141,6 +141,29 @@ namespace SimpleDb.Sql.Expressions
         #endregion
 
 
+        #region factory methods
+
+        /// <summary>
+        /// Creates a new parametrized expression "parameter.Name operand parameter.ParameterName".
+        /// Example: Name = :Name
+        /// </summary>
+        /// <param name="op">An operator.</param>
+        /// <param name="parameter">A DB parameter.</param>
+        /// <returns>A new expression.</returns>
+        public static Expression CreateParametrizedExpression(IOperator op, NamedDbParameter parameter)
+        {
+            if (op == null) throw new ArgumentNullException(nameof(op));
+            if (parameter == null) throw new ArgumentNullException(nameof(op));
+
+            return new Expression(
+                op,
+                new NameOperand(parameter.Name),
+                new NameOperand(parameter.DbParameter.ParameterName));
+        }
+
+        #endregion
+
+
         #region private
 
         private IEnumerable<IOperand> _operands;

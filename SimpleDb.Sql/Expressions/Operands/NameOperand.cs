@@ -27,25 +27,25 @@ namespace SimpleDb.Sql.Expressions.Operands
 
 
     /// <summary>
-    /// A WHERE clause operand representing a query parameter name.
+    /// A WHERE clause operand representing a name.
     /// </summary>
-    public class ParameterNameOperand : ABaseOperand
+    public class NameOperand : ABaseOperand
     {
         /// <summary>
-        /// A query parameter this operand represents.
+        /// A name this operand represents.
         /// </summary>
-        public NamedDbParameter Parameter { get; }
+        public string Name { get; }
 
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="parameter">A query parameter.</param>
-        public ParameterNameOperand(NamedDbParameter parameter)
+        /// <param name="name">A name.</param>
+        public NameOperand(string name)
         {
-            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("A name expected.");
 
-            Parameter = parameter;
+            Name = name;
         }
 
 
@@ -57,9 +57,7 @@ namespace SimpleDb.Sql.Expressions.Operands
         {
             if (to == null) throw new ArgumentException();
 
-            to.Append(Parameter.Name);
-            to.Append(" = ");
-            to.Append(Parameter.DbParameter.ParameterName);
+            to.Append(Name);
         }
     }
 }

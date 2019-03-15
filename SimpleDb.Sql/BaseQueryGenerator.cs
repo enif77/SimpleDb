@@ -151,7 +151,7 @@ namespace SimpleDb.Sql
         /// Generates a DELETE query.
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
-        /// <param name="idParameters">An optional list of parameters used to generate the WHERE clausule.</param>
+        /// <param name="parameters">An optional list of parameters used to generate the WHERE clausule.</param>
         /// <returns>A DELETE query.</returns>
         public virtual string GenerateDeleteQuery(string dataTableName, IEnumerable<NamedDbParameter> parameters)
         {
