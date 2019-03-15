@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -74,7 +74,7 @@ namespace SimpleDb.Sql
             // WHERE param1 = @param1 AND param2 = @param2 ...
             if (parameters != null && parameters.Any())
             {
-                GenerateWhereClausule(parameters, sb);
+                GenerateWhereClause(parameters, sb);
             }
 
             return sb.ToString();
@@ -142,7 +142,7 @@ namespace SimpleDb.Sql
                 sb.Append(",");
             }
 
-            GenerateWhereClausule(updateParameters.Where(p => p.IsId), sb);
+            GenerateWhereClause(updateParameters.Where(p => p.IsId), sb);
 
             return sb.ToString();
         }
@@ -164,7 +164,7 @@ namespace SimpleDb.Sql
             // WHERE param1 = @param1 AND param2 = @param2 ...
             if (parameters != null && parameters.Any())
             {
-                GenerateWhereClausule(parameters, sb);
+                GenerateWhereClause(parameters, sb);
             }
 
             return sb.ToString();
@@ -175,7 +175,7 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="parameters">A list of parameters.</param>
         /// <param name="sb">An output StringBuilder instance.</param> 
-        public virtual void GenerateWhereClausule(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
+        public virtual void GenerateWhereClause(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
         {
             sb.Append(" WHERE ");
 

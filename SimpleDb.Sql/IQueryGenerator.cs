@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -62,10 +62,10 @@ namespace SimpleDb.Sql
         string GenerateDeleteQuery(string dataTableName, IEnumerable<NamedDbParameter> parameters);
 
         /// <summary>
-        /// Generates a WHERE clausule from a nonempty list of parameters.
+        /// Generates a WHERE clause from a nonempty list of parameters.
         /// </summary>
         /// <param name="parameters">A list of parameters.</param>
         /// <param name="sb">An output StringBuilder instance.</param> 
-        void GenerateWhereClausule(IEnumerable<NamedDbParameter> parameters, StringBuilder sb);
+        void GenerateWhereClause(IEnumerable<NamedDbParameter> parameters, StringBuilder sb);
     }
 }
