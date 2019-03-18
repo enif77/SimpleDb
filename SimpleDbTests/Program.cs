@@ -66,21 +66,6 @@ namespace SimpleDbTests
 
         private static void ExpressionsTests()
         {
-            //var exp = new Expression(
-            //    new AndOperator(),
-            //    new ExpressionOperand(
-            //        new Expression(
-            //            new EqualOperator(),
-            //            new NameOperand("a"),
-            //            new NameOperand("b"))
-            //    ),
-            //    new ExpressionOperand(
-            //        new Expression(
-            //            new NotEqualOperator(),
-            //            new NameOperand("c"),
-            //            new NameOperand("d"))
-            //    )
-            //);
 
             /*
              
