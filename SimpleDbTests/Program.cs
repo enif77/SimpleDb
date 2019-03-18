@@ -92,16 +92,23 @@ namespace SimpleDbTests
              */
 
 
-            // ("a op" < 5 OR C > D OR E = 'magor') AND E <> FALSE
+            // ("a op" < 5 OR C > D OR E = 'magor') AND NOT (E <> FALSE)
             var exp = Expression.And(
-                Expression.Or(
-                    new List<IOperand>()
-                    {
-                        Expression.LessThan(Expression.QuotedName("a op"), Expression.Value(5)),
-                        Expression.GreaterThan(Expression.Name("c"), Expression.Name("d")),
-                        Expression.Equal(Expression.Name("e"), Expression.Value("magor")),
-                    }),
-                Expression.NotEqual(Expression.Name("e"), Expression.Value(false))
+                Expression.Priority(
+                    Expression.Or(
+                        new List<IOperand>()
+                        {
+                            Expression.LessThan(Expression.QuotedName("a op"), Expression.Value(5)),
+                            Expression.GreaterThan(Expression.Name("c"), Expression.Name("d")),
+                            Expression.Equal(Expression.Name("e"), Expression.Value("magor"))
+                        }
+                    )
+                ),
+                Expression.Not(
+                    Expression.Priority(
+                        Expression.NotEqual(Expression.Name("e"), Expression.Value(false))
+                    )
+                )
             );
 
             var sb = new StringBuilder();

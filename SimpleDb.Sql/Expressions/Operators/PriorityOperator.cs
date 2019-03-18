@@ -26,16 +26,16 @@ namespace SimpleDb.Sql.Expressions.Operators
 
 
     /// <summary>
-    /// Represents the NOP operator in the WHERE clause.
+    /// Represents the ( ... ) operator in the WHERE clause.
     /// </summary>
-    public class NopOperator : ABaseOperator
+    public class PriorityOperator : ABaseOperator
     {
         public override int MinimimalExpectedOperandsCount => 1;
 
 
         public override void Generate(StringBuilder to)
         {
-            // Nothing is generated here.
+            // Nothing here.
         }
     }
 }

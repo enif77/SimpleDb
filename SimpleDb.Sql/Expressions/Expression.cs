@@ -42,11 +42,6 @@ namespace SimpleDb.Sql.Expressions
         #region properties
 
         /// <summary>
-        /// If true, encapsules this expression with parenthesis.
-        /// </summary>
-        public bool WithPriority { get; private set; }
-
-        /// <summary>
         /// An operator used in this expression.
         /// </summary>
         public IOperator Operator { get; private set; }
@@ -75,26 +70,9 @@ namespace SimpleDb.Sql.Expressions
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="operand">The operand.</param>
-        public Expression(IOperand operand, bool withPriority = false)
-        {
-            if (operand == null) throw new ArgumentNullException(nameof(operand));
-
-            SetupAndValidate(
-                new NopOperator(), 
-                new List<IOperand>()
-                    {
-                        operand
-                    },
-                withPriority);
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
         /// <param name="op">An oerator.</param>
         /// <param name="operand">The operand.</param>
-        public Expression(IOperator op, IOperand operand, bool withPriority = false)
+        public Expression(IOperator op, IOperand operand)
         {
             if (operand == null) throw new ArgumentNullException(nameof(operand));
 
@@ -103,8 +81,7 @@ namespace SimpleDb.Sql.Expressions
                 new List<IOperand>()
                     {
                         operand
-                    },
-                withPriority);
+                    });
         }
 
         /// <summary>
@@ -112,20 +89,18 @@ namespace SimpleDb.Sql.Expressions
         /// </summary>
         /// <param name="op">An oerator.</param>
         /// <param name="firstOperand">The first operand.</param>
-        /// <param name="secondOperand">The second operand.</param>
-        public Expression(IOperator op, IOperand firstOperand, IOperand secondOperand, bool withPriority = false)
+        public Expression(IOperator op, IOperand firstOperand, IOperand secondOperand)
         {
             if (firstOperand == null) throw new ArgumentNullException(nameof(firstOperand));
             if (secondOperand == null) throw new ArgumentNullException(nameof(secondOperand));
 
             SetupAndValidate(
-                op, 
+                op,
                 new List<IOperand>()
                     {
                         firstOperand,
                         secondOperand
-                    },
-                withPriority);
+                    });
         }
 
         /// <summary>
@@ -133,9 +108,9 @@ namespace SimpleDb.Sql.Expressions
         /// </summary>
         /// <param name="op">An operator.</param>
         /// <param name="operands">Operands. At least op.MinimimalExpectedOperandsCount of operands.</param>
-        public Expression(IOperator op, IReadOnlyList<IOperand> operands, bool withPriority = false)
+        public Expression(IOperator op, IReadOnlyList<IOperand> operands)
         {
-            SetupAndValidate(op, operands, withPriority);
+            SetupAndValidate(op, operands);
         }
 
         #endregion
@@ -153,24 +128,33 @@ namespace SimpleDb.Sql.Expressions
 
             if (Operator.MinimimalExpectedOperandsCount == 0)
             {
-                // NOT
-                GenerateSeparator(to);
-                Operator.Generate(to);
+                throw new NotImplementedException();
             }
-            else if (Operator.MinimimalExpectedOperandsCount == 1)
+            else
+            if (Operator.MinimimalExpectedOperandsCount == 1)
             {
-                // NOT a
-                GenerateSeparator(to);
-                Operator.Generate(to);
-                GenerateSeparator(to);
+                // NOT and ( ... )
+                var withPriority = Operator is PriorityOperator;
+                if (withPriority)
+                {
+                    to.Append("(");
+                }
+                else
+                {
+                    Operator.Generate(to);
+                    GenerateSeparator(to);
+                }
+                                                
                 Operands.First().Generate(to);
+
+                if (withPriority)
+                {
+                    to.Append(")");
+                }
             }
             else
             {
                 // a AND b AND c
-
-                if (WithPriority) to.Append("(");
-
                 var expStart = true;
                 var count = ((List<IOperand>)Operands).Count;
                 foreach (var operand in Operands)
@@ -195,8 +179,6 @@ namespace SimpleDb.Sql.Expressions
                         Operator.Generate(to);
                     }
                 }
-
-                if (WithPriority) to.Append(")");
             }
         }
 
@@ -257,11 +239,10 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the AND operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand And(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand And(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new AndOperator(), operands, withPriority);
+            return new Expression(new AndOperator(), operands);
         }
 
         /// <summary>
@@ -279,11 +260,10 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the '=' operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand Equal(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand Equal(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new EqualOperator(), operands, withPriority);
+            return new Expression(new EqualOperator(), operands);
         }
 
         /// <summary>
@@ -301,11 +281,10 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the '>' operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand GreaterThan(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand GreaterThan(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new GreaterThanOperator(), operands, withPriority);
+            return new Expression(new GreaterThanOperator(), operands);
         }
 
         /// <summary>
@@ -323,11 +302,10 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the '>=' operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand GreaterThanOrEqual(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand GreaterThanOrEqual(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new GreaterThanOrEqualOperator(), operands, withPriority);
+            return new Expression(new GreaterThanOrEqualOperator(), operands);
         }
 
         /// <summary>
@@ -345,16 +323,21 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the '<' operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand LessThan(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand LessThan(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new LessThanOperator(), operands, withPriority);
+            return new Expression(new LessThanOperator(), operands);
         }
 
-
-        // TODO: NOP
-
+        /// <summary>
+        /// Creates a new expression for the NOT operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand Not(IOperand a)
+        {
+            return new Expression(new NotOperator(), a);
+        }
 
         /// <summary>
         /// Creates a new expression for the '<>' operator.
@@ -371,17 +354,12 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the '<>' operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand NotEqual(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand NotEqual(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new NotEqualOperator(), operands, withPriority);
+            return new Expression(new NotEqualOperator(), operands);
         }
-
-
-        // TODO: NOT
-
-
+        
         /// <summary>
         /// Creates a new expression for the OR operator.
         /// </summary>
@@ -397,11 +375,20 @@ namespace SimpleDb.Sql.Expressions
         /// Creates a new expression for the OR operator.
         /// </summary>
         /// <param name="operands">The list of operands. At least two.</param>
-        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
         /// <returns>An IOperand instance representing the new expression.</returns>
-        public static IOperand Or(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        public static IOperand Or(IReadOnlyList<IOperand> operands)
         {
-            return new Expression(new OrOperator(), operands, withPriority);
+            return new Expression(new OrOperator(), operands);
+        }
+        
+        /// <summary>
+        /// Creates a new expression for the ( ... ) operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand Priority(IOperand a)
+        {
+            return new Expression(new PriorityOperator(), a);
         }
 
         #endregion
@@ -438,7 +425,7 @@ namespace SimpleDb.Sql.Expressions
         /// </summary>
         /// <param name="op"></param>
         /// <param name="operands"></param>
-        private void SetupAndValidate(IOperator op, IReadOnlyList<IOperand> operands, bool withPriority)
+        private void SetupAndValidate(IOperator op, IReadOnlyList<IOperand> operands)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
             if (operands == null) throw new ArgumentNullException(nameof(operands));
@@ -450,7 +437,6 @@ namespace SimpleDb.Sql.Expressions
 
             Operator = op;
             Operands = new List<IOperand>(operands);
-            WithPriority = withPriority;
         }
 
         /// <summary>
