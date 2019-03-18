@@ -22,6 +22,8 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Sql
 {
+    using SimpleDb.Sql.Expressions;
+    using SimpleDb.Sql.Expressions.Operators;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -38,9 +40,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="columnNames">An optional list of columns we wanna to get.</param>
-        /// <param name="parameters">An optional list of WHERE parameters.</param>
+        /// <param name="expression">An optional WHERE clause expression.</param>
         /// <returns>A parametrized SELECT query.</returns>
-        public virtual string GenerateSelectQuery(string dataTableName, IEnumerable<NamedDbParameter> columnNames, IEnumerable<NamedDbParameter> parameters)
+        public virtual string GenerateSelectQuery(string dataTableName, IEnumerable<NamedDbParameter> columnNames, Expression expression)
         {
             var sb = new StringBuilder("SELECT ");
 
@@ -71,10 +73,10 @@ namespace SimpleDb.Sql
             sb.Append(dataTableName);
 
             // Generate the WHERE clausule using parameters.
-            // WHERE param1 = @param1 AND param2 = @param2 ...
-            if (parameters != null && parameters.Any())
+            // WHERE expression ...
+            if (expression != null)
             {
-                GenerateWhereClause(parameters, sb);
+                GenerateWhereClause(expression, sb);
             }
 
             return sb.ToString();
@@ -142,7 +144,13 @@ namespace SimpleDb.Sql
                 sb.Append(",");
             }
 
-            GenerateWhereClause(updateParameters.Where(p => p.IsId), sb);
+            var idParamExpressions = new List<Expression>();
+            foreach (var idParam in updateParameters.Where(p => p.IsId))
+            {
+                idParamExpressions.Add(Expression.ParameterExpression(new EqualOperator(), idParam));
+            }
+            
+            GenerateWhereClause((Expression)Expression.And(idParamExpressions), sb);
 
             return sb.ToString();
         }
@@ -151,49 +159,61 @@ namespace SimpleDb.Sql
         /// Generates a DELETE query.
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
-        /// <param name="parameters">An optional list of parameters used to generate the WHERE clausule.</param>
+        /// <param name="expression">An optional WHERE clause expression.</param>
         /// <returns>A DELETE query.</returns>
-        public virtual string GenerateDeleteQuery(string dataTableName, IEnumerable<NamedDbParameter> parameters)
+        public virtual string GenerateDeleteQuery(string dataTableName, Expression expression = null)
         {
-            // DELETE FROM table WHERE ...
+            // DELETE FROM table [ WHERE ... ]
             var sb = new StringBuilder("DELETE FROM ");
 
             sb.Append(dataTableName);
 
             // Generate the WHERE clausule using parameters.
-            // WHERE param1 = @param1 AND param2 = @param2 ...
-            if (parameters != null && parameters.Any())
+            // WHERE expression ...
+            if (expression != null)
             {
-                GenerateWhereClause(parameters, sb);
+                GenerateWhereClause(expression, sb);
             }
 
             return sb.ToString();
         }
        
+        ///// <summary>
+        ///// Generates a WHERE clausule from a nonempty list of parameters.
+        ///// </summary>
+        ///// <param name="parameters">A list of parameters.</param>
+        ///// <param name="sb">An output StringBuilder instance.</param> 
+        //public virtual void GenerateWhereClause(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
+        //{
+        //    sb.Append(" WHERE ");
+
+        //    var count = parameters.Count();
+        //    foreach (var parameter in parameters)
+        //    {
+        //        sb.Append(parameter.Name);
+        //        sb.Append("=");
+        //        sb.Append(parameter.DbParameter.ParameterName);
+
+        //        count--;
+        //        if (count < 1)
+        //        {
+        //            break;
+        //        }
+
+        //        sb.Append(" AND ");
+        //    }
+        //}
+
+
         /// <summary>
-        /// Generates a WHERE clausule from a nonempty list of parameters.
+        /// Generates a WHERE clause from a nonempty list of parameters.
         /// </summary>
-        /// <param name="parameters">A list of parameters.</param>
+        /// <param name="expression">An expression.</param>
         /// <param name="sb">An output StringBuilder instance.</param> 
-        public virtual void GenerateWhereClause(IEnumerable<NamedDbParameter> parameters, StringBuilder sb)
+        public void GenerateWhereClause(Expression expression, StringBuilder sb)
         {
-            sb.Append(" WHERE ");
-
-            var count = parameters.Count();
-            foreach (var parameter in parameters)
-            {
-                sb.Append(parameter.Name);
-                sb.Append("=");
-                sb.Append(parameter.DbParameter.ParameterName);
-
-                count--;
-                if (count < 1)
-                {
-                    break;
-                }
-
-                sb.Append(" AND ");
-            }
+            sb.Append(" WHERE");
+            expression.Generate(sb);
         }
     }
 }

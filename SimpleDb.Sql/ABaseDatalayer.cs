@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -29,6 +29,8 @@ namespace SimpleDb.Sql
     using System.Reflection;
 
     using SimpleDb.Shared;
+    using SimpleDb.Sql.Expressions;
+    using SimpleDb.Sql.Expressions.Operators;
 
 
     /// <summary>
@@ -142,16 +144,18 @@ namespace SimpleDb.Sql
 
 
         #region public methods
-        
+
         /// <summary>
         /// Returns all instances of a T.
         /// </summary>
         /// <param name="parameters">A list of parameters for the SELECT operation. 
         /// If set and UseQueries is false, the stored procedure should have all parameters, which were supplied here.</param>
+        /// <param name="expression">An optional user defined WHERE clause expression for the SELECT command. 
+        /// If not set and some parameters are defined, the WHERE clause is generated as column = param AND ...</param>
         /// <param name="dataConsumer">An optional user data consumer instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>IEnumerable of all object instances.</returns>
-        public virtual IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, IDataConsumer<T> dataConsumer = null, IDbTransaction transaction = null)
+        public virtual IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, Expression expression = null, IDataConsumer<T> dataConsumer = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
@@ -161,13 +165,15 @@ namespace SimpleDb.Sql
             {
                 Database.ExecuteReader(
                     CommandType.Text,
-                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), parameters),
+                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), CreateWhereClauseExpression(parameters, expression)),
                     parameters,
                     consumer.CreateInstance,
                     transaction);
             }
             else
             {
+                if (expression != null) throw new InvalidOperationException("WHERE clause expression not supported for stored procedures.");
+
                 Database.ExecuteReader(
                     CommandType.StoredProcedure,
                     SelectStoredProcedureName,
@@ -230,7 +236,7 @@ namespace SimpleDb.Sql
         /// <param name="parameters">A list of parameters for the WHERE calusule of the DELETE operation.
         /// If set and UseQueries is false, the stored procedure should have all parameters, which were supplied here.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Delete(IEnumerable<NamedDbParameter> parameters = null, IDbTransaction transaction = null)
+        public virtual void Delete(IEnumerable<NamedDbParameter> parameters = null, Expression expression = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Delete);
 
@@ -238,12 +244,14 @@ namespace SimpleDb.Sql
             {
                 Database.ExecuteNonQuery(
                     CommandType.Text,
-                    QueryGenerator.GenerateDeleteQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), parameters),
+                    QueryGenerator.GenerateDeleteQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateWhereClauseExpression(parameters, expression)),
                     parameters,
                     transaction);
             }
             else
             {
+                if (expression != null) throw new InvalidOperationException("WHERE clause expression not supported for stored procedures.");
+
                 Database.ExecuteNonQuery(CommandType.StoredProcedure, DeleteStoredProcedureName, parameters, transaction);
             }
         }
@@ -340,6 +348,37 @@ namespace SimpleDb.Sql
             return paramList;
         }
 
+        /// <summary>
+        /// Creates a WHERE clause expression from a list of parameters.
+        /// </summary>
+        /// <param name="parameters">An optional list of parameters for column = param [ AND column = param ] expression.</param>
+        /// <param name="expression">An optional user defined expression.</param>
+        /// <returns>An WHERE clause expression.</returns>
+        protected Expression CreateWhereClauseExpression(IEnumerable<NamedDbParameter> parameters, Expression expression = null)
+        {
+            var whereExpression = expression;
+
+            if (parameters != null && parameters.Any() && expression == null)
+            {
+                var paramExpressions = new List<Expression>();
+                foreach (var idParam in parameters)
+                {
+                    paramExpressions.Add(Expression.ParameterExpression(new EqualOperator(), idParam));
+                }
+
+                if (paramExpressions.Count > 1)
+                {
+                    whereExpression = (Expression)Expression.And(paramExpressions);
+                }
+                else
+                {
+                    whereExpression = paramExpressions.First();
+                }
+            }
+
+            return whereExpression;
+        }
+        
         /// <summary>
         /// Creates column parameters for the SELECT database operation. 
         /// These parameters contain names only.

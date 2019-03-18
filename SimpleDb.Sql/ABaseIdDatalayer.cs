@@ -29,6 +29,8 @@ namespace SimpleDb.Sql
 
     using SimpleDb.Shared;
     using System.Reflection;
+    using SimpleDb.Sql.Expressions;
+    using SimpleDb.Sql.Expressions.Operators;
 
 
     /// <summary>
@@ -85,7 +87,7 @@ namespace SimpleDb.Sql
         /// <returns>Instance of an entity or null.</returns>
         public virtual T Get(TId id, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
         {
-            return GetAll(CreateIdParameters(id), dataConsumer, transaction).FirstOrDefault();
+            return GetAll(CreateIdParameters(id), null, dataConsumer, transaction).FirstOrDefault();
         }
 
         /// <summary>
@@ -153,7 +155,7 @@ namespace SimpleDb.Sql
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             
-            Delete(CreateIdParameters(entity), transaction);
+            Delete(CreateIdParameters(entity), null, transaction);
         }
 
         /// <summary>
@@ -165,7 +167,7 @@ namespace SimpleDb.Sql
         {
             OperationAllowed(DatabaseOperation.Delete);
 
-            Delete(CreateIdParameters(id), transaction);
+            Delete(CreateIdParameters(id), null, transaction);
         }
 
         /// <summary>
@@ -195,7 +197,7 @@ namespace SimpleDb.Sql
             {
                 Database.ExecuteReader(
                     CommandType.Text,
-                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), idParameters),  // TODO: SELECT column names can be precomputed.
+                    QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), CreateWhereClauseExpression(idParameters, null)),  // TODO: SELECT column names can be precomputed.
                     idParameters,
                     consumer.RecreateInstance,
                     transaction);

@@ -25,7 +25,12 @@ namespace SimpleDb.Sql
     using System.Collections.Generic;
     using System.Text;
 
+    using SimpleDb.Sql.Expressions;
 
+
+    /// <summary>
+    /// A SQL query generator interface.
+    /// </summary>
     public interface IQueryGenerator
     {
         /// <summary>
@@ -33,9 +38,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="columnNames">An optional list of columns we wanna to get.</param>
-        /// <param name="parameters">An optional list of WHERE parameters.</param>
+        /// <param name="expression">An optional WHERE clause expression.</param>
         /// <returns>A parametrized SELECT query.</returns>
-        string GenerateSelectQuery(string dataTableName, IEnumerable<NamedDbParameter> columnNames, IEnumerable<NamedDbParameter> parameters);
+        string GenerateSelectQuery(string dataTableName, IEnumerable<NamedDbParameter> columnNames, Expression expression);
 
         /// <summary>
         /// Generates a parametrized INSERT query.
@@ -57,15 +62,22 @@ namespace SimpleDb.Sql
         /// Generates a DELETE query.
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
-        /// <param name="idParameters">An optional list of parameters used to generate the WHERE clausule.</param>
+        /// <param name="expression">An optional WHERE clause expression.</param>
         /// <returns>A DELETE query.</returns>
-        string GenerateDeleteQuery(string dataTableName, IEnumerable<NamedDbParameter> parameters);
+        string GenerateDeleteQuery(string dataTableName, Expression expression);
+
+        ///// <summary>
+        ///// Generates a WHERE clause from a nonempty list of parameters.
+        ///// </summary>
+        ///// <param name="parameters">A list of parameters.</param>
+        ///// <param name="sb">An output StringBuilder instance.</param> 
+        //void GenerateWhereClause(IEnumerable<NamedDbParameter> parameters, StringBuilder sb);
 
         /// <summary>
         /// Generates a WHERE clause from a nonempty list of parameters.
         /// </summary>
-        /// <param name="parameters">A list of parameters.</param>
+        /// <param name="expression">An expression.</param>
         /// <param name="sb">An output StringBuilder instance.</param> 
-        void GenerateWhereClause(IEnumerable<NamedDbParameter> parameters, StringBuilder sb);
+        void GenerateWhereClause(Expression expression, StringBuilder sb);
     }
 }
