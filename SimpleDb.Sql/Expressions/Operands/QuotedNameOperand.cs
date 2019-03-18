@@ -20,22 +20,44 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Sql.Expressions.Operators
+namespace SimpleDb.Sql.Expressions.Operands
 {
+    using System;
     using System.Text;
 
 
     /// <summary>
-    /// Represents the NOT operator in the WHERE clause.
+    /// A WHERE clause operand representing a quoted name.
     /// </summary>
-    public class NotOperator : ABaseOperator
+    public class QuotedNameOperand : ABaseOperand
     {
-        public override int MinimimalExpectedOperandsCount => 1;
+        /// <summary>
+        /// A name this operand represents.
+        /// </summary>
+        public string Name { get; }
 
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="name">A name.</param>
+        public QuotedNameOperand(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("A name expected.");
+
+            Name = name;
+        }
+
+
+        /// <summary>
+        /// Genarates this operand into an output StringBuilder instance.
+        /// </summary>
+        /// <param name="to">An output StringBuilder instance.</param>
         public override void Generate(StringBuilder to)
         {
-            to.Append("NOT");
+            if (to == null) throw new ArgumentException();
+
+            to.AppendFormat("\"{0}\"", Name);
         }
     }
 }

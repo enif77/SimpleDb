@@ -31,6 +31,9 @@ namespace SimpleDb.Sql.Expressions
     using SimpleDb.Sql.Expressions.Operators;
 
 
+    // https://docs.microsoft.com/cs-cz/dotnet/csharp/programming-guide/concepts/expression-trees/
+
+
     /// <summary>
     /// Represents a WHERE clause expression.
     /// </summary>
@@ -168,11 +171,22 @@ namespace SimpleDb.Sql.Expressions
 
                 if (WithPriority) to.Append("(");
 
+                var expStart = true;
                 var count = ((List<IOperand>)Operands).Count;
                 foreach (var operand in Operands)
                 {
-                    GenerateSeparator(to);
-                    operand.Generate(to);
+                    if (expStart)
+                    {
+                        operand.Generate(to);
+                        expStart = false;
+                    }
+                    else
+                    {
+                        GenerateSeparator(to);
+                        operand.Generate(to);
+                    }
+                    
+                    expStart = false;
 
                     count--;
                     if (count > 0)
@@ -191,33 +205,216 @@ namespace SimpleDb.Sql.Expressions
 
         #region factory methods
 
-        ///// <summary>
-        ///// Creates a new expression "expression AND expression".
-        ///// Example: Name = :Name
-        ///// </summary>
-        ///// <param name="firstOperandExpression">An expression.</param>
-        ///// <param name="secondOperandExpression">An expression.</param>
-        ///// <returns>A new expression.</returns>
-        //public static Expression CreateExpression(IOperator op, Expression firstOperandExpression, Expression secondOperandExpression)
-        //{
-        //    if (op == null) throw new ArgumentNullException(nameof(op));
-        //    if (firstOperandExpression == null) throw new ArgumentNullException(nameof(firstOperandExpression));
-        //    if (secondOperandExpression == null) throw new ArgumentNullException(nameof(secondOperandExpression));
-
-        //    return new Expression(
-        //        op,
-        //        firstOperandExpression,
-        //        secondOperandExpression);
-        //}
+        #region operand expressions
 
         /// <summary>
-        /// Creates a new parametrized expression "parameter.Name operator parameter.ParameterName".
+        /// Creates a new operand for a name.
+        /// </summary>
+        /// <param name="name">A name.</param>
+        /// <returns>An IOperand instance representing a name.</returns>
+        public static IOperand Name(string name)
+        {
+            return new NameOperand(name);
+        }
+
+        /// <summary>
+        /// Creates a new operand for a quoted name.
+        /// </summary>
+        /// <param name="name">A name.</param>
+        /// <returns>An IOperand instance representing a quoted name.</returns>
+        public static IOperand QuotedName(string name)
+        {
+            return new QuotedNameOperand(name);
+        }
+
+        /// <summary>
+        /// Creates a new operand for a value.
+        /// </summary>
+        /// <param name="v">A value.</param>
+        /// <returns>An IOperand instance representing a value.</returns>
+        public static IOperand Value<T>(T v)
+        {
+            return new ValueOperand<T>(v);
+        }
+
+        #endregion
+
+
+        #region operator expressions
+
+        /// <summary>
+        /// Creates a new expression for the AND operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand And(IOperand a, IOperand b)
+        {
+            return new Expression(new AndOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the AND operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand And(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new AndOperator(), operands, withPriority);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '=' operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand Equal(IOperand a, IOperand b)
+        {
+            return new Expression(new EqualOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '=' operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand Equal(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new EqualOperator(), operands, withPriority);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '>' operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand GreaterThan(IOperand a, IOperand b)
+        {
+            return new Expression(new GreaterThanOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '>' operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand GreaterThan(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new GreaterThanOperator(), operands, withPriority);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '>=' operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand GreaterThanOrEqual(IOperand a, IOperand b)
+        {
+            return new Expression(new GreaterThanOrEqualOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '>=' operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand GreaterThanOrEqual(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new GreaterThanOrEqualOperator(), operands, withPriority);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '<' operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand LessThan(IOperand a, IOperand b)
+        {
+            return new Expression(new LessThanOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '<' operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand LessThan(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new LessThanOperator(), operands, withPriority);
+        }
+
+
+        // TODO: NOP
+
+
+        /// <summary>
+        /// Creates a new expression for the '<>' operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand NotEqual(IOperand a, IOperand b)
+        {
+            return new Expression(new NotEqualOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the '<>' operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand NotEqual(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new NotEqualOperator(), operands, withPriority);
+        }
+
+
+        // TODO: NOT
+
+
+        /// <summary>
+        /// Creates a new expression for the OR operator.
+        /// </summary>
+        /// <param name="a">The first operand.</param>
+        /// <param name="b">The second operand.</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand Or(IOperand a, IOperand b)
+        {
+            return new Expression(new OrOperator(), a, b);
+        }
+
+        /// <summary>
+        /// Creates a new expression for the OR operator.
+        /// </summary>
+        /// <param name="operands">The list of operands. At least two.</param>
+        /// <param name="withPriority">If true, this expression will be enclosed in parents "(a op b)".</param>
+        /// <returns>An IOperand instance representing the new expression.</returns>
+        public static IOperand Or(IReadOnlyList<IOperand> operands, bool withPriority = true)
+        {
+            return new Expression(new OrOperator(), operands, withPriority);
+        }
+
+        #endregion
+
+
+        /// <summary>
+        /// Creates a new expression for a database parameter "parameter.Name operator parameter.ParameterName".
         /// Example: Name = :Name
         /// </summary>
         /// <param name="op">An operator.</param>
-        /// <param name="parameter">A DB parameter.</param>
+        /// <param name="parameter">A database parameter instance.</param>
         /// <returns>A new expression.</returns>
-        public static Expression CreateParametrizedExpression(IOperator op, NamedDbParameter parameter)
+        public static Expression ParameterExpression(IOperator op, NamedDbParameter parameter)
         {
             if (op == null) throw new ArgumentNullException(nameof(op));
             if (parameter == null) throw new ArgumentNullException(nameof(op));

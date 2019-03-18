@@ -82,28 +82,26 @@ namespace SimpleDbTests
             //    )
             //);
 
-            var exp = new Expression(
-                new AndOperator(),
-                new Expression(
-                    new OrOperator(),
+            /*
+             
+            ParameterExpression param = (ParameterExpression)exprTree.Parameters[0];  
+            BinaryExpression operation = (BinaryExpression)exprTree.Body;  
+            ParameterExpression left = (ParameterExpression)operation.Left;  
+            ConstantExpression right = (ConstantExpression)operation.Right;  
+             
+             */
+
+
+            // ("a op" < 5 OR C > D OR E = 'magor') AND E <> FALSE
+            var exp = Expression.And(
+                Expression.Or(
                     new List<IOperand>()
                     {
-                        new Expression(new LessThanOperator(),
-                            new NameOperand("a"),
-                            new NameOperand("b")),
-
-                        new Expression(new GreaterThanOperator(),
-                            new NameOperand("c"),
-                            new NameOperand("d")),
-
-                        new Expression(new EqualOperator(),
-                            new NameOperand("e"),
-                            new NameOperand("f")),
-                    }, true),
-                new Expression(
-                    new NotEqualOperator(),
-                    new NameOperand("e"),
-                    new ValueOperand<int>(5))
+                        Expression.LessThan(Expression.QuotedName("a op"), Expression.Value(5)),
+                        Expression.GreaterThan(Expression.Name("c"), Expression.Name("d")),
+                        Expression.Equal(Expression.Name("e"), Expression.Value("magor")),
+                    }),
+                Expression.NotEqual(Expression.Name("e"), Expression.Value(false))
             );
 
             var sb = new StringBuilder();
@@ -308,6 +306,8 @@ namespace SimpleDbTests
 
 
         #region Firebird
+
+        // // https://csharp.hotexamples.com/examples/FirebirdSql.Data.FirebirdClient/FbConnectionStringBuilder/-/php-fbconnectionstringbuilder-class-examples.html
 
         private static void FirebirdTests()
         {

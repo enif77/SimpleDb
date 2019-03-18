@@ -50,6 +50,7 @@
     <Compile Include="Expressions\IExpressionBuilder.cs" />
     <Compile Include="Expressions\Operands\ABaseOperand.cs" />
     <Compile Include="Expressions\Operands\IOperand.cs" />
+    <Compile Include="Expressions\Operands\QuotedNameOperand.cs" />
     <Compile Include="Expressions\Operands\ValueOperand.cs" />
     <Compile Include="Expressions\Operands\NameOperand.cs" />
     <Compile Include="Expressions\Operators\ABaseOperator.cs" />

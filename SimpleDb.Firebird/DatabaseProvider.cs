@@ -113,5 +113,39 @@ namespace SimpleDb.Firebird
         }
 
         #endregion
+
+
+        #region helpers
+
+        // https://stackoverflow.com/questions/16354712/how-to-programmatically-create-firebird-database
+        // https://www.tabsoverspaces.com/7968-creating-firebird-database-programatically-c-net
+        // https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/blob/master/Provider/src/FirebirdSql.Data.FirebirdClient/FirebirdClient/FbConnectionStringBuilder.cs
+
+        /// <summary>
+        /// Creates a new Firebird database.
+        /// </summary>
+        /// <param name="host">The name/IP address of the Firebird server to which to connect. Ignored for ebedded databases.</param>
+        /// <param name="fileName">The name of the actual database or the database to be used when a connection is open. It is normally the path to an .FDB file or an alias.</param>
+        /// <param name="user">Indicates the User ID to be used when connecting to the data source.</param>
+        /// <param name="password">Indicates the password to be used when connecting to the data source.</param>
+        /// <param name="pageSize">The size of the database page size. 4096 (the default and the minimum) or 8192 or 16384.</param>
+        /// <param name="forcedWrites">If true, data are written to the database synchronously on COMMIT (the safe way). Asynchronously otherwise.</param>
+        /// <param name="overwrite">If true, the new database replaces an existing database if exists.</param>
+        /// <param name="embeddedDb">If true, an embedded database will be created.</param>
+        public static void CreateDatabase(string host, string fileName, string user, string password, int pageSize, bool forcedWrites, bool overwrite, bool embeddedDb)
+        {
+            var csb = new FbConnectionStringBuilder
+            {
+                Database = fileName,
+                DataSource = host,
+                UserID = user,
+                Password = password,
+                ServerType = embeddedDb ? FbServerType.Embedded : FbServerType.Default
+            };
+
+            FbConnection.CreateDatabase(csb.ConnectionString, pageSize, forcedWrites, overwrite);
+        }
+
+        #endregion
     }
 }

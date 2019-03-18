@@ -55,7 +55,31 @@ namespace SimpleDb.Sql.Expressions.Operands
         {
             if (to == null) throw new ArgumentException();
 
-            to.Append(Value);
+            if (typeof(T) == typeof(string))
+            {
+                FormatStringValue(to);
+            }
+            else if (typeof(T) == typeof(bool))
+            {
+                FormatBooleanValue(to);
+            }
+            else
+            {
+                to.Append(Value);
+            }
+            
+        }
+
+
+        private void FormatStringValue(StringBuilder to)
+        {
+            to.AppendFormat("'{0}'", Value);
+        }
+
+
+        private void FormatBooleanValue(StringBuilder to)
+        {
+            to.Append(Value.ToString().ToUpperInvariant());
         }
     }
 }

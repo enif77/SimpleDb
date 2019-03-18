@@ -57,7 +57,7 @@ namespace SimpleDb.Sql.Expressions.Operands
         {
             if (to == null) throw new ArgumentException();
 
-            to.Append(Name);
+            to.Append(Name.ToUpperInvariant());
         }
     }
 }
