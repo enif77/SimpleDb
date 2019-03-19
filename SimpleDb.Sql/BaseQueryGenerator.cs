@@ -90,27 +90,32 @@ namespace SimpleDb.Sql
         /// <returns>A parametrized INSERT query.</returns>
         public virtual string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
         {
-            var columsStringBuilder = new StringBuilder();
+            var columnsStringBuilder = new StringBuilder();
             var valuesStringBuilder = new StringBuilder();
 
             var count = insertParameters.Count();
             foreach (var parameter in insertParameters)
             {
-                columsStringBuilder.Append(parameter.Name);
+                columnsStringBuilder.Append(parameter.Name);
                 valuesStringBuilder.Append(parameter.DbParameter.ParameterName);
-
+                
                 count--;
                 if (count < 1)
                 {
                     break;
                 }
 
-                columsStringBuilder.Append(",");
+                columnsStringBuilder.Append(",");
                 valuesStringBuilder.Append(",");
             }
 
+            // TODO: ... TITY() Id -> Replace the "Id" with a list of columns? Generate it for IId entities only.
+
             // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description); SELECT SCOPE_IDENTITY() Id;
-            return string.Format("INSERT INTO {0} ({1}) VALUES ({2}); SELECT SCOPE_IDENTITY() Id", dataTableName, columsStringBuilder.ToString(), valuesStringBuilder.ToString());
+            return string.Format("INSERT INTO {0} ({1}) VALUES ({2}); SELECT SCOPE_IDENTITY() \"Id\"",
+                dataTableName,
+                columnsStringBuilder.ToString(),
+                valuesStringBuilder.ToString());
         }
 
         /// <summary>
@@ -149,8 +154,18 @@ namespace SimpleDb.Sql
             {
                 idParamExpressions.Add(Expression.ParameterExpression(new EqualOperator(), idParam));
             }
-            
-            GenerateWhereClause((Expression)Expression.And(idParamExpressions), sb);
+
+            Expression whereExpression;
+            if (idParamExpressions.Count > 1)
+            {
+                whereExpression = (Expression)Expression.And(idParamExpressions);
+            }
+            else
+            {
+                whereExpression = idParamExpressions.First();
+            }
+
+            GenerateWhereClause(whereExpression, sb);
 
             return sb.ToString();
         }
@@ -168,7 +183,6 @@ namespace SimpleDb.Sql
 
             sb.Append(dataTableName);
 
-            // Generate the WHERE clausule using parameters.
             // WHERE expression ...
             if (expression != null)
             {
@@ -212,7 +226,7 @@ namespace SimpleDb.Sql
         /// <param name="sb">An output StringBuilder instance.</param> 
         public void GenerateWhereClause(Expression expression, StringBuilder sb)
         {
-            sb.Append(" WHERE");
+            sb.Append(" WHERE ");
             expression.Generate(sb);
         }
     }

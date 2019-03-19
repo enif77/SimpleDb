@@ -20,45 +20,24 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDb.Sql.Expressions.Operands
+namespace SimpleDb.Firebird
 {
-    using System;
-    using System.Text;
+    using System.Collections.Generic;
+
+    using SimpleDb.Sql;
 
 
-    /// <summary>
-    /// A WHERE clause operand representing a name.
-    /// </summary>
-    public class NameOperand : ABaseOperand
+    public class QueryGenerator : BaseQueryGenerator
     {
         /// <summary>
-        /// A name this operand represents.
+        /// Generates a parametrized INSERT query.
         /// </summary>
-        public string Name { get; }
-
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="name">A name.</param>
-        public NameOperand(string name)
+        /// <param name="dataTableName">A data table name.</param>
+        /// <param name="insertParameters">A list of INSERT parameters.</param>
+        /// <returns>A parametrized INSERT query.</returns>
+        public override string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
         {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("A name expected.");
-
-            Name = name;
-        }
-
-
-        /// <summary>
-        /// Genarates this operand into an output StringBuilder instance.
-        /// </summary>
-        /// <param name="to">An output StringBuilder instance.</param>
-        public override void Generate(StringBuilder to)
-        {
-            if (to == null) throw new ArgumentException();
-
-            //to.Append(Name.ToUpperInvariant());
-            to.Append(Name);
+            return base.GenerateInsertQuery(dataTableName, insertParameters).Replace("; SELECT SCOPE_IDENTITY()", " RETURNING");
         }
     }
 }

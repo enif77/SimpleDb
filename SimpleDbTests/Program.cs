@@ -45,13 +45,14 @@ namespace SimpleDbTests
         {
             try
             {
-                ExpressionsTests();
+                //ExpressionsTests();
+
                 //FilesTests();
                 //MsSqlTests();
                 //MySqlTests();
                 //PgSqlTests();
                 //SqLiteTests();
-                //FirebirdTests();
+                FirebirdTests();
             }
             finally
             {
@@ -299,35 +300,43 @@ namespace SimpleDbTests
 
         #region Firebird
 
-        // // https://csharp.hotexamples.com/examples/FirebirdSql.Data.FirebirdClient/FbConnectionStringBuilder/-/php-fbconnectionstringbuilder-class-examples.html
+        // https://csharp.hotexamples.com/examples/FirebirdSql.Data.FirebirdClient/FbConnectionStringBuilder/-/php-fbconnectionstringbuilder-class-examples.html
 
         private static void FirebirdTests()
         {
-            Console.WriteLine("========================================");
-            Console.WriteLine("FIREBIRD");
-            Console.WriteLine("========================================");
+            var test = new Firebird.Tests.QueriesTest();
 
-            Firebird.Datalayer.Initializer.InitializeLayers(
-                new SimpleDb.Sql.Database(
-                    ConfigurationManager.ConnectionStrings["SIMPLEDB_FIREBIRD"].ConnectionString,
-                    new SimpleDb.Firebird.DatabaseProvider()));
-
-            FirebirdLookupDataLayerTest();
+            test.Initialize();
+            test.RunAllTests();
         }
 
+        //private static void FirebirdTests()
+        //{
+        //    Console.WriteLine("========================================");
+        //    Console.WriteLine("FIREBIRD");
+        //    Console.WriteLine("========================================");
 
-        private static void FirebirdLookupDataLayerTest()
-        {
-            var dal = Registry.Get<Firebird.Datalayer.LookupDataLayer>();
-            foreach (var lookup in dal.GetAll())
-            {
-                Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
-            }
+        //    Firebird.Datalayer.Initializer.InitializeLayers(
+        //        new SimpleDb.Sql.Database(
+        //            ConfigurationManager.ConnectionStrings["SIMPLEDB_FIREBIRD"].ConnectionString,
+        //            new SimpleDb.Firebird.DatabaseProvider()));
 
-            var name = "V2";
-            var id = dal.GetIdByName(name);
-            Console.WriteLine("The '{0}' Id is: {1}", name, id);
-        }
+        //    FirebirdLookupDataLayerTest();
+        //}
+
+
+        //private static void FirebirdLookupDataLayerTest()
+        //{
+        //    var dal = Registry.Get<Firebird.Datalayer.LookupDataLayer>();
+        //    foreach (var lookup in dal.GetAll())
+        //    {
+        //        Console.WriteLine("Id: {0}, Name: '{1}', Description: '{2}'", lookup.Id, lookup.Name, lookup.Description);
+        //    }
+
+        //    var name = "V2";
+        //    var id = dal.GetIdByName(name);
+        //    Console.WriteLine("The '{0}' Id is: {1}", name, id);
+        //}
 
         #endregion
     }

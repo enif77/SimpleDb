@@ -71,6 +71,7 @@
     <Compile Include="Firebird\Datalayer\Initializer.cs" />
     <Compile Include="Firebird\Datalayer\LookupDatalayer.cs" />
     <Compile Include="Firebird\DataObjects\Lookup.cs" />
+    <Compile Include="Firebird\Tests\QueriesTest.cs" />
     <Compile Include="MsSql\NamesProvider.cs" />
     <Compile Include="AssertionException.cs" />
     <Compile Include="MsSql\Tests\QueriesTest.cs" />

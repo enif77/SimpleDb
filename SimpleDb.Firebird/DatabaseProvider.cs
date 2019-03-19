@@ -44,7 +44,7 @@ namespace SimpleDb.Firebird
         public DatabaseProvider(INamesProvider namesProvider = null, IQueryGenerator queryGenerator = null)
         {
             NamesProvider = namesProvider ?? new BaseNamesProvider();
-            QueryGenerator = queryGenerator ?? new BaseQueryGenerator();
+            QueryGenerator = queryGenerator ?? new QueryGenerator();
         }
 
 

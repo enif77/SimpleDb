@@ -92,7 +92,7 @@ namespace SimpleDb.Sql
         /// <inheritdoc />
         public virtual string GetParameterName(string columnName, bool translateName = true)
         {
-            return "@" + (translateName ? TranslateColumnName(columnName) : columnName);
+            return string.Format( "@{0}", translateName ? TranslateColumnName(columnName) : columnName);
         }
 
         /// <inheritdoc />

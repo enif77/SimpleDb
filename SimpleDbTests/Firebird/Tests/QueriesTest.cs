@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -20,7 +20,7 @@ freely, subject to the following restrictions:
  
  */
 
-namespace SimpleDbTests.MsSql.Tests
+namespace SimpleDbTests.Firebird.Tests
 {
     using System;
     using System.Configuration;
@@ -40,8 +40,8 @@ namespace SimpleDbTests.MsSql.Tests
         protected override void InitializeImplementation()
         {
             _database = new Database(
-                ConfigurationManager.ConnectionStrings["SIMPLEDB_MSSQL"].ConnectionString,
-                new SimpleDb.MsSql.DatabaseProvider(new SimpleDbTests.MsSql.NamesProvider()));
+                ConfigurationManager.ConnectionStrings["SIMPLEDB_FIREBIRD"].ConnectionString,
+                new SimpleDb.Firebird.DatabaseProvider());
 
             _lookupDataLayer = new LookupDataLayer(_database);
             _lookupDataLayer.UseQueries = true;
@@ -54,7 +54,7 @@ namespace SimpleDbTests.MsSql.Tests
 
             RunTest(DeleteAllWithQueryFromLookup_Test);
 
-            RunTest(InsertDefaultEntityToLookup_Test);
+            //RunTest(InsertDefaultEntityToLookup_Test);
             RunTest(InsertEntitiesToLookup_Test);
 
             RunTest(GetAllFromLookup_Test);
@@ -71,26 +71,27 @@ namespace SimpleDbTests.MsSql.Tests
         /// </summary>
         public void DeleteAllWithQueryFromLookup_Test()
         {
-            _lookupDataLayer.Database.ExecuteNonQuery(System.Data.CommandType.Text, "TRUNCATE TABLE Lookup; DBCC CHECKIDENT(Lookup, RESEED, 0) WITH NO_INFOMSGS", null);
+            _lookupDataLayer.Database.ExecuteNonQuery(System.Data.CommandType.Text, "DELETE FROM \"Lookup\"", null);
+            _lookupDataLayer.Database.ExecuteNonQuery(System.Data.CommandType.Text, "ALTER TABLE \"Lookup\" ALTER COLUMN \"Id\" RESTART", null);
         }
 
-        /// <summary>
-        /// Inserts the default entity to the lookup table. 
-        /// </summary>
-        public void InsertDefaultEntityToLookup_Test()
-        {
-            var entity = new Lookup()
-            {
-                Name = "-",
-                Description = string.Empty
-            };
+        ///// <summary>
+        ///// Inserts the default entity to the lookup table. 
+        ///// </summary>
+        //public void InsertDefaultEntityToLookup_Test()
+        //{
+        //    var entity = new Lookup()
+        //    {
+        //        Name = "-",
+        //        Description = string.Empty
+        //    };
 
-            _lookupDataLayer.Save(entity);
+        //    _lookupDataLayer.Save(entity);
 
-            Console.WriteLine("Default entity saved: {0}", FormatEntity(entity));
+        //    Console.WriteLine("Default entity saved: {0}", FormatEntity(entity));
 
-            AssertEqual(0, entity.Id);
-        }
+        //    AssertEqual(0, entity.Id);
+        //}
 
         /// <summary>
         /// Inserts all Vx entities to the lookup table. 
@@ -124,7 +125,7 @@ namespace SimpleDbTests.MsSql.Tests
                 Console.WriteLine(FormatEntity(entity));
             }
 
-            AssertEqual(11, entities.Count());
+            AssertEqual(10, entities.Count());
         }
 
         /// <summary>
@@ -189,7 +190,7 @@ namespace SimpleDbTests.MsSql.Tests
         {
             Console.WriteLine("========================================");
             Console.WriteLine("Test: Queries Test");
-            Console.WriteLine("Database: MSSQL");
+            Console.WriteLine("Database: Firebird");
             Console.WriteLine("Initialized: {0}", Initialized ? "yes" : "no");
             Console.WriteLine("Connection string: {0}", Initialized ? _database.ConnectionString : string.Empty);
             Console.WriteLine("========================================");
