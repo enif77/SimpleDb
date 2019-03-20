@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2018 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -22,22 +22,19 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.SqLite
 {
-    using System.Collections.Generic;
-
     using SimpleDb.Sql;
 
 
     public class QueryGenerator : BaseQueryGenerator
     {
         /// <summary>
-        /// Generates a parametrized INSERT query.
+        /// Generates the return-indentity for an INSERT query.
+        /// By default it is the MSSQL's SELECT SCOPE_IDENTITY() Id.
         /// </summary>
-        /// <param name="dataTableName">A data table name.</param>
-        /// <param name="insertParameters">A list of INSERT parameters.</param>
-        /// <returns>A parametrized INSERT query.</returns>
-        public override string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
+        /// <returns>The return-indentity for an INSERT query.</returns>
+        protected override string GenerateReturnIdentityForInsertQuery()
         {
-            return base.GenerateInsertQuery(dataTableName, insertParameters).Replace("SCOPE_IDENTITY()", "last_insert_rowid()");
+            return "; SELECT last_insert_rowid() \"Id\"";
         }
     }
 }

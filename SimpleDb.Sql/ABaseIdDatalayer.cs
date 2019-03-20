@@ -29,8 +29,6 @@ namespace SimpleDb.Sql
 
     using SimpleDb.Shared;
     using System.Reflection;
-    using SimpleDb.Sql.Expressions;
-    using SimpleDb.Sql.Expressions.Operators;
 
 
     /// <summary>
@@ -110,7 +108,7 @@ namespace SimpleDb.Sql
                 {
                     return entity.Id = Database.ExecuteScalar<TId>(
                         CommandType.Text,
-                        QueryGenerator.GenerateInsertQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), insertParameters),
+                        QueryGenerator.GenerateInsertQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), insertParameters, true),
                         insertParameters,
                         transaction);
                 }

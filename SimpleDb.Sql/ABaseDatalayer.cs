@@ -200,7 +200,7 @@ namespace SimpleDb.Sql
 
             if (UseQueries)
             {
-                Database.ExecuteNonQuery(CommandType.Text, QueryGenerator.GenerateInsertQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), parameters), parameters, transaction);
+                Database.ExecuteNonQuery(CommandType.Text, QueryGenerator.GenerateInsertQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), parameters, true), parameters, transaction);
             }
             else
             {

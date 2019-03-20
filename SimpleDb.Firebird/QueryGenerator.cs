@@ -22,22 +22,19 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Firebird
 {
-    using System.Collections.Generic;
-
     using SimpleDb.Sql;
 
 
     public class QueryGenerator : BaseQueryGenerator
     {
         /// <summary>
-        /// Generates a parametrized INSERT query.
+        /// Generates the return-indentity for an INSERT query.
+        /// By default it is the MSSQL's SELECT SCOPE_IDENTITY() Id.
         /// </summary>
-        /// <param name="dataTableName">A data table name.</param>
-        /// <param name="insertParameters">A list of INSERT parameters.</param>
-        /// <returns>A parametrized INSERT query.</returns>
-        public override string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
+        /// <returns>The return-indentity for an INSERT query.</returns>
+        protected override string GenerateReturnIdentityForInsertQuery()
         {
-            return base.GenerateInsertQuery(dataTableName, insertParameters).Replace("; SELECT SCOPE_IDENTITY()", " RETURNING");
+            return " RETURNING \"Id\"";
         }
     }
 }

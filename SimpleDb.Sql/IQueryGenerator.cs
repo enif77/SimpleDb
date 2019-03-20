@@ -47,8 +47,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="insertParameters">A list of INSERT parameters.</param>
+        /// <param name="withGeneratedIdentity">If true, the generated insert query will return an Id of the inserted row.</param>
         /// <returns>A parametrized INSERT query.</returns>
-        string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters);
+        string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters, bool withGeneratedIdentity);
 
         /// <summary>
         /// Generates a parametrized UPDATE query.

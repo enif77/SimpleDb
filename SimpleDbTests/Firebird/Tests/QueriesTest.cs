@@ -29,7 +29,7 @@ namespace SimpleDbTests.Firebird.Tests
     using SimpleDbTests.Shared.Datalayer;
     using SimpleDbTests.Shared.DataObjects;
     using System.Linq;
-    
+    using SimpleDb.Sql.Expressions;
 
     public class QueriesTest : ATest
     {
@@ -59,7 +59,8 @@ namespace SimpleDbTests.Firebird.Tests
 
             RunTest(GetAllFromLookup_Test);
             RunTest(GetIdByNameFromLookup_Test);
-            UpdateByNameFromLookup_Test();
+            RunTest(UpdateByNameFromLookup_Test);
+            RunTest(DeleteselectedFromLookup_Test);
 
             Console.WriteLine(Stats);
         }
@@ -163,6 +164,32 @@ namespace SimpleDbTests.Firebird.Tests
             Console.WriteLine("The '{0}' new Id is: {1}", name, newId);
 
             AssertEqual(entity.Id, id);
+        }
+        
+        /// <summary>
+        /// Deletes selected entities from the Lookup.
+        /// </summary>
+        public void DeleteselectedFromLookup_Test()
+        {
+            _lookupDataLayer.Delete(
+                null, 
+                Expression.Or(
+                    Expression.Equal(
+                        Expression.QuotedName("Name"),
+                        Expression.Value("V2")),
+                    Expression.Equal(
+                        Expression.QuotedName("Name"),
+                        Expression.Value("V4"))
+                ) as Expression,
+                null);
+
+            var entities = _lookupDataLayer.GetAll();
+            foreach (var entity in entities)
+            {
+                Console.WriteLine(FormatEntity(entity));
+            }
+
+            AssertEqual(8, entities.Count());
         }
 
 

@@ -72,7 +72,6 @@ namespace SimpleDb.Sql
             sb.Append(" FROM ");
             sb.Append(dataTableName);
 
-            // Generate the WHERE clausule using parameters.
             // WHERE expression ...
             if (expression != null)
             {
@@ -87,8 +86,9 @@ namespace SimpleDb.Sql
         /// </summary>
         /// <param name="dataTableName">A data table name.</param>
         /// <param name="insertParameters">A list of INSERT parameters.</param>
+        /// <param name="withGeneratedIdentity">If true, the generated insert query will return an Id of the inserted row.</param>
         /// <returns>A parametrized INSERT query.</returns>
-        public virtual string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters)
+        public virtual string GenerateInsertQuery(string dataTableName, IEnumerable<NamedDbParameter> insertParameters, bool withGeneratedIdentity)
         {
             var columnsStringBuilder = new StringBuilder();
             var valuesStringBuilder = new StringBuilder();
@@ -109,13 +109,33 @@ namespace SimpleDb.Sql
                 valuesStringBuilder.Append(",");
             }
 
-            // TODO: ... TITY() Id -> Replace the "Id" with a list of columns? Generate it for IId entities only.
+            if (withGeneratedIdentity)
+            {
+                // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description); SELECT SCOPE_IDENTITY() Id;
+                return string.Format("INSERT INTO {0} ({1}) VALUES ({2}){3}",
+                    dataTableName,
+                    columnsStringBuilder.ToString(),
+                    valuesStringBuilder.ToString(),
+                    GenerateReturnIdentityForInsertQuery());
+            }
+            else
+            {
+                // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description)
+                return string.Format("INSERT INTO {0} ({1}) VALUES ({2})",
+                    dataTableName,
+                    columnsStringBuilder.ToString(),
+                    valuesStringBuilder.ToString());
+            }
+        }
 
-            // INSERT INTO Lookup (Name, Description) VALUES (@Name, @Description); SELECT SCOPE_IDENTITY() Id;
-            return string.Format("INSERT INTO {0} ({1}) VALUES ({2}); SELECT SCOPE_IDENTITY() \"Id\"",
-                dataTableName,
-                columnsStringBuilder.ToString(),
-                valuesStringBuilder.ToString());
+        /// <summary>
+        /// Generates the return-indentity for an INSERT query.
+        /// By default it is the MSSQL's SELECT SCOPE_IDENTITY() Id.
+        /// </summary>
+        /// <returns>The return-indentity for an INSERT query.</returns>
+        protected virtual string GenerateReturnIdentityForInsertQuery()
+        {
+            return "; SELECT SCOPE_IDENTITY() \"Id\"";
         }
 
         /// <summary>
