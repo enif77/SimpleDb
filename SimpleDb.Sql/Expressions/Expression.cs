@@ -49,7 +49,7 @@ namespace SimpleDb.Sql.Expressions
         /// <summary>
         /// The list of operands used by this expression.
         /// </summary>
-        public IEnumerable<IOperand> Operands
+        public IList<IOperand> Operands
         {
             get
             {
@@ -156,7 +156,7 @@ namespace SimpleDb.Sql.Expressions
             {
                 // a AND b AND c
                 var expStart = true;
-                var count = ((List<IOperand>)Operands).Count;
+                var remainingOpsCount = Operands.Count;
                 foreach (var operand in Operands)
                 {
                     if (expStart)
@@ -169,11 +169,9 @@ namespace SimpleDb.Sql.Expressions
                         GenerateSeparator(to);
                         operand.Generate(to);
                     }
-                    
-                    expStart = false;
 
-                    count--;
-                    if (count > 0)
+                    remainingOpsCount--;
+                    if (remainingOpsCount > 0)
                     {
                         GenerateSeparator(to);
                         Operator.Generate(to);
