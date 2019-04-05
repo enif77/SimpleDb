@@ -120,11 +120,15 @@ namespace SimpleDb.Firebird
         // https://stackoverflow.com/questions/16354712/how-to-programmatically-create-firebird-database
         // https://www.tabsoverspaces.com/7968-creating-firebird-database-programatically-c-net
         // https://github.com/cincuranet/FirebirdSql.Data.FirebirdClient/blob/master/Provider/src/FirebirdSql.Data.FirebirdClient/FirebirdClient/FbConnectionStringBuilder.cs
+        // https://stackoverflow.com/questions/41980813/firebird-net-provider-and-embedded-server-3
+        // http://www.ibphoenix.com/files/Embedded_fb3.pdf
+        // https://www.firebirdsql.org/pdfmanual/html/ufb-cs-embedded.html
 
         /// <summary>
         /// Creates a new Firebird database.
         /// </summary>
         /// <param name="host">The name/IP address of the Firebird server to which to connect. Ignored for ebedded databases.</param>
+        /// <param name="port">The port. Ignored for ebedded databases.</param>
         /// <param name="fileName">The name of the actual database or the database to be used when a connection is open. It is normally the path to an .FDB file or an alias.</param>
         /// <param name="user">Indicates the User ID to be used when connecting to the data source.</param>
         /// <param name="password">Indicates the password to be used when connecting to the data source.</param>
@@ -132,18 +136,69 @@ namespace SimpleDb.Firebird
         /// <param name="forcedWrites">If true, data are written to the database synchronously on COMMIT (the safe way). Asynchronously otherwise.</param>
         /// <param name="overwrite">If true, the new database replaces an existing database if exists.</param>
         /// <param name="embeddedDb">If true, an embedded database will be created.</param>
-        public static void CreateDatabase(string host, string fileName, string user, string password, int pageSize, bool forcedWrites, bool overwrite, bool embeddedDb)
+        /// <returns>A connection string for connecting to the created database.</returns>
+        public static string CreateDatabase(string host, int port, string fileName, string user, string password, int pageSize, bool forcedWrites, bool overwrite, bool embeddedDb)
         {
+            // User=SYSDBA;Password=dba;
+            // Database =W:\Devel\db\Firebird\DB.FDB;
+            // DataSource =localhost;
+            // Port =3050;Dialect=3;Charset=NONE;Role=;
+            // Connection lifetime=15;
+            // Pooling =true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;
+
             var csb = new FbConnectionStringBuilder
             {
                 Database = fileName,
                 DataSource = host,
+                Port = port,
+                Dialect = 3,
+                Charset = "NONE",
+                ConnectionLifeTime = 15,
+                Pooling = true,
+                MinPoolSize = 0,
+                MaxPoolSize = 50,
+                PacketSize = 8192,
                 UserID = user,
                 Password = password,
-                ServerType = embeddedDb ? FbServerType.Embedded : FbServerType.Default
+                ServerType = embeddedDb ? FbServerType.Embedded : FbServerType.Default,
+                ClientLibrary = "fbclient.dll"
             };
 
             FbConnection.CreateDatabase(csb.ConnectionString, pageSize, forcedWrites, overwrite);
+
+            return csb.ConnectionString;
+        }
+
+
+        public static string CreateEmbeddedDatabase(string fileName, string charSet = "NONE", bool withPooling = true, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
+        {
+            var csb = new FbConnectionStringBuilder
+            {
+                Database = fileName,
+                DataSource = "localhost",
+                Port = 3050,
+                Dialect = 3,
+                Charset = charSet,
+                ConnectionLifeTime = 15,
+                Pooling = withPooling,
+                MinPoolSize = 0,
+                MaxPoolSize = 50,
+                PacketSize = 8192,
+                UserID = "SYDBA",
+                Password = null,
+                ServerType = FbServerType.Embedded,
+                ClientLibrary = "fbclient.dll"
+            };
+
+            CreateDatabase(csb.ConnectionString, pageSize, forcedWrites, overwrite);
+
+            return csb.ConnectionString;
+        }
+
+
+        public static void CreateDatabase(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
+        {
+            FbConnection.CreateDatabase(connectionString, pageSize, forcedWrites, overwrite);
         }
 
         #endregion
