@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/enif77/SimpleDb</projectUrl>
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>SimplqDb.SQLite</description>
+    <description>SimplqDb.FireBird</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB SQLite</tags>

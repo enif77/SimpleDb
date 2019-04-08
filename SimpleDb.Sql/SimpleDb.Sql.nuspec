@@ -5,14 +5,14 @@
     <version>$version$</version>
     <title>$title$</title>
     <authors>Premysl Fara</authors>
-    <owners>pfar</owners>
+    <owners>enif77</owners>
     <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
     <projectUrl>https://github.com/enif77/SimpleDb</projectUrl>
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>SimpleDb.Sql</description>
     <releaseNotes>Initial release.</releaseNotes>
-    <copyright>(C) Premysl Fara, 2018</copyright>
+    <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB</tags>
     <dependencies>
       <dependency id="SimpleDb.Core" version="1.0.0" />

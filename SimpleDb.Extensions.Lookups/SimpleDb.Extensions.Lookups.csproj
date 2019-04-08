@@ -57,10 +57,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="nuget-add.bat" />
-    <None Include="nuget-init.bat" />
-    <None Include="nuget-pack.bat" />
-    <None Include="nuget-spec.bat" />
     <None Include="SimpleDb.Extensions.Lookups.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
