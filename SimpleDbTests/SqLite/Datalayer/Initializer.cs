@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 

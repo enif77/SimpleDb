@@ -22,12 +22,13 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Sql
 {
-    using SimpleDb.Sql.Expressions;
-    using SimpleDb.Sql.Expressions.Operators;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
 
+    using SimpleDb.Sql.Expressions;
+    using SimpleDb.Sql.Expressions.Operators;
+       
 
     /// <summary>
     /// Helper class for generating SQL queries.

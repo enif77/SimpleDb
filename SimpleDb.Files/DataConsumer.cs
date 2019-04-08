@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -26,7 +26,7 @@ namespace SimpleDb.Files
     using System.Collections.Generic;
     using System.Linq;
 
-    using SimpleDb.Shared;
+    using SimpleDb.Core;
 
 
     /// <summary>

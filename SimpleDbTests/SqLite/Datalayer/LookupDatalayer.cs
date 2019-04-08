@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -22,17 +22,17 @@ freely, subject to the following restrictions:
 
 namespace SimpleDbTests.SqLite.Datalayer
 {
+    using System;
+    using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
 
+    using SimpleDb.Core;
     using SimpleDb.Extensions.Lookups;
-    using SimpleDb.Shared;
     using SimpleDb.Sql;
 
     using SimpleDbTests.SqLite.DataObjects;
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-
+    
 
     public class LookupDataLayer : ABaseIdDatalayer<Lookup, long>
     {

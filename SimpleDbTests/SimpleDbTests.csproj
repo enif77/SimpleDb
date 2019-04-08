@@ -96,6 +96,10 @@
     <None Include="Dependencies\Injektor\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SimpleDb.Core\SimpleDb.Core.csproj">
+      <Project>{7588da30-3d6b-4b2f-b8bf-d7382114214c}</Project>
+      <Name>SimpleDb.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Extensions.Lookups\SimpleDb.Extensions.Lookups.csproj">
       <Project>{157dbd82-5ea3-4e7c-a10c-bdc39f62b93e}</Project>
       <Name>SimpleDb.Extensions.Lookups</Name>
@@ -119,10 +123,6 @@
     <ProjectReference Include="..\SimpleDb.PgSql\SimpleDb.PgSql.csproj">
       <Project>{aca5f995-b3f0-404a-831a-c507fa27a09c}</Project>
       <Name>SimpleDb.PgSql</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
-      <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
-      <Name>SimpleDb.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleDb.SqLite\SimpleDb.SqLite.csproj">
       <Project>{20c4a535-6ea8-4409-b788-9100018f7415}</Project>

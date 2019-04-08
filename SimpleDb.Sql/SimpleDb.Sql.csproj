@@ -75,17 +75,17 @@
     <Compile Include="BaseQueryGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
-      <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
-      <Name>SimpleDb.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="nuget-add.bat" />
     <None Include="nuget-init.bat" />
     <None Include="nuget-pack.bat" />
     <None Include="nuget-spec.bat" />
     <None Include="SimpleDb.Sql.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleDb.Core\SimpleDb.Core.csproj">
+      <Project>{7588da30-3d6b-4b2f-b8bf-d7382114214c}</Project>
+      <Name>SimpleDb.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

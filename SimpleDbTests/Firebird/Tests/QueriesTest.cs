@@ -23,13 +23,14 @@ freely, subject to the following restrictions:
 namespace SimpleDbTests.Firebird.Tests
 {
     using System;
-    using System.Configuration;
+    using System.Linq;
 
     using SimpleDb.Sql;
     using SimpleDbTests.Shared.Datalayer;
     using SimpleDbTests.Shared.DataObjects;
-    using System.Linq;
+    
     using SimpleDb.Sql.Expressions;
+
 
     public class QueriesTest : ATest
     {

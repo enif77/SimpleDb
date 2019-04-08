@@ -28,7 +28,7 @@ namespace SimpleDb.Sql
     using System.Linq;
     using System.Reflection;
 
-    using SimpleDb.Shared;
+    using SimpleDb.Core;
     using SimpleDb.Sql.Expressions;
     using SimpleDb.Sql.Expressions.Operators;
 

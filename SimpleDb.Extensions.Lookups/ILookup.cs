@@ -1,4 +1,4 @@
-﻿/* SimpleDb - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDb - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDb is available under the zlib license:
 
@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
 
 namespace SimpleDb.Extensions.Lookups
 {
-    using SimpleDb.Shared;
+    using SimpleDb.Core;
 
 
     /// <summary>

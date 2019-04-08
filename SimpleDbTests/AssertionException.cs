@@ -1,4 +1,4 @@
-﻿/* SimpleDbTests - (C) 2016 - 2017 Premysl Fara 
+﻿/* SimpleDbTests - (C) 2016 - 2019 Premysl Fara 
  
 SimpleDbTests is available under the zlib license:
 
@@ -20,11 +20,12 @@ freely, subject to the following restrictions:
  
  */
 
-using System;
-using System.Runtime.Serialization;
-
 namespace SimpleDbTests
 {
+    using System;
+    using System.Runtime.Serialization;
+
+
     [Serializable]
     internal class AssertionException : Exception
     {

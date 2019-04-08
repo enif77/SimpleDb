@@ -66,9 +66,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimpleDb.Shared\SimpleDb.Shared.csproj">
-      <Project>{f8d2a998-1b50-4886-ad6e-485374dbeb56}</Project>
-      <Name>SimpleDb.Shared</Name>
+    <ProjectReference Include="..\SimpleDb.Core\SimpleDb.Core.csproj">
+      <Project>{7588da30-3d6b-4b2f-b8bf-d7382114214c}</Project>
+      <Name>SimpleDb.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleDb.Sql\SimpleDb.Sql.csproj">
       <Project>{22684e08-ec5b-482e-90e3-d3a7c4fccf3a}</Project>

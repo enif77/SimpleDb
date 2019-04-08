@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A2D2514-458A-4E9D-AC96-55A86753D95A}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDbTests", "SimpleDbTests\SimpleDbTests.csproj", "{5FB77F9D-863C-4233-960D-711F086D5C05}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Shared", "SimpleDb.Shared\SimpleDb.Shared.csproj", "{F8D2A998-1B50-4886-AD6E-485374DBEB56}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Files", "SimpleDb.Files\SimpleDb.Files.csproj", "{02415C98-B92E-4852-B224-A73B9902F4A3}"
 EndProject
@@ -31,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Extensions.Validat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Firebird", "SimpleDb.Firebird\SimpleDb.Firebird.csproj", "{EF019356-2F0D-4B72-B55F-2CC793023F30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDb.Core", "SimpleDb.Core\SimpleDb.Core.csproj", "{7588DA30-3D6B-4B2F-B8BF-D7382114214C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +41,6 @@ Global
 		{5FB77F9D-863C-4233-960D-711F086D5C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FB77F9D-863C-4233-960D-711F086D5C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FB77F9D-863C-4233-960D-711F086D5C05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8D2A998-1B50-4886-AD6E-485374DBEB56}.Release|Any CPU.Build.0 = Release|Any CPU
 		{02415C98-B92E-4852-B224-A73B9902F4A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{02415C98-B92E-4852-B224-A73B9902F4A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02415C98-B92E-4852-B224-A73B9902F4A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -81,6 +77,10 @@ Global
 		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF019356-2F0D-4B72-B55F-2CC793023F30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7588DA30-3D6B-4B2F-B8BF-D7382114214C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7588DA30-3D6B-4B2F-B8BF-D7382114214C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7588DA30-3D6B-4B2F-B8BF-D7382114214C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7588DA30-3D6B-4B2F-B8BF-D7382114214C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
