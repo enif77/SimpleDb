@@ -6,7 +6,7 @@
     <title>$title$</title>
     <authors>Premysl Fara</authors>
     <owners>enif77</owners>
-    <licenseUrl>http://opensource.org/licenses/MS-PL</licenseUrl>
+    <license type="file">LICENSE.txt</license>
     <projectUrl>https://github.com/enif77/SimpleDb</projectUrl>
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -15,4 +15,7 @@
     <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB</tags>
   </metadata>
+  <files>
+    <file src="..\LICENSE.txt" target="" />
+  </files>
 </package>

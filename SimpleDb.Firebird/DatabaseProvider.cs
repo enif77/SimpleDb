@@ -169,10 +169,16 @@ namespace SimpleDb.Firebird
             return csb.ConnectionString;
         }
 
-
-        public static string CreateEmbeddedDatabase(string fileName, string charSet = "NONE", bool withPooling = true, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
+        /// <summary>
+        /// Creates a connection string for an embedded database.
+        /// </summary>
+        /// <param name="fileName">A path to the database file.</param>
+        /// <param name="charSet">A charset for database strings. NONE by default.</param>
+        /// <param name="withPooling">If true, the connection pooling is udsed.</param>
+        /// <returns>A connection string for an ebedded database.</returns>
+        public static string CreateEmbeddedDatabaseConnectionString(string fileName, string charSet = "NONE", bool withPooling = true)
         {
-            var csb = new FbConnectionStringBuilder
+            return new FbConnectionStringBuilder
             {
                 Database = fileName,
                 DataSource = "localhost",
@@ -188,17 +194,59 @@ namespace SimpleDb.Firebird
                 Password = null,
                 ServerType = FbServerType.Embedded,
                 ClientLibrary = "fbclient.dll"
-            };
-
-            CreateDatabase(csb.ConnectionString, pageSize, forcedWrites, overwrite);
-
-            return csb.ConnectionString;
+            }.ConnectionString;
         }
 
+        /// <summary>
+        /// Creates an embedded database.
+        /// </summary>
+        /// <param name="fileName">A path to the database file.</param>
+        /// <param name="charSet">A charset for database strings. NONE by default.</param>
+        /// <param name="withPooling">If true, the connection pooling is udsed.</param>
+        /// <param name="pageSize">The size of the database page size. 4096 (the default and the minimum) or 8192 or 16384.</param>
+        /// <param name="forcedWrites">If true, data are written to the database synchronously on COMMIT (the safe way). Asynchronously otherwise.</param>
+        /// <param name="overwrite">If true, the new database replaces an existing database if exists.</param>
+        /// <returns></returns>
+        public static string CreateEmbeddedDatabase(string fileName, string charSet = "NONE", bool withPooling = true, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
+        {
+            var csb = CreateEmbeddedDatabaseConnectionString(fileName, charSet, withPooling);
 
+            CreateDatabase(csb, pageSize, forcedWrites, overwrite);
+
+            return csb;
+        }
+
+        /// <summary>
+        /// Creates a new database.
+        /// </summary>
+        /// <param name="connectionString">A database connection string.</param>
+        /// <param name="pageSize">A database page size. 4096 by default.</param>
+        /// <param name="forcedWrites">If true (defaut) all writes to database are immediate.</param>
+        /// <param name="overwrite">If a database already exists, it is overwritten.</param>
         public static void CreateDatabase(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
         {
             FbConnection.CreateDatabase(connectionString, pageSize, forcedWrites, overwrite);
+        }
+
+        /// <summary>
+        /// Drops a database.
+        /// </summary>
+        /// <param name="connectionString">A database connection string.</param>
+        public static void DropDatabase(string connectionString)
+        {
+            FbConnection.DropDatabase(connectionString);
+        }
+
+
+        public static void ClearAllPools()
+        {
+            FbConnection.ClearAllPools();
+        }
+
+
+        public static void ClearPool(FbConnection connection)
+        {
+            FbConnection.ClearPool(connection);
         }
 
         #endregion
