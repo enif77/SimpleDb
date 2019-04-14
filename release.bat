@@ -14,7 +14,8 @@
 
 @REM Direscories.
 @SET BUILD_START_DIR=%CD%
-@SET NUGET_DIR=W:\Devel\nuget
+@rem @SET NUGET_DIR=W:\Devel\nuget
+@SET NUGET_DIR=C:\Users\enif\source\nuget
 
 @REM --- CLEANUP ---
 
