@@ -20,5 +20,6 @@
   </metadata>
   <files>
     <file src="..\LICENSE.txt" target="" />
+    <file src="..\README.md" target="" />
   </files>
 </package>

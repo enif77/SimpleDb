@@ -16,10 +16,11 @@
     <tags>SQL DB SQLite</tags>
     <dependencies>
       <dependency id="SimpleDb.Core" version="1.0.0" />
-      <dependency id="SimpleDb.Sql" version="1.0.0" />
+      <dependency id="SimpleDb.Sql" version="1.0.1" />
     </dependencies>
   </metadata>
   <files>
     <file src="..\LICENSE.txt" target="" />
+    <file src="..\README.md" target="" />
   </files>
 </package>

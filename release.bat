@@ -6,7 +6,7 @@
 
 @REM A version of each package.
 @SET CORE_VERSION=1.0.0
-@SET SQL_VERSION=1.0.0
+@SET SQL_VERSION=1.0.1
 @SET ELKPS_VERSION=1.0.0
 @SET EVALS_VERSION=1.0.0
 @SET ISQLT_VERSION=1.0.0
@@ -14,8 +14,8 @@
 
 @REM Direscories.
 @SET BUILD_START_DIR=%CD%
-@rem @SET NUGET_DIR=W:\Devel\nuget
-@SET NUGET_DIR=C:\Users\enif\source\nuget
+@SET NUGET_DIR=W:\Devel\nuget
+@rem @SET NUGET_DIR=C:\Users\enif\source\nuget
 
 @REM --- CLEANUP ---
 
