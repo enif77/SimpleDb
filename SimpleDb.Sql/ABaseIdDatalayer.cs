@@ -80,12 +80,12 @@ namespace SimpleDb.Sql
         /// Returns an entity instance with a specific Id.
         /// </summary>
         /// <param name="id">An entity Id.</param>
-        /// <param name="dataConsumer">An optional data consumer instance.</param>
+        /// <param name="instanceFactory">An optional IInstanceFactory instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>Instance of an entity or null.</returns>
-        public virtual T Get(TId id, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
+        public virtual T Get(TId id, IInstanceFactory<T> instanceFactory, IDbTransaction transaction = null)
         {
-            return GetAll(CreateIdParameters(id), null, dataConsumer, transaction).FirstOrDefault();
+            return GetAll(CreateIdParameters(id), null, instanceFactory, transaction).FirstOrDefault();
         }
 
         /// <summary>
@@ -182,33 +182,43 @@ namespace SimpleDb.Sql
         /// Reloads an entity from the database.
         /// </summary>
         /// <param name="entity">An entity instance to be reloaded from a database.</param>
-        /// <param name="dataConsumer">An optional user data consumer instance.</param>
+        /// <param name="instanceFactory">An optional user IInstanceFactory instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
-        public virtual void Reload(T entity, IDataConsumer<T> dataConsumer, IDbTransaction transaction = null)
+        public virtual bool Reload(T entity, IInstanceFactory<T> userInstanceFactory = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = dataConsumer ?? new BaseDataConsumer<T>(NamesProvider, DatabaseColumns, new List<T> { entity });
             var idParameters = CreateIdParameters(entity);
+
+            IDataRecord record;
 
             if (UseQueries)
             {
-                Database.ExecuteReader(
+                record = Database.ExecuteReader(
                     CommandType.Text,
                     QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), CreateWhereClauseExpression(idParameters, null)),  // TODO: SELECT column names can be precomputed.
                     idParameters,
-                    consumer.RecreateInstance,
-                    transaction);
+                    transaction).FirstOrDefault();
             }
             else
             {
-                Database.ExecuteReader(
+                record = Database.ExecuteReader(
                     CommandType.StoredProcedure,
                     SelectDetailsStoredProcedureName,
                     idParameters,
-                    consumer.RecreateInstance,
-                    transaction);
+                    transaction).FirstOrDefault();
             }
+
+            if (record == null)
+            {
+                return false;
+            }
+
+            var instanceFactory = userInstanceFactory ?? new InstanceFactory<T>(NamesProvider, DatabaseColumns);
+
+            instanceFactory.CreateInstance(record, entity);
+
+            return true;
         }
 
         #endregion

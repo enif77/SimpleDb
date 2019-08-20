@@ -193,7 +193,7 @@ namespace SimpleDb.Firebird
                 UserID = "SYDBA",
                 Password = null,
                 ServerType = FbServerType.Embedded,
-                ClientLibrary = "fbclient.dll"
+                ClientLibrary = @"U:\sql\firebird\Firebird-3.0.4.33054-0_Win32\fbclient.dll"
             }.ConnectionString;
         }
 

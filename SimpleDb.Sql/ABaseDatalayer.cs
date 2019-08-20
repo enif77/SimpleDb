@@ -152,37 +152,33 @@ namespace SimpleDb.Sql
         /// If set and UseQueries is false, the stored procedure should have all parameters, which were supplied here.</param>
         /// <param name="expression">An optional user defined WHERE clause expression for the SELECT command. 
         /// If not set and some parameters are defined, the WHERE clause is generated as column = param AND ...</param>
-        /// <param name="dataConsumer">An optional user data consumer instance.</param>
+        /// <param name="instanceFactory">An optional user IInstanceFactory instance.</param>
         /// <param name="transaction">An optional SQL transaction.</param>
         /// <returns>IEnumerable of all object instances.</returns>
-        public virtual IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, Expression expression = null, IDataConsumer<T> dataConsumer = null, IDbTransaction transaction = null)
+        public virtual IEnumerable<T> GetAll(IEnumerable<NamedDbParameter> parameters = null, Expression expression = null, IInstanceFactory<T> instanceFactory = null, IDbTransaction transaction = null)
         {
             OperationAllowed(DatabaseOperation.Select);
 
-            var consumer = dataConsumer ?? new BaseDataConsumer<T>(NamesProvider, DatabaseColumns, new List<T>());
-
             if (UseQueries)
             {
-                Database.ExecuteReader(
+                return Database.ExecuteReader(
+                    instanceFactory ?? new InstanceFactory<T>(NamesProvider, DatabaseColumns),
                     CommandType.Text,
                     QueryGenerator.GenerateSelectQuery(NamesProvider.GetTableName(TypeInstance.DataTableName), CreateSelectColumnNames(), CreateWhereClauseExpression(parameters, expression)),
                     parameters,
-                    consumer.CreateInstance,
                     transaction);
             }
             else
             {
                 if (expression != null) throw new InvalidOperationException("WHERE clause expression not supported for stored procedures.");
 
-                Database.ExecuteReader(
+                return Database.ExecuteReader(
+                    instanceFactory ?? new InstanceFactory<T>(NamesProvider, DatabaseColumns),
                     CommandType.StoredProcedure,
                     SelectStoredProcedureName,
                     parameters,
-                    consumer.CreateInstance,
                     transaction);
             }
-            
-            return consumer.Instances;
         }
 
         /// <summary>

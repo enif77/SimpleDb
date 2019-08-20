@@ -28,9 +28,11 @@ namespace SimpleDb.Sql
     using System.Data.Common;
     using System.Text;
 
+    using SimpleDb.Core;
+
 
     /// <summary>
-    /// Reperesents a database.
+    /// Low level database operations.
     /// </summary>
     public class Database
     {
@@ -90,14 +92,6 @@ namespace SimpleDb.Sql
 
 
         #region delegates
-
-        /// <summary>
-        /// A method called for each database row returned by a database query or call.
-        /// Data consumer should never call reader.Read() method.
-        /// </summary>
-        /// <param name="reader">A SQL reader instance with a database row ready to be processed.</param>
-        /// <returns>True on success.</returns>
-        public delegate bool DataConsumer(IDataReader reader);
 
         /// <summary>
         /// A method called during a SQL transaction.
@@ -192,10 +186,9 @@ namespace SimpleDb.Sql
         /// <param name="parameters">Array of SQL parameters</param>
         /// <param name="transaction">SQL transaction object</param>
         /// <param name="dataConsumer">A data consumer.</param>
-        public void ExecuteReader(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, DataConsumer dataConsumer, IDbTransaction transaction)
+        public IEnumerable<IDataRecord> ExecuteReader(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction)
         {
             if (string.IsNullOrEmpty(sql)) throw new ArgumentException("A SQL query or a stored procedure name expected.", nameof(sql));
-            if (dataConsumer == null) throw new ArgumentNullException(nameof(dataConsumer));
 
             if (transaction == null)
             {
@@ -203,7 +196,13 @@ namespace SimpleDb.Sql
                 {
                     using (var command = CreateCommand(commandType, sql, parameters, connection.Connection, null))
                     {
-                        ReadData(command, dataConsumer);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                yield return reader;
+                            }
+                        }
                     }
                 }
             }
@@ -211,7 +210,59 @@ namespace SimpleDb.Sql
             {
                 using (var command = CreateCommand(commandType, sql, parameters, transaction.Connection, transaction))
                 {
-                    ReadData(command, dataConsumer);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            yield return reader;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads data from a database.
+        /// </summary>
+        /// <param name="instanceFactory">An IInstanceFactory instance.</param>
+        /// <param name="commandType">A command type.</param>
+        /// <param name="sql">A SQL command or a stored procedure name.</param>
+        /// <param name="parameters">Array of SQL parameters</param>
+        /// <param name="transaction">SQL transaction object</param>
+        /// <param name="dataConsumer">A data consumer.</param>
+        public IEnumerable<T> ExecuteReader<T>(IInstanceFactory<T> instanceFactory, CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbTransaction transaction)
+            where T : AEntity, new()
+        {
+            if (instanceFactory == null) throw new ArgumentNullException(nameof(instanceFactory));
+            if (string.IsNullOrEmpty(sql)) throw new ArgumentException("A SQL query or a stored procedure name expected.", nameof(sql));
+
+            if (transaction == null)
+            {
+                using (var connection = CreateConnection())
+                {
+                    using (var command = CreateCommand(commandType, sql, parameters, connection.Connection, null))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                yield return instanceFactory.CreateInstance(reader);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                using (var command = CreateCommand(commandType, sql, parameters, transaction.Connection, transaction))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            yield return instanceFactory.CreateInstance(reader);
+                        }
+                    }
                 }
             }
         }
@@ -221,6 +272,7 @@ namespace SimpleDb.Sql
         /// Can be used for DB functions too.
         /// </summary>
         /// <typeparam name="T">The type of the returned value.</typeparam>
+        /// <param name="instanceFactory">An IInstanceFactory instance.</param>
         /// <param name="commandType">A command type.</param>
         /// <param name="sql">A SQL command or a stored procedure name.</param>
         /// <param name="parameters">Array of SQL parameters.</param>
@@ -423,25 +475,6 @@ namespace SimpleDb.Sql
         private IDbCommand CreateCommand(CommandType commandType, string sql, IEnumerable<NamedDbParameter> parameters, IDbConnection connection, IDbTransaction transaction)
         {
             return Provider.CreateDbCommand(commandType, CommandTimeout, sql, parameters, connection, transaction);
-        }
-       
-        /// <summary>
-        /// Reads data from a SQL command.
-        /// </summary>
-        /// <param name="command">A IDbCommand instance.</param>
-        /// <param name="dataConsumer">A DataConsumer instance.</param>
-        private void ReadData(IDbCommand command, DataConsumer dataConsumer)
-        {
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    if (dataConsumer(reader) == false)
-                    {
-                        break; // Something was wrong. Stop reading.
-                    }
-                }
-            }
         }
 
         /// <summary>

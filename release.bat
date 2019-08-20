@@ -1,16 +1,18 @@
 @REM Creates nuget packages from all relevant projects.
 
+@SET PATH=%PATH%;W:\Devel\bin\nuget
+
 @REM If this is 0, it is a normal release.
 @REM If this is not 0, it is a rerelease. Existing packages with the same versions are deleted from the source first, then readded.
-@SET RERELEASE=1
+@SET RERELEASE=0
 
 @REM A version of each package.
 @SET CORE_VERSION=1.0.0
-@SET SQL_VERSION=1.0.1
-@SET ELKPS_VERSION=1.0.0
+@SET SQL_VERSION=1.0.2
+@SET ELKPS_VERSION=1.0.2
 @SET EVALS_VERSION=1.0.0
-@SET ISQLT_VERSION=1.0.0
-@SET IFRBI_VERSION=1.0.1
+@SET ISQLT_VERSION=1.0.2
+@SET IFRBI_VERSION=1.0.2
 
 @REM Direscories.
 @SET BUILD_START_DIR=%CD%

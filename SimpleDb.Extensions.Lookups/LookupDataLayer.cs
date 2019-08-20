@@ -67,11 +67,11 @@ namespace SimpleDb.Extensions.Lookups
 
             if (UseQueries)
             {
-                var res = GetAll(GetDbParameterForName(name), null, new BaseDataConsumer<T>(NamesProvider, IdDatabaseColumns, new List<T>()), transaction);
+                var res = GetAll(GetDbParameterForName(name), null, new InstanceFactory<T>(NamesProvider, IdDatabaseColumns), transaction).ToList();
 
-                return (res.Any())
+                return res.Any()
                     ? res.First().Id
-                    : default(int);
+                    : default;
             }
             else
             {

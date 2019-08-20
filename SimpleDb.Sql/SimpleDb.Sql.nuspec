@@ -11,7 +11,7 @@
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>SimpleDb.Sql</description>
-    <releaseNotes>Initial release.</releaseNotes>
+    <releaseNotes>Supports IInstanceFactory and IEnumerable&lt;T&gt; from the Database.cs</releaseNotes>
     <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB</tags>
     <dependencies>
