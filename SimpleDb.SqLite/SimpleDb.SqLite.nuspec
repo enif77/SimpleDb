@@ -11,12 +11,12 @@
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>SimplqDb.SQLite</description>
-    <releaseNotes>Supports IInstanceFactory and IEnumerable&lt;T&gt; from the Database.cs</releaseNotes>
+    <releaseNotes></releaseNotes>
     <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB SQLite</tags>
     <dependencies>
-      <dependency id="SimpleDb.Core" version="1.0.0" />
-      <dependency id="SimpleDb.Sql" version="1.0.2" />
+      <dependency id="SimpleDb.Core" version="1.0.1" />
+      <dependency id="SimpleDb.Sql" version="1.0.3" />
     </dependencies>
   </metadata>
   <files>

@@ -15,8 +15,8 @@
     <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB</tags>
     <dependencies>
-      <dependency id="SimpleDb.Core" version="1.0.0" />
-      <dependency id="SimpleDb.Sql" version="1.0.2" />
+      <dependency id="SimpleDb.Core" version="1.0.1" />
+      <dependency id="SimpleDb.Sql" version="1.0.3" />
     </dependencies>
   </metadata>
   <files>
