@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>netcoreapp3.0;net472</TargetFrameworks>
     <Title>SimpleDb.Extensions.Lookups</Title>
     <Description>A simple library for data access.</Description>
     <Product>SimpleDb</Product>
@@ -9,6 +9,7 @@
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
     <FileVersion>1.0.3.0</FileVersion>
     <InformationalVersion>1.0.3.0</InformationalVersion>
+    <PackageVersion>1.0.3</PackageVersion>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleDb.Core\SimpleDb.Core.csproj" />
