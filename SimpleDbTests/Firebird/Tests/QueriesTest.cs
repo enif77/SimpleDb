@@ -45,7 +45,7 @@ namespace SimpleDbTests.Firebird.Tests
             //    new SimpleDb.Firebird.DatabaseProvider());
 
             //var connectionString = SimpleDb.Firebird.DatabaseProvider.CreateDatabase(null, 3050, @"U:\sql\firebird\test.fbd", "SYSDBA", null, 4096, true, true, true);
-            var connectionString = SimpleDb.Firebird.DatabaseProvider.CreateEmbeddedDatabase(@"U:\sql\firebird\test.fbd", "NONE", true, 4096, true, true);
+            var connectionString = SimpleDb.Firebird.DatabaseProvider.CreateEmbeddedDatabase(@"W:\sql\firebird\test.fbd", "NONE", true, 4096, true, true);
 
             _database = new Database(
                 connectionString,

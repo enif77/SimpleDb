@@ -11,7 +11,7 @@
     <iconUrl>http://github.com/contoso/UsefulStuff/nuget_icon.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>SimplqDb.FireBird</description>
-    <releaseNotes>Supports IInstanceFactory and IEnumerable&lt;T&gt; from the Database.cs.</releaseNotes>
+    <releaseNotes></releaseNotes>
     <copyright>(C) Premysl Fara, 2019</copyright>
     <tags>SQL DB Firebird</tags>
     <dependencies>

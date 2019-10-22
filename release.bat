@@ -4,7 +4,7 @@
 
 @REM If this is 0, it is a normal release.
 @REM If this is not 0, it is a rerelease. Existing packages with the same versions are deleted from the source first, then readded.
-@SET RERELEASE=0
+@SET RERELEASE=1
 
 @REM A version of each package.
 @SET CORE_VERSION=1.0.1
